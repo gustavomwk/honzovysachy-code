@@ -40,9 +40,11 @@ public class SachoveView extends View {
 	boolean mOtoceno = false;
 	boolean mBilyClovek = true;
 	boolean mCernyClovek = false;
+	boolean mPremyslim = false;
 	Drawable mFigury[][];
 	Pozice mPozice = new Pozice();
 	final Handler mHandler = new Handler();
+	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
 	
 	protected boolean hrajeClovek() {
 		return mBilyClovek && mPozice.bily ||
@@ -102,7 +104,7 @@ public class SachoveView extends View {
     }
     
     public boolean onTouchEvent(MotionEvent event)  {
-  
+    	if (isPremyslim()) return false;
      	if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
     	if (mPole <= 0 || !hrajeClovek()) return false;
     	int x = (int)((event.getX() + 0.5) / mPole);
@@ -112,7 +114,7 @@ public class SachoveView extends View {
     	} else {
     		y = 7 - y;
     	}
-    	//dlg(x + " " + y);
+
     	Vector t = mPozice.nalezTahy();
 		int pole = Pozice.a1 + x + 10 * y;
 		if (mPozice.JeTam1(t, pole)) {
@@ -135,6 +137,12 @@ public class SachoveView extends View {
     
     @Override
     protected void onDraw(Canvas canvas) {
+    	byte[] sch = null;
+    	if (isPremyslim()) {
+    		sch = mSchPriMysleni;
+    	} else {
+    		sch = mPozice.sch;
+    	}
     	Rect r = new Rect();
     	getDrawingRect(r);
   		int w = r.right - r.left;//canvas.getWidth();
@@ -169,7 +177,7 @@ public class SachoveView extends View {
             	int sx = (mOtoceno ? 7 - i : i) * mPole;
             	int sy = (mOtoceno ? j : 7 - j) * mPole;
                 canvas.drawRect(new Rect(sx, sy, sx + mPole, sy + mPole), p);
-                byte co = mPozice.sch[Pozice.a1 + i + 10 * j];
+                byte co = sch[Pozice.a1 + i + 10 * j];
                 
                 if (co != 0 && co > -7 && co < 7) {
                 	Drawable dr = mFigury[co > 0 ? 1 : 0][co > 0 ? co -1 : -co - 1];
@@ -180,7 +188,7 @@ public class SachoveView extends View {
     }
 
 	
-	private void dlg(String co) {
+	public void dlg(String co) {
 		Dialog d = new Dialog(this.getContext());
 		d.setTitle(co);
 		d.show();
@@ -188,6 +196,7 @@ public class SachoveView extends View {
 	
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent msg) {
+    	if (isPremyslim()) return false;
     	switch (keyCode) {
     	case KeyEvent.KEYCODE_DPAD_UP:
     		if (!mOtoceno && mcy < 7 || mOtoceno && mcy > 0) {
@@ -236,7 +245,16 @@ public class SachoveView extends View {
     	return false;
     }
     
+    public boolean isPremyslim() {
+    	return mPremyslim;
+    }
+    
+    
+    
+    
     protected void tahniPrograme() {
+    	mPremyslim = true;
+    	System.arraycopy(mPozice.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		 public void run() {
     			 mPozice.nalezTahy();
@@ -246,16 +264,22 @@ public class SachoveView extends View {
     					 new Runnable() {
 
 							public void run() {
+								mPremyslim = false;
 								if (tah != 0) 
 									tahni(tah);
-								else dlg("The end");
-								
+								else
+									dlg("The end");
 							}}
     					 );
     		 }
     	};
     	t.start();
      }
+    
+    protected void novaPartie() {
+    	mPozice = new Pozice();
+    	invalidate();
+    }
     
     protected void hrajTed() {
     	if (mPozice.bily) {

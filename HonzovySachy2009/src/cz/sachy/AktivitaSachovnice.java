@@ -29,6 +29,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	    super.onCreateOptionsMenu(menu);
 	    menu.add(Menu.NONE, 1, Menu.NONE, "Flip board").setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 2, Menu.NONE, "Move").setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 3, Menu.NONE, "New game").setOnMenuItemClickListener(this);
 	    return true;
 	}
 	
@@ -43,11 +44,18 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 
 
 	public boolean onMenuItemClick(MenuItem item) {
+		if (mView.isPremyslim()) {
+			mView.dlg("thinking...");
+			return true;
+		}
 		switch (item.getItemId()) {
 		case 1: mView.otoc();
 			break;
 		case 2: 
 			mView.hrajTed();
+			break;
+		case 3: 
+			mView.novaPartie();
 			break;
 		}
 		return true;
