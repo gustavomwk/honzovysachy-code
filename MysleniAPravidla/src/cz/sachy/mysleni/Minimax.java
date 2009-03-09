@@ -95,7 +95,7 @@ public class Minimax {
 		for (int i = 0; i < tahy.size(); i++) {
 			int t = ((Integer)(tahy.elementAt(i))).intValue();
 			p.tahni(t, false, false, null);
-			int h = dalOdMatu(alfabetaZasobnik(p, 2, blizKMatu(MAT), blizKMatu(max)));
+			int h = dalOdMatu(alfabetaZasobnik(p, 4, blizKMatu(MAT), blizKMatu(max)));
 			if (i == 0 || h > max) {
 				max = h;
 				maxT = t;

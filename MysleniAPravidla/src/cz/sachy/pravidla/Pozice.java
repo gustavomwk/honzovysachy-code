@@ -19,6 +19,8 @@ package cz.sachy.pravidla;
 import java.util.Iterator;
 import java.util.Vector;
 
+import cz.sachy.mysleni.HodnotaPozice;
+
 public class Pozice {
   
 
@@ -651,6 +653,7 @@ public class Pozice {
   
   private void zaradTah(int i, int j) {
 	    mZasobnik.tahy[index] = (i << 7) | j;
+	    mZasobnik.hodnoty[index] = HodnotaPozice.mStdCenyFigur[abs(sch[j])];
 	    index++;
   	}
 	  
@@ -691,6 +694,31 @@ public class Pozice {
 	      }
 	    }
 	  }
+	  
+	  private void dlouhaBilaFiguraBrani(int o1, int o2, int p) {
+		    for(int j = o1; j <= o2; j++) {
+		      for(int q = p + mOfsety[j]; sch[q] <= 0; q += mOfsety[j]) {
+		        
+		        if (sch[q] < 0) {
+		        	zaradTah(p, q);
+		          break;
+		        }
+		      }
+		    }
+		  }
+		  
+		  private void dlouhaCernaFiguraBrani(int o1, int o2, int p) {
+		    for(int j = o1; j <= o2; j++) {
+		      for(int q = p + mOfsety[j]; sch[q] >= 0 && sch[q] < 7; q += mOfsety[j]) {
+		        
+		        if (sch[q] > 0) {
+		        	zaradTah(p, q);
+		          break;
+		        }
+		      }
+		    }
+		  }
+	  
 	  
 	  private void zaradRosadu(int jakou) {
 		  mZasobnik.tahy[index] =  jakou;
@@ -816,7 +844,154 @@ public class Pozice {
 	    } /* od hraje cerny*/
 	    mZasobnik.hranice[mZasobnik.pos] = index;
 	    mZasobnik.pos++;
+	    
+	    
+	    if (false) {
+	    int maxPos;
+	    int max;
+	    int tmp;
+	    for (i = (mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2]); i < index - 1; i++) {
+	    	maxPos = i;
+	    	max = mZasobnik.hodnoty[i];
+	    	for (j = i + 1; j < index; j++) {
+	    		  if (mZasobnik.hodnoty[j] > max) {
+	    			  maxPos = j;
+	    			  max = mZasobnik.hodnoty[j];
+	    		  }
+	    	}
+	    	if (maxPos != i) {
+	    		mZasobnik.hodnoty[maxPos] = mZasobnik.hodnoty[i] ;
+	    		mZasobnik.hodnoty[i] = max;
+	    		tmp = mZasobnik.tahy[maxPos];
+	    		mZasobnik.tahy[maxPos] = mZasobnik.tahy[i];
+	    		mZasobnik.tahy[i] = tmp;
+	    	}
+	    }
+	    }
 	  }
+
+  public void nalezPseudolegalniBraniZasobnik() {
+	  int j, i; /*promenne pro for cykly*/
+	  if (mZasobnik.pos == 0) 
+		  index = 0;
+	  else 
+		  index = mZasobnik.hranice[mZasobnik.pos - 1];
+	    
+	    if (bily) {
+	     for (i = a1; i <= h8; i++)
+	      {if (sch[i] < 1 || sch[i] > 6) continue;
+	       switch (sch[i]) {
+	        case 1 : /*pesec*/
+	         if (i < a7) /*tedy nehrozi promena*/ {
+	           if (sch[i + 11] < 0) zaradTah(i, i + 11);
+	           if (sch[i + 9] < 0) zaradTah(i, i + 9);
+	           if (mimoch == i + 1) zaradMimochodem(i, i + 11); else
+	           if (mimoch == i - 1) zaradMimochodem(i, i + 9);
+	         }
+	        else /* i>=a7 => promeny pesce*/
+	         {if (sch[i + 10] == 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 10, j);
+	          if (sch[i + 11] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 11, j);
+	          if (sch[i + 9] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 9, j);
+	         }
+	      break;
+	     case 2: /* kun*/
+	      for (j = 8; j <= 15; j++)
+	        if ((sch[i + mOfsety[j]]) <0 ) zaradTah(i,i + mOfsety[j]);
+	      break;
+	     case 3: /* strelec*/
+	       dlouhaBilaFiguraBrani(4, 7, i);
+	     break;
+	     case 4: /* vez*/
+	       dlouhaBilaFiguraBrani(0, 3, i);
+	     break;
+	     case 5: /* dama*/
+	       dlouhaBilaFiguraBrani(0, 7, i);
+	     break;
+	     case 6: /* kral*/
+	       for (j = 0; j <= 7; j++) 
+	         if ((sch[i + mOfsety[j]]) < 0) zaradTah(i, i + mOfsety[j]);
+	       
+	       break; /* od krale */
+	     }/* od switch*/
+	   } /* od for cyklu*/
+	 } /* od hraje bily*/
+	    else
+	     {
+	     for (i = a1; i <= h8; i++) {
+	       if (sch[i] >=0 ) continue;
+	       switch (sch[i]) {
+	         case -1 : /*pesec*/
+	         if (i>h2) /*tedy nehrozi promena*/ {
+	           if (sch[i - 11] > 0 && sch[i - 11] < 7)
+	             zaradTah(i, i - 11);
+	           if (sch[i - 9] > 0 && sch[i - 9] < 7) 
+	             zaradTah(i, i - 9);
+	             
+	             if (mimoch == i + 1) zaradMimochodem(i, i - 9); else
+	             if (mimoch == i - 1) zaradMimochodem(i, i - 11);
+	           } else /* i<=h2 => promeny pesce*/ {
+	             if (sch[i - 10] == 0)
+	               for(j = 3; j >= 0; j--)
+	                 zaradCernouPromenu(i, i - 10, j);
+	             if (sch[i - 11] > 0 && sch[i - 11] < 7)
+	               for(j = 3; j >= 0; j--)
+	                 zaradCernouPromenu(i, i - 11, j);
+	             if (sch[i - 9] > 0 && sch[i - 9] < 7)
+	               for(j = 3; j >= 0; j--)
+	                 zaradCernouPromenu(i, i - 9, j);
+	           }
+	      break;
+	     case -2: /* kun*/
+	      for (j = 8; j <= 15; j++)
+	        if (sch[i + mOfsety[j]] > 0 && sch[i + mOfsety[j]] < 7)
+	          zaradTah(i, i + mOfsety[j]);
+	      break;
+	     case -3: /* strelec*/
+	       dlouhaCernaFiguraBrani(4, 7, i);
+	       break;
+	     case -4: /* vez*/
+	       dlouhaCernaFiguraBrani(0, 3, i);
+	       break;
+	     case -5: /* dama*/
+	       dlouhaCernaFiguraBrani(0, 7, i);
+	       break;
+	     case -6: /* kral*/
+	       for (j = 0; j <= 7; j++)
+	         if (sch[i + mOfsety[j]] > 0 && sch[i + mOfsety[j]] < 7)
+	           zaradTah(i, i + mOfsety[j]);
+
+	      break;
+	     }/* od switch*/
+	    } /* od for cyklu*/
+	    } /* od hraje cerny*/
+	    mZasobnik.hranice[mZasobnik.pos] = index;
+	    mZasobnik.pos++;
+	    
+	    
+	    if (false) {
+	    int maxPos;
+	    int max;
+	    int tmp;
+	    for (i = (mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2]); i < index - 1; i++) {
+	    	maxPos = i;
+	    	max = mZasobnik.hodnoty[i];
+	    	for (j = i + 1; j < index; j++) {
+	    		  if (mZasobnik.hodnoty[j] > max) {
+	    			  maxPos = j;
+	    			  max = mZasobnik.hodnoty[j];
+	    		  }
+	    	}
+	    	if (maxPos != i) {
+	    		mZasobnik.hodnoty[maxPos] = mZasobnik.hodnoty[i] ;
+	    		mZasobnik.hodnoty[i] = max;
+	    		tmp = mZasobnik.tahy[maxPos];
+	    		mZasobnik.tahy[maxPos] = mZasobnik.tahy[i];
+	    		mZasobnik.tahy[i] = tmp;
+	    	}
+	    }
+	    }
+	  }
+
   
   public static int abs(int i) {
     if (i < 0) return -i;
