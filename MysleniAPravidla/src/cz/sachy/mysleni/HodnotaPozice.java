@@ -19,7 +19,7 @@ package cz.sachy.mysleni;
 import cz.sachy.pravidla.Pozice;
 
 public class HodnotaPozice {
-	public static final int[] mStdCenyFigur = {0, 50, 150, 150, 250, 450, 0};
+	public static final int[] mStdCenyFigur = {0, 50, 150, 150, 250, 450, Minimax.BLIZKO_MATU};
 	public static int hodnotaPozice(Pozice p) {
 		int suma = 0;
 		for (int i = Pozice.a1; i <= Pozice.h8; i++) {

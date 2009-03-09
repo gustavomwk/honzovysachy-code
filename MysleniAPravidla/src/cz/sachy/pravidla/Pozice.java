@@ -22,14 +22,14 @@ import java.util.Vector;
 public class Pozice {
   
 
-  public static final byte[] ofsety =
+  public static final byte[] mOfsety =
   {  1,  -1,  10,  -10, /* Vez*/
     11, -11,   9,  -9,  /* Strelec*/
     21,  19,  12,   8, -21, -19, -12, - 8 /* Kun*/
   };
   
   
-  public static final byte[] zakladniPostaveni = {
+  public static final byte[] mZakladniPostaveni = {
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     /*     a    b    c    d    e    f    g    h*/
@@ -54,33 +54,35 @@ public class Pozice {
 
   public byte[] sch;
   
-  Vector mtahy;
+  public Vector mPartie;
   
-  public Vector partie;
+  public int mIndexVPartii;
   
-  public int indexVPartii;
+  public ZasobnikTahu mZasobnik;
+  
   
   public Vector zasobnik;
   
   public int indexVZasobniku;
+  
+  int index;
     
   public Pozice() {
-    sch = new byte[zakladniPostaveni.length];
-    System.arraycopy(zakladniPostaveni, 0, sch, 0, sch.length);
+    sch = new byte[mZakladniPostaveni.length];
+    System.arraycopy(mZakladniPostaveni, 0, sch, 0, sch.length);
     bily = true;
     roch = 15;
     mimoch = 0;
-    indexVPartii = -1;
+    mIndexVPartii = -1;
     indexVZasobniku = -1;
-    partie = new Vector();
+    mPartie = new Vector();
     zasobnik = new Vector();
-    
-    mtahy = nalezPseudolegalniTahy2();
+    mZasobnik = new ZasobnikTahu();
   }
   
   protected void push(byte brani,boolean globalne) {
     if (globalne) {
-      ((ZasobnikStruct)partie.elementAt(indexVPartii)).brani = brani;
+      ((ZasobnikStruct)mPartie.elementAt(mIndexVPartii)).brani = brani;
     } else {
       ((ZasobnikStruct)zasobnik.elementAt(indexVZasobniku)).brani = brani;
     }
@@ -88,13 +90,13 @@ public class Pozice {
   
   protected void push(boolean globalne, boolean ukousniKonec, int tah) {
     if (globalne) {
-      indexVPartii++;
-      if (indexVPartii <= partie.size()) {
-        partie.add(new ZasobnikStruct(roch, mimoch, tah));
+      mIndexVPartii++;
+      if (mIndexVPartii <= mPartie.size()) {
+        mPartie.add(new ZasobnikStruct(roch, mimoch, tah));
       } else {
-        ((ZasobnikStruct) partie.elementAt(indexVPartii)).set(roch, mimoch, tah);
-        if (ukousniKonec && partie.size() > indexVPartii + 1) {
-          partie.setSize(indexVPartii + 1);
+        ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).set(roch, mimoch, tah);
+        if (ukousniKonec && mPartie.size() > mIndexVPartii + 1) {
+          mPartie.setSize(mIndexVPartii + 1);
         }
       }
     } else {
@@ -112,7 +114,7 @@ public class Pozice {
    int odkud, kam;
    ZasobnikStruct z;
    if (globalne) {
-     z = (ZasobnikStruct) partie.elementAt(indexVPartii--);
+     z = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii--);
    } else {
      z = (ZasobnikStruct) zasobnik.elementAt(indexVZasobniku--);
    }
@@ -416,7 +418,7 @@ public class Pozice {
 
   private void dlouhaBilaFigura(Vector tahy, int o1, int o2, int p) {
     for(int j = o1; j <= o2; j++) {
-      for(int q = p + ofsety[j]; sch[q] <= 0; q += ofsety[j]) {
+      for(int q = p + mOfsety[j]; sch[q] <= 0; q += mOfsety[j]) {
         zaradTah(tahy, p, q);
         if (sch[q] < 0) {
           break;
@@ -427,7 +429,7 @@ public class Pozice {
   
   private void dlouhaCernaFigura(Vector tahy, int o1, int o2, int p) {
     for(int j = o1; j <= o2; j++) {
-      for(int q = p + ofsety[j]; sch[q] >= 0 && sch[q] < 7; q += ofsety[j]) {
+      for(int q = p + mOfsety[j]; sch[q] >= 0 && sch[q] < 7; q += mOfsety[j]) {
         zaradTah(tahy, p, q);
         if (sch[q] > 0) {
           break;
@@ -447,26 +449,26 @@ public class Pozice {
       if (sch[i - 9] == 1) return true;/*pescem*/
       if (sch[i - 11] == 1) return true;/*pescem*/
       for (j = 8; j <= 15; j++)
-        if (sch[i + ofsety[j]] == 2) return true;/*konem*/
+        if (sch[i + mOfsety[j]] == 2) return true;/*konem*/
       for(j = 0; j <= 7; j++)
-        if (sch[i + ofsety[j]] == 6) return true;/*kralem*/
+        if (sch[i + mOfsety[j]] == 6) return true;/*kralem*/
       for (j = 0; j <= 3; j++) /*vezi nebo damou po rade/sloupci*/
        {
-        k = ofsety[j];
+        k = mOfsety[j];
         while(true) {
           if ((sch[i + k] == 4) || sch[i + k] == 5)
             return true;
           if (sch[i + k] != 0) break;
-          k+=ofsety[j];
+          k+=mOfsety[j];
         }
       }
       for(j = 4; j <= 7; j++) /*strelcem nebo damou po diagonale*/
        {
-        k = ofsety[j];
+        k = mOfsety[j];
         while (true) {
           if ((sch[i + k] == 3) || (sch[i + k] == 5)) return true;
           if (sch[i + k] != 0) break;
-          k+=ofsety[j];
+          k+=mOfsety[j];
         }
       }
     } else /*cernym*/
@@ -474,27 +476,27 @@ public class Pozice {
       if (sch[i + 9] == -1) return true;/*pescem*/
       if (sch[i + 11] == -1) return true;/*pescem*/
       for(j = 8; j <= 15; j++)
-        if (sch[i + ofsety[j]] == -2) return true;/*konem*/
+        if (sch[i + mOfsety[j]] == -2) return true;/*konem*/
       for (j = 0; j <= 7; j++)
-        if (sch[i + ofsety[j]] == -6) return true;/*kralem*/
+        if (sch[i + mOfsety[j]] == -6) return true;/*kralem*/
         for (j = 0; j <= 3; j++) /*vezi nebo damou po rade/sloupci*/
          {
-          k = ofsety[j];
+          k = mOfsety[j];
           while (true) {
             if (sch[i + k] == -4 ||
                 sch[i + k] == -5) return true;
             if (sch[i + k] != 0) break;
-            k+=ofsety[j];
+            k+=mOfsety[j];
           }
         }
         for (j = 4; j <= 7; j++) /*vezi nebo damou po rade/sloupci*/
         {
-         k = ofsety[j];
+         k = mOfsety[j];
          while (true) {
            if (sch[i + k] == -3 ||
                sch[i + k] == -5) return true;
            if (sch[i + k] != 0) break;
-           k+=ofsety[j];
+           k+=mOfsety[j];
          }
        }
     }
@@ -558,7 +560,7 @@ public class Pozice {
       break;
      case 2: /* kun*/
       for (j = 8; j <= 15; j++)
-        if ((sch[i + ofsety[j]]) <=0 ) zaradTah(tahy, i,i + ofsety[j]);
+        if ((sch[i + mOfsety[j]]) <=0 ) zaradTah(tahy, i,i + mOfsety[j]);
       break;
      case 3: /* strelec*/
        dlouhaBilaFigura(tahy, 4, 7, i);
@@ -571,7 +573,7 @@ public class Pozice {
      break;
      case 6: /* kral*/
        for (j = 0; j <= 7; j++) 
-         if ((sch[i + ofsety[j]]) <= 0) zaradTah(tahy, i, i + ofsety[j]);
+         if ((sch[i + mOfsety[j]]) <= 0) zaradTah(tahy, i, i + mOfsety[j]);
        if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0)
          && !ohrozeno(i + 1, false) && !ohrozeno(i, false))  {
          zaradRosadu(tahy, MBRoch);
@@ -616,8 +618,8 @@ public class Pozice {
       break;
      case -2: /* kun*/
       for (j = 8; j <= 15; j++)
-        if (sch[i + ofsety[j]] >=0 && sch[i + ofsety[j]]  <7)
-          zaradTah(tahy, i, i + ofsety[j]);
+        if (sch[i + mOfsety[j]] >=0 && sch[i + mOfsety[j]]  <7)
+          zaradTah(tahy, i, i + mOfsety[j]);
       break;
      case -3: /* strelec*/
        dlouhaCernaFigura(tahy, 4, 7, i);
@@ -630,8 +632,8 @@ public class Pozice {
        break;
      case -6: /* kral*/
        for (j = 0; j <= 7; j++)
-         if (sch[i + ofsety[j]] >= 0 && sch[i + ofsety[j]] < 7)
-           zaradTah(tahy, i, i + ofsety[j]);
+         if (sch[i + mOfsety[j]] >= 0 && sch[i + mOfsety[j]] < 7)
+           zaradTah(tahy, i, i + mOfsety[j]);
        if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0
            && !ohrozeno(e8, true) && !ohrozeno(f8, true)) {
          zaradRosadu(tahy, MCRoch);
@@ -647,6 +649,174 @@ public class Pozice {
     return tahy;
   }
   
+  private void zaradTah(int i, int j) {
+	    mZasobnik.tahy[index] = (i << 7) | j;
+	    index++;
+  	}
+	  
+	  private void zaradMimochodem(int i, int j) {
+		  mZasobnik.tahy[index] =  (1<<15) | ((i)<<7) | (j);
+		  index++;
+	  }
+	  
+	  private void zaradBilouPromenu(int p1, int p2, int fig) {
+		  mZasobnik.tahy[index] =  ((3<<14)|(fig<<10)|((p1-a7)<<7)|((p2-a8)<<4));
+		  index++;
+	  }
+	  
+	  private void zaradCernouPromenu(int p1, int p2, int fig) {
+		  mZasobnik.tahy[index] =  ((13<<12)|(fig<<10)|((p1-a2)<<7)|((p2-a1)<<4));
+		  index++;
+	  }
+	  
+
+	  private void dlouhaBilaFigura(int o1, int o2, int p) {
+	    for(int j = o1; j <= o2; j++) {
+	      for(int q = p + mOfsety[j]; sch[q] <= 0; q += mOfsety[j]) {
+	        zaradTah(p, q);
+	        if (sch[q] < 0) {
+	          break;
+	        }
+	      }
+	    }
+	  }
+	  
+	  private void dlouhaCernaFigura(int o1, int o2, int p) {
+	    for(int j = o1; j <= o2; j++) {
+	      for(int q = p + mOfsety[j]; sch[q] >= 0 && sch[q] < 7; q += mOfsety[j]) {
+	        zaradTah(p, q);
+	        if (sch[q] > 0) {
+	          break;
+	        }
+	      }
+	    }
+	  }
+	  
+	  private void zaradRosadu(int jakou) {
+		  mZasobnik.tahy[index] =  jakou;
+		  index++;
+	  }
+
+  
+  public void nalezPseudolegalniTahyZasobnik() {
+	  int j, i; /*promenne pro for cykly*/
+	  if (mZasobnik.pos == 0) 
+		  index = 0;
+	  else 
+		  index = mZasobnik.hranice[mZasobnik.pos - 1];
+	    
+	    if (bily) {
+	     for (i = a1; i <= h8; i++)
+	      {if (sch[i] < 1 || sch[i] > 6) continue;
+	       switch (sch[i]) {
+	        case 1 : /*pesec*/
+	         if (i < a7) /*tedy nehrozi promena*/ {
+	           if (sch[i + 11] < 0) zaradTah(i, i + 11);
+	           if (sch[i + 9] < 0) zaradTah(i, i + 9);
+	           if (sch[i + 10] == 0) {
+	             zaradTah(i, i + 10);
+	             if (i <= h2 && sch[i + 20] == 0) zaradTah(i,i+20);
+	           } /* pescem o 2*/
+	           if (mimoch == i + 1) zaradMimochodem(i, i + 11); else
+	           if (mimoch == i - 1) zaradMimochodem(i, i + 9);
+	         }
+	        else /* i>=a7 => promeny pesce*/
+	         {if (sch[i + 10] == 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 10, j);
+	          if (sch[i + 11] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 11, j);
+	          if (sch[i + 9] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 9, j);
+	         }
+	      break;
+	     case 2: /* kun*/
+	      for (j = 8; j <= 15; j++)
+	        if ((sch[i + mOfsety[j]]) <=0 ) zaradTah(i,i + mOfsety[j]);
+	      break;
+	     case 3: /* strelec*/
+	       dlouhaBilaFigura(4, 7, i);
+	     break;
+	     case 4: /* vez*/
+	       dlouhaBilaFigura(0, 3, i);
+	     break;
+	     case 5: /* dama*/
+	       dlouhaBilaFigura(0, 7, i);
+	     break;
+	     case 6: /* kral*/
+	       for (j = 0; j <= 7; j++) 
+	         if ((sch[i + mOfsety[j]]) <= 0) zaradTah(i, i + mOfsety[j]);
+	       if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0)
+	         && !ohrozeno(i + 1, false) && !ohrozeno(i, false))  {
+	         zaradRosadu(MBRoch);
+	       }
+	       if (i == e1 && ((roch & 2) != 0) && (sch[i - 1] == 0) && (sch[i - 2] == 0)
+	         && !ohrozeno(i - 1, false) && !ohrozeno(i, false))  {
+	         zaradRosadu(VBRoch);
+	       }
+	       break; /* od krale */
+	     }/* od switch*/
+	   } /* od for cyklu*/
+	 } /* od hraje bily*/
+	    else
+	     {
+	     for (i = a1; i <= h8; i++) {
+	       if (sch[i] >=0 ) continue;
+	       switch (sch[i]) {
+	         case -1 : /*pesec*/
+	         if (i>h2) /*tedy nehrozi promena*/ {
+	           if (sch[i - 11] > 0 && sch[i - 11] < 7)
+	             zaradTah(i, i - 11);
+	           if (sch[i - 9] > 0 && sch[i - 9] < 7) 
+	             zaradTah(i, i - 9);
+	           if (sch[i - 10] == 0) /* policko pred pescem je volne*/ {
+	             zaradTah(i, i - 10);
+	             if (i >= a7 && sch[i - 20] == 0)
+	               zaradTah(i, i-20);
+	             } /* pescem o 2*/
+	             if (mimoch == i + 1) zaradMimochodem(i, i - 9); else
+	             if (mimoch == i - 1) zaradMimochodem(i, i - 11);
+	           } else /* i<=h2 => promeny pesce*/ {
+	             if (sch[i - 10] == 0)
+	               for(j = 3; j >= 0; j--)
+	                 zaradCernouPromenu(i, i - 10, j);
+	             if (sch[i - 11] > 0 && sch[i - 11] < 7)
+	               for(j = 3; j >= 0; j--)
+	                 zaradCernouPromenu(i, i - 11, j);
+	             if (sch[i - 9] > 0 && sch[i - 9] < 7)
+	               for(j = 3; j >= 0; j--)
+	                 zaradCernouPromenu(i, i - 9, j);
+	           }
+	      break;
+	     case -2: /* kun*/
+	      for (j = 8; j <= 15; j++)
+	        if (sch[i + mOfsety[j]] >=0 && sch[i + mOfsety[j]]  <7)
+	          zaradTah(i, i + mOfsety[j]);
+	      break;
+	     case -3: /* strelec*/
+	       dlouhaCernaFigura(4, 7, i);
+	       break;
+	     case -4: /* vez*/
+	       dlouhaCernaFigura(0, 3, i);
+	       break;
+	     case -5: /* dama*/
+	       dlouhaCernaFigura(0, 7, i);
+	       break;
+	     case -6: /* kral*/
+	       for (j = 0; j <= 7; j++)
+	         if (sch[i + mOfsety[j]] >= 0 && sch[i + mOfsety[j]] < 7)
+	           zaradTah(i, i + mOfsety[j]);
+	       if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0
+	           && !ohrozeno(e8, true) && !ohrozeno(f8, true)) {
+	         zaradRosadu(MCRoch);
+	       }
+	       if (i == e8 && (roch & 8) != 0 && sch[d8] == 0 && sch[c8] == 0
+	         && !ohrozeno(e8, true) && !ohrozeno(d8, true)){
+	       zaradRosadu(VCRoch);
+	      }
+	      break;
+	     }/* od switch*/
+	    } /* od for cyklu*/
+	    } /* od hraje cerny*/
+	    mZasobnik.hranice[mZasobnik.pos] = index;
+	    mZasobnik.pos++;
+	  }
   
   public static int abs(int i) {
     if (i < 0) return -i;
@@ -908,7 +1078,5 @@ public class Pozice {
    return 0;
    }
   
-  public Vector getTahy2() {
-  	return mtahy;
-  }
+
 } 
