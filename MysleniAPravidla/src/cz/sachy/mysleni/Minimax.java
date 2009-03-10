@@ -33,29 +33,52 @@ public class Minimax {
 		if (i > 0) return -(1 + i);
 		return -(i - 1);
 	}
-	public static int alfabeta(Pozice p, int hloubka, int alfa, int beta) {
-		if (hloubka == 0) return HodnotaPozice.hodnotaPozice(p); 
-		Vector tahy = p.nalezPseudolegalniTahy2();
-		if (tahy.size() == 0) {
+	
+	
+	public static int alfabetaBrani(Pozice p, int hloubka, int alfa, int beta) {
+		int h = HodnotaPozice.hodnotaPozice(p);
+		if (hloubka == 0) return h;
+		boolean sach = p.sach();
+		if (h > alfa && !sach) {
+			alfa = h;
+			if (h >= beta) {
+				return beta; 
+			}
+		}
+		
+		if (sach) 
+			p.nalezPseudolegalniTahyZasobnik();
+		else
+			p.nalezPseudolegalniBraniZasobnik();
+		int odkud = p.mZasobnik.pos == 1 ? 0 : p.mZasobnik.hranice[p.mZasobnik.pos - 2];
+		int kam = p.mZasobnik.hranice[p.mZasobnik.pos - 1];
+		
+		if (kam - odkud == 0) {
+			p.mZasobnik.pos--;
 			if (p.sach()) return -MAT;
 			return 0;
 		}
 		hloubka--;
-		for (int i = 0; i < tahy.size(); i++) {
-			int t = ((Integer)(tahy.elementAt(i))).intValue();
+		
+		for (int i = odkud; i < kam; i++) {
+			int t = p.mZasobnik.tahy[i];
 			p.tahni(t, false, false, null);
-			int h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
+			h = dalOdMatu(alfabetaBrani(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
 			p.tahniZpet(t, false, null);
 			if (h > alfa) {
 				alfa = h;
-				if (h > beta) return beta; 
+				if (h >= beta) {
+					p.mZasobnik.pos--;
+					return beta; 
+				}
 			}
 		}
+		p.mZasobnik.pos--;
 		return alfa;
 	}
 
-	public static int alfabetaZasobnik(Pozice p, int hloubka, int alfa, int beta) {
-		if (hloubka == 0) return HodnotaPozice.hodnotaPozice(p); 
+	public static int alfabeta(Pozice p, int hloubka, int alfa, int beta) {
+		if (hloubka == 0) return alfabetaBrani(p, 0, alfa, beta);
 		p.nalezPseudolegalniTahyZasobnik();
 		int odkud = p.mZasobnik.pos == 1 ? 0 : p.mZasobnik.hranice[p.mZasobnik.pos - 2];
 		int kam = p.mZasobnik.hranice[p.mZasobnik.pos - 1];
@@ -74,7 +97,7 @@ public class Minimax {
 			p.tahniZpet(t, false, null);
 			if (h > alfa) {
 				alfa = h;
-				if (h > beta) {
+				if (h >= beta) {
 					p.mZasobnik.pos--;
 					return beta; 
 				}
@@ -85,6 +108,7 @@ public class Minimax {
 	}
 	
 	public static int minimax(Pozice p) {
+		p.mOh = 0;
 		Vector tahy = p.nalezTahy();
 		switch (tahy.size()) {
 		case 0: return 0;
@@ -95,7 +119,7 @@ public class Minimax {
 		for (int i = 0; i < tahy.size(); i++) {
 			int t = ((Integer)(tahy.elementAt(i))).intValue();
 			p.tahni(t, false, false, null);
-			int h = dalOdMatu(alfabetaZasobnik(p, 4, blizKMatu(MAT), blizKMatu(max)));
+			int h = dalOdMatu(alfabeta(p, 3, blizKMatu(MAT), blizKMatu(max)));
 			if (i == 0 || h > max) {
 				max = h;
 				maxT = t;

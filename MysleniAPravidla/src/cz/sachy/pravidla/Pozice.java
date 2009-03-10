@@ -23,6 +23,7 @@ import cz.sachy.mysleni.HodnotaPozice;
 
 public class Pozice {
   
+	public int mOh;
 
   public static final byte[] mOfsety =
   {  1,  -1,  10,  -10, /* Vez*/
@@ -846,7 +847,7 @@ public class Pozice {
 	    mZasobnik.pos++;
 	    
 	    
-	    if (false) {
+	    if (true) {
 	    int maxPos;
 	    int max;
 	    int tmp;
@@ -968,7 +969,7 @@ public class Pozice {
 	    mZasobnik.pos++;
 	    
 	    
-	    if (false) {
+	    if (true) {
 	    int maxPos;
 	    int max;
 	    int tmp;
