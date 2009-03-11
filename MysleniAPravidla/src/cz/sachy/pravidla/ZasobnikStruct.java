@@ -19,7 +19,7 @@ package cz.sachy.pravidla;
 public class ZasobnikStruct {
   byte roch;
   byte mimoch;
-  int tah;
+  public int tah;
   byte brani;
   
   public ZasobnikStruct(byte roch, byte mimoch, int tah) {

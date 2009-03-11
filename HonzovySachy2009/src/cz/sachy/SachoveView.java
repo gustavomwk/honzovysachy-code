@@ -47,8 +47,8 @@ public class SachoveView extends View {
 	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
 	
 	protected boolean hrajeClovek() {
-		return mBilyClovek && mPozice.bily ||
-			mCernyClovek && !mPozice.bily;
+		return !isPremyslim() && (mBilyClovek && mPozice.bily ||
+			mCernyClovek && !mPozice.bily);
 	}
 	
     public SachoveView(Activity a) {
@@ -286,9 +286,10 @@ public class SachoveView extends View {
     		mBilyClovek = false;
     		mCernyClovek = true;
     	} else {
-    		mBilyClovek = false;
-    		mCernyClovek = true;
+    		mBilyClovek = true;
+    		mCernyClovek = false;
     	}
+    //	this.mcx = this.mcy = this.mcx = this.mcy  
     	invalidate();
     	tahniPrograme();
     }

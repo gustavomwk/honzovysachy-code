@@ -24,6 +24,7 @@ import java.util.Vector;
 
 import cz.sachy.mysleni.Minimax;
 import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.ZasobnikStruct;
 
 public class KonSachy {
 	private static void hlavniDosCyklus() {
@@ -43,8 +44,11 @@ public class KonSachy {
 				System.out.println(
 						"? - tahle napoveda\n" +
 						"ta - tahni\n" +
+						"tz - tahni zpet\n" +
 						"tg - test generatoru\n" +
+						"tb - test brani\n" +
 						"sa - tiskni sachovnici\n" +
+						"bb - alfa beta brani\n" +
 						"ko - konec\n");
 				continue;
 			}
@@ -56,12 +60,33 @@ public class KonSachy {
 				tiskniSachovnici(p);
 				continue;
 			}
+			if (s.equals("tz")) {
+				if (p.mIndexVPartii >= 0)
+				p.tahniZpet(((ZasobnikStruct)(p.mPartie.elementAt(p.mIndexVPartii))).tah, true, null);
+					tiskniSachovnici(p);
+				continue;
+			}
 			if (s.equals("tg")) {
 				Vector t = p.nalezTahy();
 				for (int i = 0; i < t.size(); i++) {
 					System.out.print(p.tah2Str(t, ((Integer)(t.elementAt(i))).intValue()) + " ");
 				}
 				System.out.println();
+				continue;
+			}
+			if (s.equals("tb")) {
+				p.nalezPseudolegalniBraniZasobnik();
+				int odkud = p.getOdkud();
+				int kam = p.getKam();
+				for (int i = odkud; i < kam; i++) {
+					System.out.print(p.tah2Str(new Vector(), p.mZasobnik.tahy[i]) + " (" + p.mZasobnik.hodnoty[i] + ") ");
+				}
+				p.mZasobnik.pos--;
+				System.out.println();
+				continue;
+			}
+			if (s.equals("bb")) {
+				System.out.println(Minimax.alfabetaBrani(p, 4, -Minimax.MAT, Minimax.MAT));
 				continue;
 			}
 			if (s.equals("sa")) {

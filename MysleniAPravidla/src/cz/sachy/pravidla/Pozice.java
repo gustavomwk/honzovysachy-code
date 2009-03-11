@@ -652,6 +652,14 @@ public class Pozice {
     return tahy;
   }
   
+  public int getOdkud() {
+	return mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2];
+  }
+  
+  public int getKam() {
+	  return mZasobnik.hranice[mZasobnik.pos - 1];
+  }
+  
   private void zaradTah(int i, int j) {
 	    mZasobnik.tahy[index] = (i << 7) | j;
 	    mZasobnik.hodnoty[index] = HodnotaPozice.mStdCenyFigur[abs(sch[j])];
