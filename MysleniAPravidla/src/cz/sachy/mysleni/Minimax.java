@@ -105,7 +105,8 @@ public class Minimax {
 		return alfa;
 	}
 	
-	public static int minimax(Pozice p) {
+	public static int minimax(Pozice p, long casMs) {
+		long casStart = System.currentTimeMillis();
 		p.mOh = 0;
 		p.nalezTahyZasobnik();
 		int odkud = p.getOdkud();
@@ -121,7 +122,7 @@ public class Minimax {
 		case 1: p.mZasobnik.pos--;
 			return p.mZasobnik.tahy[odkud];
 		}
-		for (int hloubka = 0; hloubka < 2; hloubka++) {
+		for (int hloubka = 0; hloubka < 10; hloubka++) {
 			int max = -MAT + 1;
 			for (int i = odkud; i < kam; i++) {
 				int t = p.mZasobnik.tahy[i];
@@ -139,6 +140,8 @@ public class Minimax {
 				}
 				p.tahniZpet(t, false, null);
 			}
+			long casTed = System.currentTimeMillis();
+			if (casTed - casStart > casMs / 8) break;
 		}
 		p.mZasobnik.pos--;
 		return p.mZasobnik.tahy[odkud];

@@ -58,7 +58,7 @@ public class KonSachy {
 					System.out.println("Neni tah");
 					continue;
 				}
-				int tah = Minimax.minimax(p);
+				int tah = Minimax.minimax(p, 5000);
 				System.out.println(p.tah2Str(t, tah));
 				p.tahni(tah, true, true, null);
 				tiskniSachovnici(p);

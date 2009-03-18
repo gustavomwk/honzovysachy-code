@@ -259,7 +259,7 @@ public class SachoveView extends View {
     		 public void run() {
     			 mPozice.nalezTahy();
     			 final int tah;
-    			 tah = Minimax.minimax(mPozice); 
+    			 tah = Minimax.minimax(mPozice, 5000); 
     			 mHandler.post(
     					 new Runnable() {
 
