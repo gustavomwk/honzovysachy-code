@@ -31,19 +31,19 @@ public class Pozice {
     21,  19,  12,   8, -21, -19, -12, - 8 /* Kun*/
   };
   
-  
+ 
   public static final byte[] mZakladniPostaveni = {
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
-    /*     a    b    c    d    e    f    g    h*/
-    100,   4,   2,   3,   5,   6,   3,   2,   4, 100, /* 1 */
-    100,   1,   1,   1,   1,   1,   1,   1,   1, 100, /* 2*/
-    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, /* 3*/
-    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, /* 4*/
-    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, /* 5*/
-    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, /* 6*/
-    100,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 100, /* 7*/
-    100,  -4,  -2,  -3,  -5,  -6,  -3,  -2,  -4, 100, /* 8*/
+    //     a    b    c    d    e    f    g    h
+    100,   4,   2,   3,   5,   6,   3,   2,   4, 100, // 1
+    100,   1,   1,   1,   1,   1,   1,   1,   1, 100, // 2
+    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 3
+    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 4
+    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 5
+    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 6
+    100,  -1,  -1,  -1,  -1,  -1,  -1,  -1,  -1, 100, // 7
+    100,  -4,  -2,  -3,  -5,  -6,  -3,  -2,  -4, 100, // 8
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100
   };
@@ -652,6 +652,8 @@ public class Pozice {
     return tahy;
   }
   
+  
+  
   public int getOdkud() {
 	return mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2];
   }
@@ -879,6 +881,42 @@ public class Pozice {
 	    }
 	  }
 
+  public void nalezTahyZasobnik() {
+	nalezPseudolegalniTahyZasobnik();
+	int odkud = getOdkud();
+	int kam = getKam();
+
+	boolean jeSach = false;
+	for (int i = odkud; i < kam; i++) {
+	   int tah = mZasobnik.tahy[i];
+	  tahni(tah, false, false, null);
+	  if (sach(!bily)) {
+		  mZasobnik.tahy[i] = 0;
+		  jeSach = true;
+	  }
+	  tahniZpet(tah, false, null);
+	}
+	
+	if (jeSach) {
+		int indexOdkud = odkud;
+		int indexKam = odkud;
+		hlavni:
+		while (indexOdkud < kam) {
+			if (mZasobnik.tahy[indexKam] == 0) {
+				while (mZasobnik.tahy[indexOdkud] == 0) { 
+					indexOdkud++;
+					if (indexOdkud == kam) {
+						break hlavni; 
+					}
+				}
+			} 
+			mZasobnik.tahy[indexKam++] = mZasobnik.tahy[indexOdkud++];
+		}
+		mZasobnik.hranice[mZasobnik.pos - 1] = indexKam;
+	}
+	
+  }
+  
   public void nalezPseudolegalniBraniZasobnik() {
 	  int j, i; /*promenne pro for cykly*/
 	  if (mZasobnik.pos == 0) 
@@ -1036,6 +1074,71 @@ public class Pozice {
     }
     return true;
    } 
+  
+  public String tah2Str(int tah) {
+	    int odkud, kam;
+	    StringBuffer s = new StringBuffer();
+
+	    if ((tah >> 14) == 0) /* Normalni tah*/ {
+	      kam = tah & 127;
+	      odkud = tah >> 7;
+	      //i = 0;
+	    switch (abs(sch[odkud])) {
+	      case 1:
+	      if (sch[kam] != 0) s.append((char)('a' + (odkud - a1) % 10));
+	      break;
+	      case 2: s.append('N'); break;
+	      case 3: s.append('B'); break;
+	      case 4: s.append('R'); break;
+	      case 5: s.append('Q'); break;
+	      case 6: s.append('K'); break;
+	    }
+	   if (abs(sch[odkud]) != 1) {
+	      s.append((char)((odkud-a1)%10 + 'a'));
+	      s.append((char)((odkud-a1)/10 + '1'));
+	   }
+	   if (sch[kam] != 0) s.append('x');
+	   s.append((char)((kam-a1)%10 + 'a'));
+	   s.append((char)((kam-a1)/10 + '1'));
+	     
+	    return new String(s);
+	  }
+	  /* Nenormalni tah
+	     Mala rosada*/
+	  if (tah==MBRoch || tah==MCRoch) return "O-O";
+	  /*Velka rosada*/
+	  if (tah==VBRoch || tah==VCRoch) return "O-O-O";
+
+	  /*Promena bileho pesce*/
+	 if ((tah>>12)==12 || (tah>>12)==13 ) {
+	 if ((tah>>12)==12)
+	  {odkud=a7+((tah>>7)&7);
+	   kam=a8+((tah>>4)&7);}
+	  else
+	  {odkud=a2+((tah>>7)&7);
+	   kam=a1+((tah>>4)&7);}
+	   s.append((char)((odkud-a1)%10 + 'a'));
+	   if (sch[kam] != 0) {s.append('x'); s.append((char)((kam-a1)%10 + 'a'));}
+	   s.append((char)((kam-a1)/10 + '1'));
+	   switch((tah>>10)&3){
+	   case 0: s.append('N'); break;
+	   case 1: s.append('B'); break;
+	   case 2: s.append('R'); break;
+	   case 3: s.append('Q'); break;
+	   }
+	   return new String(s);
+	  }
+	 /* Brani mimochodem (nic jineho to uz byt nemuze)*/
+	 tah&=0x3fff; /* odstraneni prvnich dvou bitu, aby se lepe siftovalo*/
+	 kam=tah&127;
+	 odkud=tah>>7;
+	 s.append((char)((odkud-a1)%10 + 'a'));
+	/* s[i++]=(odkud-a1)/10 + '1';*/
+	 s.append('x');
+	 s.append((char)((kam-a1)%10 + 'a'));
+	 s.append((char)((kam-a1)/10 + '1'));
+	 return new String(s);
+	}
   
   public String tah2Str(Vector tahy, int tah) {
     int odkud, kam;

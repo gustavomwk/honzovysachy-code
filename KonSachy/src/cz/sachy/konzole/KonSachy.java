@@ -53,8 +53,12 @@ public class KonSachy {
 				continue;
 			}
 			if (s.equals("ta")) {
-				int tah = Minimax.minimax(p);
 				Vector t = p.nalezTahy();
+				if (t.size() == 0) {
+					System.out.println("Neni tah");
+					continue;
+				}
+				int tah = Minimax.minimax(p);
 				System.out.println(p.tah2Str(t, tah));
 				p.tahni(tah, true, true, null);
 				tiskniSachovnici(p);

@@ -16,8 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.sachy.mysleni;
 
-import java.util.Vector;
-
 import cz.sachy.pravidla.Pozice;
 
 public class Minimax {
@@ -109,23 +107,40 @@ public class Minimax {
 	
 	public static int minimax(Pozice p) {
 		p.mOh = 0;
-		Vector tahy = p.nalezTahy();
-		switch (tahy.size()) {
-		case 0: return 0;
-		case 1: return ((Integer)(tahy.elementAt(0))).intValue();
+		p.nalezTahyZasobnik();
+		int odkud = p.getOdkud();
+		int kam = p.getKam();
+		if (kam - odkud == 0) {
+			p.mZasobnik.pos--;
+			return 0;
 		}
-		int maxT = 0;
-		int max = -MAT + 1;
-		for (int i = 0; i < tahy.size(); i++) {
-			int t = ((Integer)(tahy.elementAt(i))).intValue();
-			p.tahni(t, false, false, null);
-			int h = dalOdMatu(alfabeta(p, 2, blizKMatu(MAT), blizKMatu(max)));
-			if (i == 0 || h > max) {
-				max = h;
-				maxT = t;
+		switch (kam - odkud) {
+		case 0: p.mZasobnik.pos--;
+			if (p.sach()) return -MAT;
+			return 0;
+		case 1: p.mZasobnik.pos--;
+			return p.mZasobnik.tahy[odkud];
+		}
+		for (int hloubka = 0; hloubka < 2; hloubka++) {
+			int max = -MAT + 1;
+			for (int i = odkud; i < kam; i++) {
+				int t = p.mZasobnik.tahy[i];
+				p.tahni(t, false, false, null);
+				int h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(MAT), blizKMatu(max)));
+				if (i == 0 || h > max) {
+					max = h;
+					if (i != 0)
+					{
+						for (int j = i; j > odkud; j--)
+							p.mZasobnik.tahy[j] = p.mZasobnik.tahy[j - 1];
+						p.mZasobnik.tahy[odkud] = t;
+					}
+					
+				}
+				p.tahniZpet(t, false, null);
 			}
-			p.tahniZpet(t, false, null);
 		}
-		return maxT;
+		p.mZasobnik.pos--;
+		return p.mZasobnik.tahy[odkud];
 	}
 }
