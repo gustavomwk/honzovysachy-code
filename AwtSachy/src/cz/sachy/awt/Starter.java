@@ -3,7 +3,6 @@ package cz.sachy.awt;
 import java.applet.Applet;
 import java.awt.Button;
 import java.awt.Frame;
-import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
@@ -16,7 +15,10 @@ class SachFrame extends Frame implements WindowListener {
 	public SachFrame(String string, boolean inApplet) {
 		super(string);
 		mInApplet = inApplet;
-		add(new Label("Does not work yet, please wait for the next version."));
+		//add(new Label("Does not work yet, please wait for the next version."));
+		Sachovnice s = new Sachovnice(40, 10); 
+		add(s);
+		addKeyListener(s);
 		pack();
 	}
 

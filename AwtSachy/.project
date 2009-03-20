@@ -3,6 +3,7 @@
 	<name>AwtSachy</name>
 	<comment></comment>
 	<projects>
+		<project>MysleniAPravidla</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
