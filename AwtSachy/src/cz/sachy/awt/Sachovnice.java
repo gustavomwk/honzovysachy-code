@@ -1,13 +1,17 @@
 package cz.sachy.awt;
 
+import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.BufferedInputStream;
+import java.net.URL;
 import java.util.Vector;
 
 import javax.swing.ImageIcon;
@@ -33,23 +37,31 @@ public class Sachovnice extends Component  implements KeyListener {
 	boolean mCernyClovek = false;
 	boolean mPremyslim = false;
 	
+	protected Image loadImage(String img) {
+		URL url = this.getClass().getResource("figury/" + img + ".png");
+		return Toolkit.getDefaultToolkit().getImage(url);
+	}
+
+	
 	public Sachovnice(int poleXY, int odstup) {
 		mPoleXY = poleXY;
 		mOdstup = odstup;
 		mHrana = 8 * poleXY + 2 * odstup;
 		mOtoceno = false;
-		bk = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/bk.png")).getImage();
-		ck = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/ck.png")).getImage();
-		bd = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/bd.png")).getImage();
-		cd = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/cd.png")).getImage();
-		bv = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/bv.png")).getImage();
-		cv = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/cv.png")).getImage();
-		bp = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/bp.png")).getImage();
-		cp = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/cp.png")).getImage();
-		bs = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/bs.png")).getImage();
-		cs = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/cs.png")).getImage();
-		bj = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/bj.png")).getImage();
-		cj = new ImageIcon(ClassLoader.getSystemResource("cz/sachy/awt/figury/cj.png")).getImage();
+		bk = loadImage("bk");
+		bd = loadImage("bd");
+		bv = loadImage("bv");
+		bs = loadImage("bs");
+		bj = loadImage("bj");
+		bp = loadImage("bp");
+		ck = loadImage("ck");
+		cd = loadImage("cd");
+		cv = loadImage("cv");
+		cs = loadImage("cs");
+		cj = loadImage("cj");
+		cp = loadImage("cp");
+		
+
 		MediaTracker mediaTracker = new MediaTracker(this);
 		mediaTracker.addImage(bk, 0);
 		mediaTracker.addImage(ck, 1);
