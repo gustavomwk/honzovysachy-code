@@ -1,6 +1,5 @@
 package cz.sachy.awt;
 
-import java.applet.Applet;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -10,11 +9,9 @@ import java.awt.MediaTracker;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedInputStream;
 import java.net.URL;
 import java.util.Vector;
 
-import javax.swing.ImageIcon;
 import javax.swing.SwingUtilities;
 
 import cz.sachy.mysleni.Minimax;
