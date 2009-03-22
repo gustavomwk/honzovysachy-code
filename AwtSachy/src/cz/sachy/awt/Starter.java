@@ -1,10 +1,9 @@
 package cz.sachy.awt;
 
 import java.applet.Applet;
-import java.awt.Button;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -69,12 +68,11 @@ class SachFrame extends Frame implements WindowListener {
 }
 
 @SuppressWarnings("serial")
-public class Starter extends Applet {
+public class Starter extends Applet implements MouseListener {
 
 	
 	public static void otevriOkno(boolean inApplet) {
 		SachFrame f = new SachFrame("Honzovy šachy for AWT", inApplet);
-		//f.setSize(400,400);
 		f.addWindowListener(f);
 		f.setVisible(true);
 	}
@@ -85,17 +83,42 @@ public class Starter extends Applet {
 	
 	public void init()
     {
-		Button open = new Button("Open chess board");
-		open.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				otevriOkno(true);
-			}
-			
-		});
-		this.add(open);
+		Sachovnice s = new Sachovnice(40, 10);
+		addKeyListener(s);
+		requestFocus();
+		add(s);
+		addMouseListener(this);
 		
-    } 
+    }
+
+	@Override
+	public void mouseClicked(MouseEvent arg0) {
+		requestFocus();
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+		requestFocus();
+		
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	} 
 
 }
