@@ -115,54 +115,7 @@ public class KonSachy {
 		}
 	}
 	public static void tiskniSachovnici(Pozice p) {
-		for (int i = Pozice.a1; i <= Pozice.h8; i++) {
-			char c = ' ';
-			switch (p.sch[i]) {
-			case 100:
-				System.out.println("");
-				i++;
-				continue;
-			case 1:
-				c = 'P';
-				break;
-			case -1:
-				c = 'p';
-				break;
-			case 2:
-				c = 'J';
-				break;
-			case -2:
-				c = 'j';
-				break;
-			case 3:
-				c = 'S';
-				break;
-			case -3:
-				c = 's';
-				break;
-			case 4:
-				c = 'V';
-				break;
-			case -4:
-				c = 'v';
-				break;
-			case 5:
-				c = 'D';
-				break;
-			case -5:
-				c = 'd';
-				break;
-			case 6:
-				c = 'K';
-				break;
-			case -6:
-				c = 'k';
-				break;
-			}
-			
-			System.out.print(c);
-		}
-		System.out.println("");
+		System.out.print(p.toString());
 	}
 	public static void main(String[] args) {
 		System.out.println("Honzuv sachovy program, '?' je napoveda");

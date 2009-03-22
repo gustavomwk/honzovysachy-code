@@ -387,8 +387,9 @@ public class Pozice {
      }
        /* to hral bily*/
      else
-      {sch[kam+10]=0;
-      push((byte)1, globalne);
+      {
+    		 sch[kam+10]=0;
+    	 	 push((byte)1, globalne);
      }
        /* cerny*/
      sch[kam] = sch[odkud];
@@ -557,8 +558,8 @@ public class Pozice {
          }
         else /* i>=a7 => promeny pesce*/
          {if (sch[i + 10] == 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 10, j);
-          if (sch[i + 11] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 11, j);
-          if (sch[i + 9] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 9, j);
+          if (sch[i + 11] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 11, j);
+          if (sch[i + 9] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 9, j);
          }
       break;
      case 2: /* kun*/
@@ -675,6 +676,9 @@ public class Pozice {
 	  
 	  private void zaradBilouPromenu(int p1, int p2, int fig) {
 		  mZasobnik.tahy[index] =  ((3<<14)|(fig<<10)|((p1-a7)<<7)|((p2-a8)<<4));
+		  if (mZasobnik.tahy[index] < 0) {
+			  System.out.println(toString());
+		  }
 		  index++;
 	  }
 	  
@@ -761,8 +765,8 @@ public class Pozice {
 	         }
 	        else /* i>=a7 => promeny pesce*/
 	         {if (sch[i + 10] == 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 10, j);
-	          if (sch[i + 11] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 11, j);
-	          if (sch[i + 9] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 9, j);
+	          if (sch[i + 11] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 11, j);
+	          if (sch[i + 9] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 9, j);
 	         }
 	      break;
 	     case 2: /* kun*/
@@ -914,7 +918,7 @@ public class Pozice {
 		}
 		mZasobnik.hranice[mZasobnik.pos - 1] = indexKam;
 	}
-	
+
   }
   
   public void nalezPseudolegalniBraniZasobnik() {
@@ -937,8 +941,8 @@ public class Pozice {
 	         }
 	        else /* i>=a7 => promeny pesce*/
 	         {if (sch[i + 10] == 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 10, j);
-	          if (sch[i + 11] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 11, j);
-	          if (sch[i + 9] != 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 9, j);
+	          if (sch[i + 11] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 11, j);
+	          if (sch[i + 9] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(i, i + 9, j);
 	         }
 	      break;
 	     case 2: /* kun*/
@@ -1014,31 +1018,29 @@ public class Pozice {
 	    mZasobnik.hranice[mZasobnik.pos] = index;
 	    mZasobnik.pos++;
 	    
+		
 	    
-	    if (true) {
-	    int maxPos;
-	    int max;
-	    int tmp;
-	    for (i = (mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2]); i < index - 1; i++) {
-	    	maxPos = i;
-	    	max = mZasobnik.hodnoty[i];
-	    	for (j = i + 1; j < index; j++) {
-	    		  if (mZasobnik.hodnoty[j] > max) {
-	    			  maxPos = j;
-	    			  max = mZasobnik.hodnoty[j];
-	    		  }
-	    	}
-	    	if (maxPos != i) {
-	    		mZasobnik.hodnoty[maxPos] = mZasobnik.hodnoty[i] ;
-	    		mZasobnik.hodnoty[i] = max;
-	    		tmp = mZasobnik.tahy[maxPos];
-	    		mZasobnik.tahy[maxPos] = mZasobnik.tahy[i];
-	    		mZasobnik.tahy[i] = tmp;
-	    	}
-	    }
-	    }
-	  }
-
+    	int maxPos;
+    	int max;
+    	int tmp;
+    	for (i = (mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2]); i < index - 1; i++) {
+    		maxPos = i;
+    		max = mZasobnik.hodnoty[i];
+    		for (j = i + 1; j < index; j++) {
+    			if (mZasobnik.hodnoty[j] > max) {
+    				maxPos = j;
+    				max = mZasobnik.hodnoty[j];
+    			}
+    		}
+    		if (maxPos != i) {
+    			mZasobnik.hodnoty[maxPos] = mZasobnik.hodnoty[i] ;
+    			mZasobnik.hodnoty[i] = max;
+    			tmp = mZasobnik.tahy[maxPos];
+    			mZasobnik.tahy[maxPos] = mZasobnik.tahy[i];
+    			mZasobnik.tahy[i] = tmp;
+    		}
+    	}
+    }
   
   public static int abs(int i) {
     if (i < 0) return -i;
@@ -1364,6 +1366,54 @@ public class Pozice {
   } /* konec while cyklu*/
    return 0;
    }
-  
+	public String toString() {
+		StringBuffer s = new StringBuffer();
+		for (int j = 7; j >= 0; j--) {
+			for (int i = 0; i <= 7; i++) {
+			char c = ' ';
+			switch (sch[Pozice.a1 + i + j * 10]) {
+			case 1:
+				c = 'P';
+				break;
+			case -1:
+				c = 'p';
+				break;
+			case 2:
+				c = 'J';
+				break;
+			case -2:
+				c = 'j';
+				break;
+			case 3:
+				c = 'S';
+				break;
+			case -3:
+				c = 's';
+				break;
+			case 4:
+				c = 'V';
+				break;
+			case -4:
+				c = 'v';
+				break;
+			case 5:
+				c = 'D';
+				break;
+			case -5:
+				c = 'd';
+				break;
+			case 6:
+				c = 'K';
+				break;
+			case -6:
+				c = 'k';
+				break;
+			}
+			s.append(c);
+		}
+		s.append('\n');
+		}
+		return new String(s);
+	}
 
 } 
