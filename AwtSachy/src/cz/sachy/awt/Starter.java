@@ -2,8 +2,6 @@ package cz.sachy.awt;
 
 import java.applet.Applet;
 import java.awt.Frame;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -23,14 +21,10 @@ class SachFrame extends Frame implements WindowListener {
 
 	@Override
 	public void windowActivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void windowClosed(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
@@ -43,32 +37,23 @@ class SachFrame extends Frame implements WindowListener {
 
 	@Override
 	public void windowDeactivated(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void windowDeiconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void windowIconified(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void windowOpened(WindowEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
-	
 }
 
 @SuppressWarnings("serial")
-public class Starter extends Applet implements MouseListener {
+public class Starter extends Applet  {
 
 	
 	public static void otevriOkno(boolean inApplet) {
@@ -84,41 +69,6 @@ public class Starter extends Applet implements MouseListener {
 	public void init()
     {
 		Sachovnice s = new Sachovnice(40, 10);
-		addKeyListener(s);
-		requestFocus();
 		add(s);
-		addMouseListener(this);
-		
     }
-
-	@Override
-	public void mouseClicked(MouseEvent arg0) {
-		requestFocus();
-		
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mouseExited(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void mousePressed(MouseEvent arg0) {
-		requestFocus();
-		
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
-		// TODO Auto-generated method stub
-		
-	} 
-
 }

@@ -6,9 +6,15 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
+import java.awt.MenuItem;
+import java.awt.PopupMenu;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.net.URL;
 import java.util.Vector;
 
@@ -16,9 +22,17 @@ import javax.swing.SwingUtilities;
 
 import cz.sachy.mysleni.Minimax;
 import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.ZobrazPole;
+
 
 @SuppressWarnings("serial")
-public class Sachovnice extends Component  implements KeyListener {
+public class Sachovnice extends Component  implements KeyListener, ZobrazPole, MouseListener {
+	static final Color mCerna = new Color(100, 100, 100); 
+	static final Color mBila = new Color(200, 200, 200);
+	static final Color mModra = new Color(0, 0, 255);
+	static final Color mZelena = new Color(0, 255, 0);
+	
+	
 	int mPoleXY;
 	int mOdstup;
 	int mHrana;
@@ -41,6 +55,8 @@ public class Sachovnice extends Component  implements KeyListener {
 
 	
 	public Sachovnice(int poleXY, int odstup) {
+		addMouseListener(this);
+		addKeyListener(this);
 		mPoleXY = poleXY;
 		mOdstup = odstup;
 		mHrana = 8 * poleXY + 2 * odstup;
@@ -57,7 +73,6 @@ public class Sachovnice extends Component  implements KeyListener {
 		cs = loadImage("cs");
 		cj = loadImage("cj");
 		cp = loadImage("cp");
-		
 
 		MediaTracker mediaTracker = new MediaTracker(this);
 		mediaTracker.addImage(bk, 0);
@@ -82,6 +97,11 @@ public class Sachovnice extends Component  implements KeyListener {
 		}
 	}
 	
+	public void otoc() {
+		mOtoceno = !mOtoceno;
+		repaint();
+	}
+	
 	private int getX(int i) {
 		if (mOtoceno) i = 7 - i;
 		return mOdstup + mPoleXY * i;
@@ -92,6 +112,17 @@ public class Sachovnice extends Component  implements KeyListener {
 		return mOdstup + mPoleXY * j;
 	}
 	
+	private int getI(int x) {
+		int zaklad = (x - mOdstup) / mPoleXY;
+		if (mOtoceno) zaklad = 7 - zaklad;
+		return zaklad;
+	}
+	
+	private int getJ(int y) {
+		int zaklad = (y - mOdstup) / mPoleXY;
+		if (!mOtoceno) zaklad = 7 - zaklad;
+		return zaklad;
+	}
 	
 	public boolean isPremyslim() {
 	  	return mPremyslim;
@@ -100,93 +131,79 @@ public class Sachovnice extends Component  implements KeyListener {
 		return !isPremyslim() && (mBilyClovek && mPozice.bily ||
 			mCernyClovek && !mPozice.bily);
 	}
+
+
+
+	private void zobrazPole(int x, int y, boolean clovek, Graphics g) {
+		Color c;
+        if (clovek && mox == x && moy == y) {
+       		c = mZelena;
+       	} else
+       	if (clovek && mcx == x && mcy == y) {
+       		c = mModra;
+       	} else {
+       		c = ((((x + y) & 1) == 1) ? mBila : mCerna);
+       	}
+       	g.setColor(c);
+        g.fillRect(getX(x), getY(y), mPoleXY, mPoleXY);
+        int p = Pozice.a1 + x + y * 10;
+        byte f = mPremyslim ? mSchPriMysleni[p] : mPozice.sch[p];
+        if (f == 0) return;
+      
+        int xx = getX(x) + (mPoleXY - bp.getWidth(null)) / 2;
+        int yy = getY(y) + (mPoleXY - bp.getHeight(null)) / 2;
+        
+        switch (f) {
+        case 1:
+          g.drawImage(bp, xx, yy, null);
+          break;
+        case 2:
+          g.drawImage(bj, xx, yy, null);
+          break;
+        case 3:
+          g.drawImage(bs, xx, yy, null);
+          break;
+        case 4:
+          g.drawImage(bv, xx, yy, null);
+          break;
+        case 5:
+          g.drawImage(bd, xx, yy, null);
+          break;
+        case 6:
+          g.drawImage(bk, xx, yy, null);
+          break;
+        case -1:
+          g.drawImage(cp, xx, yy, null);
+          break;
+        case -2:
+          g.drawImage(cj, xx, yy, null);
+          break;
+        case -3:
+          g.drawImage(cs, xx, yy, null);
+          break;
+        case -4:
+          g.drawImage(cv, xx, yy, null);
+          break;
+        case -5:
+          g.drawImage(cd, xx, yy, null);
+          break;
+        case -6:
+          g.drawImage(ck, xx, yy, null);
+          break;
+        }
+	}
 	
 	public void paint(Graphics g) {
 	    g.clearRect(0, 0, mHrana, mHrana);
 	    
-	    
-	    Color cerna = new Color(150, 110, 110); 
-	    Color bila = new Color(220, 220, 100);
-	    Color modra = new Color(0, 0, 255);
-        Color zelena = new Color(0, 255, 0);
 	    boolean clovek = hrajeClovek();
 	    
-	    g.setColor(cerna);
+	    //g.setColor(mCerna);
 	    for (int i = 0; i < 8; i++) {
-	      for (int j = 0; j < 8; j++) {
-        	Color c;
-            if (clovek && mox == i && moy == j) {
-           		c = zelena;
-           	} else
-           	if (clovek && mcx == i && mcy == j) {
-           		c = modra;
-           	} else {
-           		c = ((((i + j) & 1) == 1) ? bila : cerna);
-           	}
-           	g.setColor(c);
-	        g.fillRect(getX(i), getY(j), mPoleXY, mPoleXY);
+	    	for (int j = 0; j < 8; j++) {
+	    		zobrazPole(i, j, clovek, g);
 	        }
 	    }
-	    
-	    for (int i = 0; i < 8; i++) {
-	      for (int j = 0; j < 8; j++) {
-	        int p = Pozice.a1 + i + j * 10;
-	        byte f = mPremyslim ? mSchPriMysleni[p] : mPozice.sch[p];
-	        if (f == 0) continue;
-
-	      
-	        int x = getX(i) + (mPoleXY - bp.getWidth(null)) / 2;
-	        int y = getY(j) + (mPoleXY - bp.getHeight(null)) / 2;
-	        
-	        switch (f) {
-	        case 1:
-	          g.drawImage(bp, x, y, null);
-	          break;
-	        case 2:
-	          g.drawImage(bj, x, y, null);
-	          break;
-	        case 3:
-	          g.drawImage(bs, x, y, null);
-	          break;
-	        case 4:
-	          g.drawImage(bv, x, y, null);
-	          break;
-	        case 5:
-	          g.drawImage(bd, x, y, null);
-	          break;
-	        case 6:
-	          g.drawImage(bk, x, y, null);
-	          break;
-	        case -1:
-	          g.drawImage(cp, x, y, null);
-	          break;
-	        case -2:
-	          g.drawImage(cj, x, y, null);
-	          break;
-	        case -3:
-	          g.drawImage(cs, x, y, null);
-	          break;
-	        case -4:
-	          g.drawImage(cv, x, y, null);
-	          break;
-	        case -5:
-	          g.drawImage(cd, x, y, null);
-	          break;
-	        case -6:
-	          g.drawImage(ck, x, y, null);
-	          break;
-	        }
-	      /*  if (p == oznaceno) {
-	          g.setColor(new Color(0, 0, 0));
-	          g.fillRect(x + 3, y + 3, pole - 6, 3);
-	          g.fillRect(x + 3, y - 6 + pole, pole - 6, 3);
-	          g.fillRect(x + 3, y + 3, 3, pole - 6);
-	          g.fillRect(x + pole - 6, y + 3, 3, pole - 6);
-	          //g.drawLine(x, y, x, y + this.pole);
-	        }*/
-	      }
-	    }
-	    
 	  }
 	
 	 public Dimension getMaximumSize() {
@@ -207,26 +224,34 @@ public class Sachovnice extends Component  implements KeyListener {
 		switch (code) {
 		case 37:
 			if (mOtoceno && mcx < 7 || !mOtoceno && mcx > 0) {
+				int x = mcx;
     			if (mOtoceno) mcx++; else mcx--;
-    			repaint();
+    			zobrazPole(Pozice.a1 + x + mcy * 10);
+    			zobrazPole();
     		}
 			break;
 		case 38:
 			if (!mOtoceno && mcy < 7 || mOtoceno && mcy > 0) {
+				int y = mcy;
     			if (mOtoceno) mcy--; else mcy++;
-    			repaint();
+    			zobrazPole(Pozice.a1 + mcx + y * 10);
+    			zobrazPole();
     		}
 			break;
 		case 39:
 			if (!mOtoceno && mcx < 7 || mOtoceno && mcx > 0) {
+				int x = mcx;
     			if (mOtoceno) mcx--; else mcx++;
-    			repaint();
+    			zobrazPole(Pozice.a1 + x + mcy * 10);
+    			zobrazPole();
     		}
 			break;
 		case 40:
 			if (mOtoceno && mcy < 7 || !mOtoceno && mcy > 0) {
+				int y = mcy;
     			if (mOtoceno) mcy++; else mcy--;
-    			repaint();
+    			zobrazPole(Pozice.a1 + mcx + y * 10);
+    			zobrazPole();
     		}
 			break;
 		case 10:
@@ -234,9 +259,11 @@ public class Sachovnice extends Component  implements KeyListener {
     		Vector t = mPozice.nalezTahy();
     		int pole = Pozice.a1 + mcx + 10 * mcy;
     		if (mPozice.JeTam1(t, pole)) {
+    			int stare = Pozice.a1 + mox + moy * 10;
     			mox = mcx;
     			moy = mcy;
-    			repaint();
+    			zobrazPole(stare);
+    			zobrazPole();
     			return;
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
@@ -251,10 +278,10 @@ public class Sachovnice extends Component  implements KeyListener {
 	public void tahni(int tah) {
     	mox = -1;
     	moy = -1;
-    	mPozice.tahni(tah, true, true, null);
+    	mPozice.tahni(tah, true, true, this);
     	mPozice.nalezTahy();
-    	repaint();
     	pripravTah();
+    	if (hrajeClovek()) zobrazPole();
     }
 
 	public void pripravTah() {
@@ -299,13 +326,112 @@ public class Sachovnice extends Component  implements KeyListener {
 	
 	@Override
 	public void keyReleased(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent arg0) {
-		// TODO Auto-generated method stub
-		
+	}
+
+
+	@Override // ZobrazPole
+	public void zobrazPole(int pole) {
+		Graphics g = getGraphics();
+		pole -= Pozice.a1;
+		if (pole < 0) return;
+		int x = pole % 10;
+		int y = pole / 10;
+		if (x >= 0 && x < 8 && y >= 0 && y < 8)
+		zobrazPole(x, y, hrajeClovek(), g);
+	}
+	
+	public void zobrazPole() {
+		zobrazPole(Pozice.a1 + mcx + 10 * mcy);
+	}
+
+
+	@Override
+	public void mouseClicked(MouseEvent me) {
+		requestFocus();
+		if (me.getButton() == 3) {
+			PopupMenu m = new PopupMenu();
+			MenuItem flipBoard = new MenuItem("Flip board");
+			flipBoard.addActionListener(new ActionListener(){
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					otoc();
+				}
+			});
+			m.add(flipBoard);
+			if (hrajeClovek()) {
+				MenuItem newGame = new MenuItem("New game");
+				newGame.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						mPozice = new Pozice();
+						repaint();
+					}
+				});
+				m.add(newGame);
+				MenuItem move = new MenuItem("Move");
+				move.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						mBilyClovek = !mBilyClovek;
+						mCernyClovek = !mCernyClovek;
+						repaint();
+						tahniPrograme();
+					}
+				});
+				m.add(move);
+			}
+
+			this.add(m);
+			m.show(this, me.getX(), me.getY());
+		}
+		if (me.getButton() == 1) {
+			int i = getI(me.getX());
+			int j = getJ(me.getY());
+			if (i < 0 || i > 7 || j < 0 || j > 7) return;
+			Vector t = mPozice.nalezTahy();
+    		int pole = Pozice.a1 + i + 10 * j;
+    		if (mPozice.JeTam1(t, pole)) {
+    			int stare = Pozice.a1 + mcx + mcy * 10;
+    			mcx = i;
+    			mcy = j;
+    			zobrazPole(stare);
+    			stare = Pozice.a1 + mox + moy * 10;
+    			mox = mcx;
+    			moy = mcy;
+    			zobrazPole(stare);
+    			zobrazPole();
+    			return;
+    		}
+    		int pole1 = Pozice.a1 + mox + 10 * moy;
+    		if (mPozice.JeTam2(t, pole1, pole)) {
+    			int tah = mPozice.DoplnTah(t, pole1, pole);
+    			tahni(tah);
+    			return;
+    		}
+		}
+	}
+
+
+	@Override
+	public void mouseEntered(MouseEvent arg0) {
+	}
+
+
+	@Override
+	public void mouseExited(MouseEvent arg0) {
+	}
+
+
+	@Override
+	public void mousePressed(MouseEvent arg0) {
+	}
+
+
+	@Override
+	public void mouseReleased(MouseEvent arg0) {
 	}
 }
