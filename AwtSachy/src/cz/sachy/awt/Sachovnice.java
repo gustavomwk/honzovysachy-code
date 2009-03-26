@@ -305,7 +305,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     	System.arraycopy(mPozice.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		 public void run() {
-    			 mPozice.nalezTahy();
+    			// mPozice.nalezTahy();
     			 final int tah;
     			 tah = Minimax.minimax(mPozice, 5000); 
     			 SwingUtilities.invokeLater(
@@ -362,7 +362,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 				}
 			});
 			m.add(flipBoard);
-			if (hrajeClovek()) {
+			if (!mPremyslim) {
 				MenuItem newGame = new MenuItem("New game");
 				newGame.addActionListener(new ActionListener(){
 					@Override
