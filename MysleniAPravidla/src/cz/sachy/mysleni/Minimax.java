@@ -60,9 +60,14 @@ public class Minimax {
 		
 		for (int i = odkud; i < kam; i++) {
 			int t = p.mZasobnik.tahy[i];
+			//int hf = p.hashF.hash(p);
 			p.tahni(t, false, false, null);
 			h = dalOdMatu(alfabetaBrani(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
 			p.tahniZpet(t, false, null);
+			//int hg = p.hashF.hash(p);
+			//if (hg != hf) {
+			//	throw new RuntimeException("Jauvajs");
+			//}
 			if (h > alfa) {
 				alfa = h;
 				if (h >= beta) {
@@ -90,9 +95,15 @@ public class Minimax {
 		
 		for (int i = odkud; i < kam; i++) {
 			int t = p.mZasobnik.tahy[i];
+			//int hf = p.hashF.hash(p);
 			p.tahni(t, false, false, null);
 			int h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
 			p.tahniZpet(t, false, null);
+			//int hg = p.hashF.hash(p);
+			//if (hg != hf) {
+			//	System.out.println(p.toString() + "\n" + p.tah2Str(t));
+			//	throw new RuntimeException("Jauvajs");
+			//}
 			if (h > alfa) {
 				alfa = h;
 				if (h >= beta) {
@@ -126,6 +137,7 @@ public class Minimax {
 			int max = -MAT + 1;
 			for (int i = odkud; i < kam; i++) {
 				int t = p.mZasobnik.tahy[i];
+				int hf = p.hashF.hash(p);
 				p.tahni(t, false, false, null);
 				int h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(MAT), blizKMatu(max)));
 				if (i == 0 || h > max) {
@@ -139,9 +151,14 @@ public class Minimax {
 					
 				}
 				p.tahniZpet(t, false, null);
+				int hg = p.hashF.hash(p);
+				if (hg != hf) {
+					throw new RuntimeException("Jauvajs");
+				}
 			}
 			long casTed = System.currentTimeMillis();
 			if (casTed - casStart > casMs / 8) break;
+			if (hloubka == 4) break;
 		}
 		p.mZasobnik.pos--;
 		return p.mZasobnik.tahy[odkud];

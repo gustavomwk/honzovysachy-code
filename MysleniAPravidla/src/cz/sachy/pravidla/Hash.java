@@ -2,7 +2,6 @@ package cz.sachy.pravidla;
 
 public class Hash {
 
-	class HashRandomData {
 		int[][] mF; //[13][99];
 	/* [od cerneho krale pres prazdne pole az po bileho krale][pole]*/
 		int mWhite;
@@ -10,9 +9,9 @@ public class Hash {
 		int[] mEp; //[69];
 		
 		public int iRandom() {
-			return (int) Math.random();
+			return (int) (((Math.random() - 0.5) * 2) * 0x7FFFFFFF);
 		}
-		public HashRandomData() {
+		public Hash() {
 			mF = new int[13][];
 			for (int i = 0; i < mF.length; i++) {
 				mF[i] = new int[99];
@@ -41,4 +40,4 @@ public class Hash {
 			return ret;
 		}
 	}
-}
+

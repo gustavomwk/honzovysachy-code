@@ -20,7 +20,6 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import cz.sachy.mysleni.HodnotaPozice;
-import cz.sachy.pravidla.Hash.HashRandomData;
 
 public class Pozice {
 	public static final int NO_END = 0;
@@ -102,7 +101,7 @@ public class Pozice {
   };
   
   
-  public static final byte[] mZakladniPostaveni = {
+  public static final byte[] mZakladniPostaveni2 = {
 	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
 	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
 	    //     a    b    c    d    e    f    g    h
@@ -118,7 +117,7 @@ public class Pozice {
 	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100
 	  };
  
-  public static final byte[] mZakladniPostaveni2 = {
+  public static final byte[] mZakladniPostaveni = {
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     //     a    b    c    d    e    f    g    h
@@ -134,7 +133,7 @@ public class Pozice {
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100
   };
 
-  public HashRandomData hashF; // = new HashRandomData();
+  public Hash hashF;
   
   public byte roch;  /* binarne 00...00vmVM */
   /* V,v - moznost velke rosady bileho a cerneho
@@ -169,6 +168,7 @@ public class Pozice {
     mPartie = new Vector();
     zasobnik = new Vector();
     mZasobnik = new ZasobnikTahu();
+    hashF = new Hash();
   }
   
   protected void push(byte brani,boolean globalne) {
@@ -674,11 +674,11 @@ public class Pozice {
      case 6: /* kral*/
        for (j = 0; j <= 7; j++) 
          if ((sch[i + mOfsety[j]]) <= 0) zaradTah(tahy, i, i + mOfsety[j]);
-       if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0)
+       if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0) && (sch[h1] == 4)
          && !ohrozeno(i + 1, false) && !ohrozeno(i, false))  {
          zaradRosadu(tahy, MBRoch);
        }
-       if (i == e1 && ((roch & 2) != 0) && (sch[i - 1] == 0) && (sch[i - 2] == 0)
+       if (i == e1 && ((roch & 2) != 0) && (sch[i - 1] == 0) && (sch[i - 2] == 0) && (sch[a1] == 4)
          && !ohrozeno(i - 1, false) && !ohrozeno(i, false))  {
          zaradRosadu(tahy, VBRoch);
        }
@@ -734,11 +734,11 @@ public class Pozice {
        for (j = 0; j <= 7; j++)
          if (sch[i + mOfsety[j]] >= 0 && sch[i + mOfsety[j]] < 7)
            zaradTah(tahy, i, i + mOfsety[j]);
-       if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0
+       if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0  && (sch[h8] == -4)
            && !ohrozeno(e8, true) && !ohrozeno(f8, true)) {
          zaradRosadu(tahy, MCRoch);
        }
-       if (i == e8 && (roch & 8) != 0 && sch[d8] == 0 && sch[c8] == 0
+       if (i == e8 && (roch & 8) != 0 && sch[d8] == 0 && sch[c8] == 0  && (sch[a8] == -4)
          && !ohrozeno(e8, true) && !ohrozeno(d8, true)){
        zaradRosadu(tahy, VCRoch);
       }
@@ -881,11 +881,11 @@ public class Pozice {
 	     case 6: /* kral*/
 	       for (j = 0; j <= 7; j++) 
 	         if ((sch[i + mOfsety[j]]) <= 0) zaradTah(i, i + mOfsety[j]);
-	       if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0)
+	       if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0) && (sch[h1] == 4)
 	         && !ohrozeno(i + 1, false) && !ohrozeno(i, false))  {
 	         zaradRosadu(MBRoch);
 	       }
-	       if (i == e1 && ((roch & 2) != 0) && (sch[i - 1] == 0) && (sch[i - 2] == 0)
+	       if (i == e1 && ((roch & 2) != 0) && (sch[i - 1] == 0) && (sch[i - 2] == 0) && (sch[a1] == 4)
 	         && !ohrozeno(i - 1, false) && !ohrozeno(i, false))  {
 	         zaradRosadu(VBRoch);
 	       }
@@ -941,11 +941,11 @@ public class Pozice {
 	       for (j = 0; j <= 7; j++)
 	         if (sch[i + mOfsety[j]] >= 0 && sch[i + mOfsety[j]] < 7)
 	           zaradTah(i, i + mOfsety[j]);
-	       if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0
+	       if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0 && (sch[h8] == -4)
 	           && !ohrozeno(e8, true) && !ohrozeno(f8, true)) {
 	         zaradRosadu(MCRoch);
 	       }
-	       if (i == e8 && (roch & 8) != 0 && sch[d8] == 0 && sch[c8] == 0
+	       if (i == e8 && (roch & 8) != 0 && sch[d8] == 0 && sch[c8] == 0 && (sch[a8] == -4)
 	         && !ohrozeno(e8, true) && !ohrozeno(d8, true)){
 	       zaradRosadu(VCRoch);
 	      }
