@@ -20,9 +20,79 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import cz.sachy.mysleni.HodnotaPozice;
+import cz.sachy.pravidla.Hash.HashRandomData;
 
 public class Pozice {
-  
+	public static final int NO_END = 0;
+	
+	public static final int WHITE_WINS_MAT = 1;
+	
+	public static final int BLACK_WINS_MAT = 11;
+	
+	public static final int DRAW_WHITE_IN_STALEMATE = 21;
+	public static final int DRAW_BLACK_IN_STALEMATE = 22;
+	public static final int DRAW_MATERIAL = 23;
+	public static final int DRAW_50_MOVES = 24;
+	public static final int DRAW_3_REPETITION = 25;
+	
+	public String getEndOfGameString(int end) {
+		if (end == 0) return "";
+		String s = new String();
+		if (end < 10) s = "White wins";
+		else if (end < 20) s = "Black wins";
+		else s = "Draw";
+		switch (end) {
+		case WHITE_WINS_MAT: s += ", black checkmated"; break;
+		case BLACK_WINS_MAT: s += ", white checkmated"; break;
+		case DRAW_WHITE_IN_STALEMATE:
+		case DRAW_BLACK_IN_STALEMATE: s += ", stalemate"; break;
+		case DRAW_MATERIAL: s += ", material"; break;
+		case DRAW_50_MOVES: s += ", 50 moves rule"; break;
+		case DRAW_3_REPETITION: s += ", 3 times repetition"; break;
+		}
+		return s;
+	}
+	
+	public int getEndOfGame() {
+		int i, bbs, bcs, cbs, ccs, cj, bj;
+		
+		 Vector v = this.nalezTahy();
+		 
+		 if (v.isEmpty()) {
+			 if (sach()) return (this.bily ? BLACK_WINS_MAT : WHITE_WINS_MAT); 
+			 return (this.bily ? DRAW_WHITE_IN_STALEMATE : DRAW_BLACK_IN_STALEMATE);
+		 }
+
+/*		 switch(Remiza50Nebo3(uloha))
+		  {
+		  case 50:uloha->KonecPartie=Remis50;break;
+		  case 3: uloha->KonecPartie=Remis3;break;
+		 }
+		 if(uloha->KonecPartie)return; */
+		 bbs = bcs = cbs = ccs = cj = bj = 0;
+		 for(i = a1; i <= h8; i++) {
+			 switch (sch[i]) {
+			 case 1: return NO_END;
+			 case 4: return NO_END;
+			 case 5: return NO_END;
+			 case -1: return NO_END;
+			 case -4: return NO_END;
+			 case -5: return NO_END;
+			 case 2: bj++; break;
+			 case -2: cj++; break ;
+			 case 3: if ((((i/10)+(i%10))&1) != 0) bbs++; else bcs++; break;
+			 case -3: if ((((i/10)+(i%10))&1) != 0) cbs++; else ccs++; break;
+			 }
+		 }
+		 if ((i = bbs + bcs + cbs + ccs + cj + bj) <= 1 || i == bbs + cbs || i == bcs + ccs)
+			 return DRAW_MATERIAL;
+		 /*Je-li zadna nebo jen jedna lehka figura nebo
+		  jsou na sachovnici jen strelci jedne barvy, nebude mat*/
+		return NO_END;
+	}
+	
+	public int mEnd;
+	
 	public int mOh;
 
   public static final byte[] mOfsety =
@@ -31,8 +101,24 @@ public class Pozice {
     21,  19,  12,   8, -21, -19, -12, - 8 /* Kun*/
   };
   
- 
+  
   public static final byte[] mZakladniPostaveni = {
+	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+	    //     a    b    c    d    e    f    g    h
+	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 1
+	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 2
+	    100,   0,   0,   0,   0,   0,   1,   0,   0, 100, // 3
+	    100,   0,   0,   0,   0,   1,   0,   1,   0, 100, // 4
+	    100,   1,   0,   0,   0,   0,   0,   0,   1, 100, // 5
+	    100,   0,   0,   0,   0,   0,  -6,   0,   6, 100, // 6
+	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 7
+	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 8
+	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
+	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100
+	  };
+ 
+  public static final byte[] mZakladniPostaveni2 = {
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     //     a    b    c    d    e    f    g    h
@@ -47,6 +133,8 @@ public class Pozice {
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
     100, 100, 100, 100, 100, 100, 100, 100, 100, 100
   };
+
+  public HashRandomData hashF; // = new HashRandomData();
   
   public byte roch;  /* binarne 00...00vmVM */
   /* V,v - moznost velke rosady bileho a cerneho
@@ -273,6 +361,7 @@ public class Pozice {
       zobrazPole.zobrazPole(odkud);
       zobrazPole.zobrazPole(kam);
     }
+    if (globalne) mEnd = getEndOfGame();
     return;
     }
      /* Nenormalni tah
@@ -291,6 +380,7 @@ public class Pozice {
          zobrazPole.zobrazPole(g1);
          zobrazPole.zobrazPole(h1);
        }
+       if (globalne) mEnd = getEndOfGame();
        return;}
      /*Velka bila rosada*/
      if (tah == VBRoch)
@@ -306,6 +396,7 @@ public class Pozice {
          zobrazPole.zobrazPole(d1);
          zobrazPole.zobrazPole(e1);
        }
+       if (globalne) mEnd = getEndOfGame();
        return;}
     /*Mala cerna rosada*/
      if (tah==MCRoch)
@@ -321,6 +412,7 @@ public class Pozice {
          zobrazPole.zobrazPole(g8);
          zobrazPole.zobrazPole(h8);
        }
+       if (globalne) mEnd = getEndOfGame();
        return;}
      /*Velka cerna rosada*/
      if (tah==VCRoch)
@@ -336,6 +428,7 @@ public class Pozice {
          zobrazPole.zobrazPole(d8);
          zobrazPole.zobrazPole(e8);
        }
+       if (globalne) mEnd = getEndOfGame();
        return;}
      /*Promena bileho pesce*/
     if ((tah>>12)==12)
@@ -354,6 +447,7 @@ public class Pozice {
         zobrazPole.zobrazPole(odkud);
         zobrazPole.zobrazPole(kam);
       }
+      if (globalne) mEnd = getEndOfGame();
       return;
      }
      /*Promena cerneho pesce*/
@@ -375,6 +469,7 @@ public class Pozice {
          zobrazPole.zobrazPole(odkud);
          zobrazPole.zobrazPole(kam);
        }
+       if (globalne) mEnd = getEndOfGame();
        return;
       }
      /* Brani mimochodem (nic jineho to uz byt nemuze)*/
@@ -400,6 +495,7 @@ public class Pozice {
        zobrazPole.zobrazPole(kam + 10);
        zobrazPole.zobrazPole(kam - 10);
      }
+     if (globalne) mEnd = getEndOfGame();
      return;
   }
   
