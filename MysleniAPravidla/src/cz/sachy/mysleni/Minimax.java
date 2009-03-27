@@ -153,12 +153,11 @@ public class Minimax {
 				p.tahniZpet(t, false, null);
 				int hg = p.hashF.hash(p);
 				if (hg != hf) {
-					throw new RuntimeException("Jauvajs");
+					throw new RuntimeException("Error, board has changed!!!");
 				}
 			}
 			long casTed = System.currentTimeMillis();
 			if (casTed - casStart > casMs / 8) break;
-			if (hloubka == 4) break;
 		}
 		p.mZasobnik.pos--;
 		return p.mZasobnik.tahy[odkud];
