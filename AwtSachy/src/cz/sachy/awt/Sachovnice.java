@@ -3,6 +3,7 @@ package cz.sachy.awt;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
@@ -204,6 +205,11 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	    		zobrazPole(i, j, clovek, g);
 	        }
 	    }
+	    if (mPozice.mEnd != 0) {
+	    	g.setFont(new Font("Dialog", Font.BOLD, mPoleXY / 3));
+	    	g.setColor(new Color(0xFF, 0, 0));
+	    	g.drawString(mPozice.getEndOfGameString(mPozice.mEnd), 50, 50);
+	    }
 	  }
 	
 	 public Dimension getMaximumSize() {
@@ -282,6 +288,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     	mPozice.nalezTahy();
     	pripravTah();
     	if (hrajeClovek()) zobrazPole();
+    	if (mPozice.mEnd != 0) repaint();
     }
 
 	public void pripravTah() {
