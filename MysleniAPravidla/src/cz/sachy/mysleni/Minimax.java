@@ -36,6 +36,7 @@ public class Minimax {
 	public static int alfabetaBrani(Pozice p, int hloubka, int alfa, int beta) {
 		int h = HodnotaPozice.hodnotaPozice(p, alfa, beta);
 		if (hloubka == 0) return h;
+		if (h > MAT || h < -MAT) return h;
 		boolean sach = p.sach();
 		if (h > alfa && !sach) {
 			alfa = h;
@@ -82,6 +83,8 @@ public class Minimax {
 
 	public static int alfabeta(Pozice p, int hloubka, int alfa, int beta) {
 		if (hloubka == 0) return alfabetaBrani(p, 4, alfa, beta);
+		int h = HodnotaPozice.hodnotaPozice(p, alfa, beta);
+		if (h > MAT || h < -MAT) return h;
 		p.nalezPseudolegalniTahyZasobnik();
 		int odkud = p.getOdkud();
 		int kam = p.getKam();
@@ -97,7 +100,7 @@ public class Minimax {
 			int t = p.mZasobnik.tahy[i];
 			//int hf = p.hashF.hash(p);
 			p.tahni(t, false, false, null);
-			int h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
+			h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
 			p.tahniZpet(t, false, null);
 			//int hg = p.hashF.hash(p);
 			//if (hg != hf) {
@@ -158,6 +161,7 @@ public class Minimax {
 			}
 			long casTed = System.currentTimeMillis();
 			if (casTed - casStart > casMs / 8) break;
+			if (hloubka == 4) break;
 		}
 		p.mZasobnik.pos--;
 		return p.mZasobnik.tahy[odkud];
