@@ -135,6 +135,29 @@ public class Pozice {
 
   public byte[] sch;
     
+  protected Object clone() {
+	return new Pozice(this);
+  }
+  
+  public Pozice(Pozice p) {
+	sch = new byte[mZakladniPostaveni.length];
+	System.arraycopy(p.sch, 0, sch, 0, sch.length);
+	bily = p.bily;
+	roch = p.roch;
+	mimoch = p.mimoch;
+  }
+  
+  public boolean equals(Object o) {
+	  if (o == null) return false;
+	  if (o.getClass() != getClass()) return false;
+	  Pozice p = (Pozice) o;
+	  if (bily != p.bily || roch != p.roch || mimoch != p.mimoch) return false;
+	  if (p.sch.length != sch.length) return false;
+	  for (int i = 0; i < sch.length; i++)
+		  if (sch[i] != p.sch[i]) return false;
+      return true;
+  }
+  
   public Pozice() {
     sch = new byte[mZakladniPostaveni.length];
     System.arraycopy(mZakladniPostaveni, 0, sch, 0, sch.length);
