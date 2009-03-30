@@ -24,11 +24,12 @@ import java.util.Vector;
 
 import cz.sachy.mysleni.Minimax;
 import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.Task;
 import cz.sachy.pravidla.ZasobnikStruct;
 
 public class KonSachy {
 	private static void hlavniDosCyklus() {
-		Pozice p = new Pozice();
+		Task task = new Task();
 		BufferedReader br = new BufferedReader(new InputStreamReader(new DataInputStream(System.in)));
 		hlavni:
 		while (true) {
@@ -53,60 +54,60 @@ public class KonSachy {
 				continue;
 			}
 			if (s.equals("ta")) {
-				Vector t = p.nalezTahy();
+				Vector t = task.nalezTahy();
 				if (t.size() == 0) {
 					System.out.println("Neni tah");
 					continue;
 				}
-				int tah = Minimax.minimax(p, 5000);
-				System.out.println(p.tah2Str(t, tah));
-				p.tahni(tah, true, true, null);
-				tiskniSachovnici(p);
+				int tah = Minimax.minimax(task, 5000);
+				System.out.println(task.tah2Str(t, tah));
+				task.tahni(tah, true, true, null);
+				tiskniSachovnici(task.board);
 				continue;
 			}
 			if (s.equals("tz")) {
-				if (p.mIndexVPartii >= 0)
-				p.tahniZpet(((ZasobnikStruct)(p.mPartie.elementAt(p.mIndexVPartii))).tah, true, null);
-					tiskniSachovnici(p);
+				if (task.mIndexVPartii >= 0)
+				task.tahniZpet(((ZasobnikStruct)(task.mPartie.elementAt(task.mIndexVPartii))).tah, true, null);
+					tiskniSachovnici(task.board);
 				continue;
 			}
 			if (s.equals("tg")) {
-				Vector t = p.nalezTahy();
+				Vector t = task.nalezTahy();
 				for (int i = 0; i < t.size(); i++) {
-					System.out.print(p.tah2Str(t, ((Integer)(t.elementAt(i))).intValue()) + " ");
+					System.out.print(task.tah2Str(t, ((Integer)(t.elementAt(i))).intValue()) + " ");
 				}
 				System.out.println();
 				continue;
 			}
 			if (s.equals("tb")) {
-				p.nalezPseudolegalniBraniZasobnik();
-				int odkud = p.getOdkud();
-				int kam = p.getKam();
+				task.nalezPseudolegalniBraniZasobnik();
+				int odkud = task.getOdkud();
+				int kam = task.getKam();
 				for (int i = odkud; i < kam; i++) {
-					System.out.print(p.tah2Str(new Vector(), p.mZasobnik.tahy[i]) + " (" + p.mZasobnik.hodnoty[i] + ") ");
+					System.out.print(task.tah2Str(new Vector(), task.mZasobnik.tahy[i]) + " (" + task.mZasobnik.hodnoty[i] + ") ");
 				}
-				p.mZasobnik.pos--;
+				task.mZasobnik.pos--;
 				System.out.println();
 				continue;
 			}
 			if (s.equals("bb")) {
-				System.out.println(Minimax.alfabetaBrani(p, 4, -Minimax.MAT, Minimax.MAT));
+				System.out.println(Minimax.alfabetaBrani(task, 4, -Minimax.MAT, Minimax.MAT));
 				continue;
 			}
 			if (s.equals("sa")) {
-				tiskniSachovnici(p);
+				tiskniSachovnici(task.board);
 				continue;
 			}
 			if (s.equals("ko")) {
 				System.out.println("Koncim");
 				break;
 			}
-			Vector t = p.nalezTahy();
+			Vector t = task.nalezTahy();
 			for (int i = 0; i < t.size(); i++) {
 				int tah = ((Integer)(t.elementAt(i))).intValue();
-				if (s.equals(p.tah2Str(t, tah))) {
-					p.tahni(tah, true, true, null);
-					tiskniSachovnici(p);
+				if (s.equals(task.tah2Str(t, tah))) {
+					task.tahni(tah, true, true, null);
+					tiskniSachovnici(task.board);
 					continue hlavni;
 				}
 				

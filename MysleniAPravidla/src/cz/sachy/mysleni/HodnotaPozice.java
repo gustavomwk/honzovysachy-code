@@ -104,7 +104,6 @@ public class HodnotaPozice {
 	
 
 	public static int hodnotaPozice(Pozice p, int alfa, int beta) {
-		p.mOh++;
 		int bm = 0;
 		int cm = 0;
 		int bp = 0;

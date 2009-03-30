@@ -16,7 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.sachy.mysleni;
 
-import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.Task;
 
 public class Minimax {
 	public static final int MAT = 30000;
@@ -33,11 +33,11 @@ public class Minimax {
 	}
 	
 	
-	public static int alfabetaBrani(Pozice p, int hloubka, int alfa, int beta) {
-		int h = HodnotaPozice.hodnotaPozice(p, alfa, beta);
+	public static int alfabetaBrani(Task task, int hloubka, int alfa, int beta) {
+		int h = HodnotaPozice.hodnotaPozice(task.board, alfa, beta);
 		if (hloubka == 0) return h;
 		if (h > MAT || h < -MAT) return h;
-		boolean sach = p.sach();
+		boolean sach = task.board.sach();
 		if (h > alfa && !sach) {
 			alfa = h;
 			if (h >= beta) {
@@ -46,25 +46,25 @@ public class Minimax {
 		}
 		
 		if (sach) 
-			p.nalezPseudolegalniTahyZasobnik();
+			task.nalezPseudolegalniTahyZasobnik();
 		else
-			p.nalezPseudolegalniBraniZasobnik();
-		int odkud = p.getOdkud();
-		int kam = p.getKam();
+			task.nalezPseudolegalniBraniZasobnik();
+		int odkud = task.getOdkud();
+		int kam = task.getKam();
 		
 		if (kam - odkud == 0) {
-			p.mZasobnik.pos--;
-			if (p.sach()) return -MAT;
+			task.mZasobnik.pos--;
+			if (task.board.sach()) return -MAT;
 			return alfa;
 		}
 		hloubka--;
 		
 		for (int i = odkud; i < kam; i++) {
-			int t = p.mZasobnik.tahy[i];
+			int t = task.mZasobnik.tahy[i];
 			//int hf = p.hashF.hash(p);
-			p.tahni(t, false, false, null);
-			h = dalOdMatu(alfabetaBrani(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
-			p.tahniZpet(t, false, null);
+			task.tahni(t, false, false, null);
+			h = dalOdMatu(alfabetaBrani(task, hloubka, blizKMatu(beta), blizKMatu(alfa)));
+			task.tahniZpet(t, false, null);
 			//int hg = p.hashF.hash(p);
 			//if (hg != hf) {
 			//	throw new RuntimeException("Jauvajs");
@@ -72,36 +72,36 @@ public class Minimax {
 			if (h > alfa) {
 				alfa = h;
 				if (h >= beta) {
-					p.mZasobnik.pos--;
+					task.mZasobnik.pos--;
 					return beta; 
 				}
 			}
 		}
-		p.mZasobnik.pos--;
+		task.mZasobnik.pos--;
 		return alfa;
 	}
 
-	public static int alfabeta(Pozice p, int hloubka, int alfa, int beta) {
-		if (hloubka == 0) return alfabetaBrani(p, 4, alfa, beta);
-		int h = HodnotaPozice.hodnotaPozice(p, alfa, beta);
+	public static int alfabeta(Task task, int hloubka, int alfa, int beta) {
+		if (hloubka == 0) return alfabetaBrani(task, 4, alfa, beta);
+		int h = HodnotaPozice.hodnotaPozice(task.board, alfa, beta);
 		if (h > MAT || h < -MAT) return h;
-		p.nalezPseudolegalniTahyZasobnik();
-		int odkud = p.getOdkud();
-		int kam = p.getKam();
+		task.nalezPseudolegalniTahyZasobnik();
+		int odkud = task.getOdkud();
+		int kam = task.getKam();
 		
 		if (kam - odkud == 0) {
-			p.mZasobnik.pos--;
-			if (p.sach()) return -MAT;
+			task.mZasobnik.pos--;
+			if (task.board.sach()) return -MAT;
 			return 0;
 		}
 		hloubka--;
 		
 		for (int i = odkud; i < kam; i++) {
-			int t = p.mZasobnik.tahy[i];
+			int t = task.mZasobnik.tahy[i];
 			//int hf = p.hashF.hash(p);
-			p.tahni(t, false, false, null);
-			h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(beta), blizKMatu(alfa)));
-			p.tahniZpet(t, false, null);
+			task.tahni(t, false, false, null);
+			h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(beta), blizKMatu(alfa)));
+			task.tahniZpet(t, false, null);
 			//int hg = p.hashF.hash(p);
 			//if (hg != hf) {
 			//	System.out.println(p.toString() + "\n" + p.tah2Str(t));
@@ -110,51 +110,50 @@ public class Minimax {
 			if (h > alfa) {
 				alfa = h;
 				if (h >= beta) {
-					p.mZasobnik.pos--;
+					task.mZasobnik.pos--;
 					return beta; 
 				}
 			}
 		}
-		p.mZasobnik.pos--;
+		task.mZasobnik.pos--;
 		return alfa;
 	}
 	
-	public static int minimax(Pozice p, long casMs) {
+	public static int minimax(Task task, long casMs) {
 		long casStart = System.currentTimeMillis();
-		p.mOh = 0;
-		p.nalezTahyZasobnik();
-		int odkud = p.getOdkud();
-		int kam = p.getKam();
+		task.nalezTahyZasobnik();
+		int odkud = task.getOdkud();
+		int kam = task.getKam();
 		if (kam - odkud == 0) {
-			p.mZasobnik.pos--;
+			task.mZasobnik.pos--;
 			return 0;
 		}
 		switch (kam - odkud) {
-		case 0: p.mZasobnik.pos--;
-			if (p.sach()) return -MAT;
+		case 0: task.mZasobnik.pos--;
+			if (task.board.sach()) return -MAT;
 			return 0;
-		case 1: p.mZasobnik.pos--;
-			return p.mZasobnik.tahy[odkud];
+		case 1: task.mZasobnik.pos--;
+			return task.mZasobnik.tahy[odkud];
 		}
 		for (int hloubka = 0; hloubka < 10; hloubka++) {
 			int max = -MAT + 1;
 			for (int i = odkud; i < kam; i++) {
-				int t = p.mZasobnik.tahy[i];
-				int hf = p.hashF.hash(p);
-				p.tahni(t, false, false, null);
-				int h = dalOdMatu(alfabeta(p, hloubka, blizKMatu(MAT), blizKMatu(max)));
+				int t = task.mZasobnik.tahy[i];
+				int hf = task.hashF.hash(task.board);
+				task.tahni(t, false, false, null);
+				int h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(MAT), blizKMatu(max)));
 				if (i == 0 || h > max) {
 					max = h;
 					if (i != 0)
 					{
 						for (int j = i; j > odkud; j--)
-							p.mZasobnik.tahy[j] = p.mZasobnik.tahy[j - 1];
-						p.mZasobnik.tahy[odkud] = t;
+							task.mZasobnik.tahy[j] = task.mZasobnik.tahy[j - 1];
+						task.mZasobnik.tahy[odkud] = t;
 					}
 					
 				}
-				p.tahniZpet(t, false, null);
-				int hg = p.hashF.hash(p);
+				task.tahniZpet(t, false, null);
+				int hg = task.hashF.hash(task.board);
 				if (hg != hf) {
 					throw new RuntimeException("Error, board has changed!!!");
 				}
@@ -163,7 +162,7 @@ public class Minimax {
 			if (casTed - casStart > casMs / 8) break;
 			if (hloubka == 4) break;
 		}
-		p.mZasobnik.pos--;
-		return p.mZasobnik.tahy[odkud];
+		task.mZasobnik.pos--;
+		return task.mZasobnik.tahy[odkud];
 	}
 }

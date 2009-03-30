@@ -30,6 +30,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import cz.sachy.mysleni.Minimax;
 import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.Task;
 
 public class SachoveView extends View {
 	int mcx = 4;
@@ -42,13 +43,13 @@ public class SachoveView extends View {
 	boolean mCernyClovek = false;
 	boolean mPremyslim = false;
 	Drawable mFigury[][];
-	Pozice mPozice = new Pozice();
+	Task mTask = new Task();
 	final Handler mHandler = new Handler();
 	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
 	
 	protected boolean hrajeClovek() {
-		return !isPremyslim() && (mBilyClovek && mPozice.bily ||
-			mCernyClovek && !mPozice.bily);
+		return !isPremyslim() && (mBilyClovek && mTask.board.bily ||
+			mCernyClovek && !mTask.board.bily);
 	}
 	
     public SachoveView(Activity a) {
@@ -83,15 +84,15 @@ public class SachoveView extends View {
     public void tahni(int tah) {
     	mox = -1;
     	moy = -1;
-    	mPozice.tahni(tah, true, true, null);
-    	mPozice.nalezTahy();
+    	mTask.tahni(tah, true, true, null);
+    	mTask.nalezTahy();
     	invalidate();
     	pripravTah();
     }
     
     protected void pripravTahHned() {
     	if (hrajeClovek()) {
-    		mPozice.nalezTahy();
+    		mTask.nalezTahy();
     	} else {
 			tahniPrograme();
     	}
@@ -115,17 +116,17 @@ public class SachoveView extends View {
     		y = 7 - y;
     	}
 
-    	Vector t = mPozice.nalezTahy();
+    	Vector t = mTask.nalezTahy();
 		int pole = Pozice.a1 + x + 10 * y;
-		if (mPozice.JeTam1(t, pole)) {
+		if (mTask.JeTam1(t, pole)) {
 			mcx = mox = x;
 			mcy = moy = y;
 			invalidate();
 			return true;
 		}
 		int pole1 = Pozice.a1 + mox + 10 * moy;
-		if (mPozice.JeTam2(t, pole1, pole)) {
-			int tah = mPozice.DoplnTah(t, pole1, pole);
+		if (mTask.JeTam2(t, pole1, pole)) {
+			int tah = mTask.DoplnTah(t, pole1, pole);
 			tahni(tah);
 			return true;
 		}
@@ -141,7 +142,7 @@ public class SachoveView extends View {
     	if (isPremyslim()) {
     		sch = mSchPriMysleni;
     	} else {
-    		sch = mPozice.sch;
+    		sch = mTask.board.sch;
     	}
     	Rect r = new Rect();
     	getDrawingRect(r);
@@ -225,17 +226,17 @@ public class SachoveView extends View {
     		return true;
     	case KeyEvent.KEYCODE_DPAD_CENTER:
     		if (!hrajeClovek()) return true;
-    		Vector t = mPozice.nalezTahy();
+    		Vector t = mTask.nalezTahy();
     		int pole = Pozice.a1 + mcx + 10 * mcy;
-    		if (mPozice.JeTam1(t, pole)) {
+    		if (mTask.JeTam1(t, pole)) {
     			mox = mcx;
     			moy = mcy;
     			invalidate();
     			return true;
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
-    		if (mPozice.JeTam2(t, pole1, pole)) {
-    			int tah = mPozice.DoplnTah(t, pole1, pole);
+    		if (mTask.JeTam2(t, pole1, pole)) {
+    			int tah = mTask.DoplnTah(t, pole1, pole);
     			tahni(tah);
     			return true;
     		}
@@ -254,12 +255,12 @@ public class SachoveView extends View {
     
     protected void tahniPrograme() {
     	mPremyslim = true;
-    	System.arraycopy(mPozice.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
+    	System.arraycopy(mTask.board.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		 public void run() {
-    			 mPozice.nalezTahy();
+    			 mTask.nalezTahy();
     			 final int tah;
-    			 tah = Minimax.minimax(mPozice, 5000); 
+    			 tah = Minimax.minimax(mTask, 5000); 
     			 mHandler.post(
     					 new Runnable() {
 
@@ -277,12 +278,12 @@ public class SachoveView extends View {
      }
     
     protected void novaPartie() {
-    	mPozice = new Pozice();
+    	mTask = new Task();
     	invalidate();
     }
     
     protected void hrajTed() {
-    	if (mPozice.bily) {
+    	if (mTask.board.bily) {
     		mBilyClovek = false;
     		mCernyClovek = true;
     	} else {

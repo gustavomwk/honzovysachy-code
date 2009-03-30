@@ -23,6 +23,7 @@ import javax.swing.SwingUtilities;
 
 import cz.sachy.mysleni.Minimax;
 import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.Task;
 import cz.sachy.pravidla.ZobrazPole;
 
 
@@ -37,7 +38,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	int mPoleXY;
 	int mOdstup;
 	int mHrana;
-	Pozice mPozice = new Pozice();
+	Task mTask = new Task();
 	Image bk, ck, bp, cp, bs, cs, bj, cj, bd, cd, bv, cv;
 	boolean mOtoceno;
 	int mcx = 4;
@@ -129,8 +130,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	  	return mPremyslim;
 	}
 	protected boolean hrajeClovek() {
-		return !isPremyslim() && (mBilyClovek && mPozice.bily ||
-			mCernyClovek && !mPozice.bily);
+		return !isPremyslim() && (mBilyClovek && mTask.board.bily ||
+			mCernyClovek && !mTask.board.bily);
 	}
 
 
@@ -148,7 +149,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
        	g.setColor(c);
         g.fillRect(getX(x), getY(y), mPoleXY, mPoleXY);
         int p = Pozice.a1 + x + y * 10;
-        byte f = mPremyslim ? mSchPriMysleni[p] : mPozice.sch[p];
+        byte f = mPremyslim ? mSchPriMysleni[p] : mTask.board.sch[p];
         if (f == 0) return;
       
         int xx = getX(x) + (mPoleXY - bp.getWidth(null)) / 2;
@@ -205,10 +206,10 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	    		zobrazPole(i, j, clovek, g);
 	        }
 	    }
-	    if (mPozice.mEnd != 0) {
+	    if (mTask.mEnd != 0) {
 	    	g.setFont(new Font("Dialog", Font.BOLD, mPoleXY / 3));
 	    	g.setColor(new Color(0xFF, 0, 0));
-	    	g.drawString(mPozice.getEndOfGameString(mPozice.mEnd), 50, 50);
+	    	g.drawString(mTask.getEndOfGameString(mTask.mEnd), 50, 50);
 	    }
 	  }
 	
@@ -262,9 +263,9 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 			break;
 		case 10:
 			if (!hrajeClovek()) return;
-    		Vector t = mPozice.nalezTahy();
+    		Vector t = mTask.nalezTahy();
     		int pole = Pozice.a1 + mcx + 10 * mcy;
-    		if (mPozice.JeTam1(t, pole)) {
+    		if (mTask.JeTam1(t, pole)) {
     			int stare = Pozice.a1 + mox + moy * 10;
     			mox = mcx;
     			moy = mcy;
@@ -273,8 +274,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     			return;
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
-    		if (mPozice.JeTam2(t, pole1, pole)) {
-    			int tah = mPozice.DoplnTah(t, pole1, pole);
+    		if (mTask.JeTam2(t, pole1, pole)) {
+    			int tah = mTask.DoplnTah(t, pole1, pole);
     			tahni(tah);
     			return;
     		}
@@ -284,11 +285,10 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	public void tahni(int tah) {
     	mox = -1;
     	moy = -1;
-    	mPozice.tahni(tah, true, true, this);
-    	mPozice.nalezTahy();
+    	mTask.tahni(tah, true, true, this);
     	pripravTah();
     	if (hrajeClovek()) zobrazPole();
-    	if (mPozice.mEnd != 0) repaint();
+    	if (mTask.mEnd != 0) repaint();
     }
 
 	public void pripravTah() {
@@ -301,7 +301,6 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	
 	protected void pripravTahHned() {
     	if (hrajeClovek()) {
-    		mPozice.nalezTahy();
     	} else {
 			tahniPrograme();
     	}
@@ -309,12 +308,12 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	
 	protected void tahniPrograme() {
     	mPremyslim = true;
-    	System.arraycopy(mPozice.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
+    	System.arraycopy(mTask.board.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		 public void run() {
-    			// mPozice.nalezTahy();
+    			// mTask.board.nalezTahy();
     			 final int tah;
-    			 tah = Minimax.minimax(mPozice, 5000); 
+    			 tah = Minimax.minimax(mTask, 5000); 
     			 SwingUtilities.invokeLater(
     					 new Runnable() {
 
@@ -374,7 +373,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 				newGame.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						mPozice = new Pozice();
+						mTask.board = new Pozice();
 						repaint();
 					}
 				});
@@ -399,9 +398,9 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 			int i = getI(me.getX());
 			int j = getJ(me.getY());
 			if (i < 0 || i > 7 || j < 0 || j > 7) return;
-			Vector t = mPozice.nalezTahy();
+			Vector t = mTask.nalezTahy();
     		int pole = Pozice.a1 + i + 10 * j;
-    		if (mPozice.JeTam1(t, pole)) {
+    		if (mTask.JeTam1(t, pole)) {
     			int stare = Pozice.a1 + mcx + mcy * 10;
     			mcx = i;
     			mcy = j;
@@ -414,8 +413,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     			return;
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
-    		if (mPozice.JeTam2(t, pole1, pole)) {
-    			int tah = mPozice.DoplnTah(t, pole1, pole);
+    		if (mTask.JeTam2(t, pole1, pole)) {
+    			int tah = mTask.DoplnTah(t, pole1, pole);
     			tahni(tah);
     			return;
     		}
