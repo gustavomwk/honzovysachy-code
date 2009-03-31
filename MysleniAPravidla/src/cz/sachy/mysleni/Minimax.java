@@ -122,6 +122,7 @@ public class Minimax {
 	public static int minimax(Task task, long casMs) {
 		long casStart = System.currentTimeMillis();
 		task.nalezTahyZasobnik();
+		
 		int odkud = task.getOdkud();
 		int kam = task.getKam();
 		if (kam - odkud == 0) {
@@ -160,7 +161,6 @@ public class Minimax {
 			}
 			long casTed = System.currentTimeMillis();
 			if (casTed - casStart > casMs / 8) break;
-			if (hloubka == 4) break;
 		}
 		task.mZasobnik.pos--;
 		return task.mZasobnik.tahy[odkud];

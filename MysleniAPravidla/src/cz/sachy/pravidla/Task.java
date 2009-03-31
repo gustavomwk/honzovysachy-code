@@ -72,6 +72,55 @@ public class Task {
 		return s;
 	}
 	
+	boolean importantMove() {
+		int t = ((ZasobnikStruct) (mPartie.elementAt(mIndexVPartii + 1))).tah;
+	  if ((t & (1 << 15)) != 0)  {
+	    /* nenormalni tah */
+	     if ((t & (1 << 14)) != 0)
+	      /* rosada nebo promena pesce*/
+	      {
+	       if ((t & (1 << 13)) != 0) return false; else return true;
+	                     /* rosada else promena pesce*/
+	      }
+	     else
+	     /* brani mimochodem */
+	      return true;
+	   }
+	  else
+	    /* nenormalni tah */
+	   {
+	    if (board.sch[t&127] != 0 || board.sch[t>>7]==1 || board.sch[t>>7]==-1) return true;
+	     else return false;
+	   }
+	 }
+	
+	int draw50or3()	{
+		
+		int i, dupl;
+		Pozice pos;
+
+		dupl = 0;
+		pos = new Pozice(board);
+		for(i = 0; i < 100; i++) {
+			if (mIndexVPartii < 0) break;
+			tahniZpet(0, true, null);
+			if (importantMove()) {
+				i++;
+				break;
+			}
+			if (pos.equals(board))
+				if (++dupl == 2) {
+					i++;
+					break;
+				}
+			if (i == 99) dupl = 49;
+	  }
+	 for(;i > 0; i--) 
+		 tahni(0, true, false, null);
+	 if (dupl < 2) dupl = 0; else dupl++;
+	 return dupl;
+	}
+	
 	public int getEndOfGame() {
 		int i, bbs, bcs, cbs, ccs, cj, bj;
 		
@@ -82,12 +131,12 @@ public class Task {
 			 return (board.bily ? DRAW_WHITE_IN_STALEMATE : DRAW_BLACK_IN_STALEMATE);
 		 }
 
-/*		 switch(Remiza50Nebo3(uloha))
+		 switch(draw50or3())
 		  {
-		  case 50:uloha->KonecPartie=Remis50;break;
-		  case 3: uloha->KonecPartie=Remis3;break;
+		  case 50: return DRAW_50_MOVES;
+		  case 3:  return DRAW_3_REPETITION;
 		 }
-		 if(uloha->KonecPartie)return; */
+		 
 		 bbs = bcs = cbs = ccs = cj = bj = 0;
 		 for(i = Pozice.a1; i <= Pozice.h8; i++) {
 			 switch (board.sch[i]) {
@@ -116,6 +165,7 @@ public class Task {
 		   ZasobnikStruct z;
 		   if (globalne) {
 		     z = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii--);
+		     tah = z.tah;
 		   } else {
 		     z = (ZasobnikStruct) zasobnik.elementAt(indexVZasobniku--);
 		   }
@@ -236,6 +286,9 @@ public class Task {
 		     int odkud,kam;
 		     byte co;
 		     
+		     if (globalne && !ukousniKonec) {
+		    	 tah = ((ZasobnikStruct)mPartie.elementAt(mIndexVPartii + 1)).tah;
+		     }
 		     push(globalne, ukousniKonec, tah);
 		     board.mimoch = 0; /*Vetsina tahu neni pescem o 2, pokud ano, osetri se*/
 		     board.bily = !board.bily;
@@ -271,7 +324,7 @@ public class Task {
 		      zobrazPole.zobrazPole(odkud);
 		      zobrazPole.zobrazPole(kam);
 		    }
-		    if (globalne) mEnd = getEndOfGame();
+		    if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		    return;
 		    }
 		     /* Nenormalni tah
@@ -290,7 +343,7 @@ public class Task {
 		         zobrazPole.zobrazPole(Pozice.g1);
 		         zobrazPole.zobrazPole(Pozice.h1);
 		       }
-		       if (globalne) mEnd = getEndOfGame();
+		       if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		       return;}
 		     /*Velka bila rosada*/
 		     if (tah == VBRoch)
@@ -306,7 +359,7 @@ public class Task {
 		         zobrazPole.zobrazPole(Pozice.d1);
 		         zobrazPole.zobrazPole(Pozice.e1);
 		       }
-		       if (globalne) mEnd = getEndOfGame();
+		       if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		       return;}
 		    /*Mala cerna rosada*/
 		     if (tah==MCRoch)
@@ -322,7 +375,7 @@ public class Task {
 		         zobrazPole.zobrazPole(Pozice.g8);
 		         zobrazPole.zobrazPole(Pozice.h8);
 		       }
-		       if (globalne) mEnd = getEndOfGame();
+		       if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		       return;}
 		     /*Velka cerna rosada*/
 		     if (tah==VCRoch)
@@ -338,7 +391,7 @@ public class Task {
 		         zobrazPole.zobrazPole(Pozice.d8);
 		         zobrazPole.zobrazPole(Pozice.e8);
 		       }
-		       if (globalne) mEnd = getEndOfGame();
+		       if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		       return;}
 		     /*Promena bileho pesce*/
 		    if ((tah>>12)==12)
@@ -357,7 +410,7 @@ public class Task {
 		        zobrazPole.zobrazPole(odkud);
 		        zobrazPole.zobrazPole(kam);
 		      }
-		      if (globalne) mEnd = getEndOfGame();
+		      if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		      return;
 		     }
 		     /*Promena cerneho pesce*/
@@ -379,7 +432,7 @@ public class Task {
 		         zobrazPole.zobrazPole(odkud);
 		         zobrazPole.zobrazPole(kam);
 		       }
-		       if (globalne) mEnd = getEndOfGame();
+		       if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		       return;
 		      }
 		     /* Brani mimochodem (nic jineho to uz byt nemuze)*/
@@ -405,7 +458,7 @@ public class Task {
 		       zobrazPole.zobrazPole(kam + 10);
 		       zobrazPole.zobrazPole(kam - 10);
 		     }
-		     if (globalne) mEnd = getEndOfGame();
+		     if (globalne && ukousniKonec) mEnd = getEndOfGame();
 		     return;
 		  }
 
@@ -420,6 +473,7 @@ public class Task {
 			  protected void push(boolean globalne, boolean ukousniKonec, int tah) {
 			    if (globalne) {
 			      mIndexVPartii++;
+			      if (!ukousniKonec) return;
 			      if (mIndexVPartii <= mPartie.size()) {
 			        mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
 			      } else {
@@ -660,7 +714,7 @@ public void nalezPseudolegalniTahyZasobnik() {
 	    mZasobnik.pos++;
 	    
 	    
-	    if (true) {
+	    if (false) {
 	    int maxPos;
 	    int max;
 	    int tmp;
@@ -686,6 +740,7 @@ public void nalezPseudolegalniTahyZasobnik() {
 
 public void nalezTahyZasobnik() {
 	nalezPseudolegalniTahyZasobnik();
+
 	int odkud = getOdkud();
 	int kam = getKam();
 
@@ -705,12 +760,10 @@ public void nalezTahyZasobnik() {
 		int indexKam = odkud;
 		hlavni:
 		while (indexOdkud < kam) {
-			if (mZasobnik.tahy[indexKam] == 0) {
-				while (mZasobnik.tahy[indexOdkud] == 0) { 
-					indexOdkud++;
-					if (indexOdkud == kam) {
-						break hlavni; 
-					}
+			while (mZasobnik.tahy[indexOdkud] == 0) { 
+				indexOdkud++;
+				if (indexOdkud == kam) {
+					break hlavni; 
 				}
 			} 
 			mZasobnik.tahy[indexKam++] = mZasobnik.tahy[indexOdkud++];
