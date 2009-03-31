@@ -85,6 +85,7 @@ public class SachoveView extends View {
     	mox = -1;
     	moy = -1;
     	mTask.tahni(tah, true, true, null);
+    	if (mTask.mEnd != 0) dlg(mTask.getEndOfGameString(mTask.mEnd));
     	mTask.nalezTahy();
     	invalidate();
     	pripravTah();
@@ -268,8 +269,6 @@ public class SachoveView extends View {
 								mPremyslim = false;
 								if (tah != 0) 
 									tahni(tah);
-								else
-									dlg("The end");
 							}}
     					 );
     		 }
