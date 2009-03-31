@@ -321,9 +321,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 								mPremyslim = false;
 								if (tah != 0) 
 									tahni(tah);
-								//else
-									//dlg("The end");
-							}}
+								}}
     					 );
     		 }
     	};
@@ -395,6 +393,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 			m.show(this, me.getX(), me.getY());
 		}
 		if (me.getButton() == 1) {
+			if (mPremyslim) return;
 			int i = getI(me.getX());
 			int j = getJ(me.getY());
 			if (i < 0 || i > 7 || j < 0 || j > 7) return;
