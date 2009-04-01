@@ -387,6 +387,34 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 					}
 				});
 				m.add(move);
+				
+				MenuItem undo = new MenuItem("Undo");
+				undo.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						if (mTask.mIndexVPartii >= 0) {
+							mTask.tahniZpet(0, true, null);
+							mBilyClovek = mTask.board.bily;
+							mCernyClovek = !mTask.board.bily;
+							repaint();
+						}
+					}
+				});
+				m.add(undo);
+				
+				MenuItem redo = new MenuItem("Redo");
+				redo.addActionListener(new ActionListener(){
+					@Override
+					public void actionPerformed(ActionEvent arg0) {
+						if (mTask.mIndexVPartii + 1 < mTask.mPartie.size()) {
+							mTask.tahni(0, true, false, null);
+							mBilyClovek = mTask.board.bily;
+							mCernyClovek = !mTask.board.bily;
+							repaint();
+						}
+					}
+				});
+				m.add(redo);
 			}
 
 			this.add(m);

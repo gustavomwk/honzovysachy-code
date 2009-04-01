@@ -166,6 +166,7 @@ public class Task {
 		   if (globalne) {
 		     z = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii--);
 		     tah = z.tah;
+		     mEnd = 0;
 		   } else {
 		     z = (ZasobnikStruct) zasobnik.elementAt(indexVZasobniku--);
 		   }
@@ -177,8 +178,8 @@ public class Task {
 		    {
 		     kam = tah & 127;
 		     odkud = tah >> 7;
-		board.sch[odkud] = board.sch[kam];
-		board.sch[kam] = z.brani;
+			board.sch[odkud] = board.sch[kam];
+			board.sch[kam] = z.brani;
 		     if (zobrazPole != null) {
 		       zobrazPole.zobrazPole(odkud);
 		       zobrazPole.zobrazPole(kam);
@@ -474,7 +475,7 @@ public class Task {
 			    if (globalne) {
 			      mIndexVPartii++;
 			      if (!ukousniKonec) return;
-			      if (mIndexVPartii <= mPartie.size()) {
+			      if (mIndexVPartii >= mPartie.size()) {
 			        mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
 			      } else {
 			        ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).set(board.roch, board.mimoch, tah);
