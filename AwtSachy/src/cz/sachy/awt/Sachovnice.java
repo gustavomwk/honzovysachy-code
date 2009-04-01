@@ -371,7 +371,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 				newGame.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						mTask.board = new Pozice();
+						mTask = new Task();
 						repaint();
 					}
 				});
