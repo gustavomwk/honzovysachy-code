@@ -281,6 +281,24 @@ public class SachoveView extends View {
     	invalidate();
     }
     
+    protected void undo() {
+    	if (mTask.mIndexVPartii >= 0) {
+    		mTask.tahniZpet(0, true, null);
+    		mBilyClovek = mTask.board.bily;
+			mCernyClovek = !mTask.board.bily;
+    		invalidate();
+    	}
+    }
+    
+    protected void redo() {
+    	if (mTask.mIndexVPartii + 1 < mTask.mPartie.size()) {
+			mTask.tahni(0, true, false, null);
+			mBilyClovek = mTask.board.bily;
+			mCernyClovek = !mTask.board.bily;
+			invalidate();
+		}
+    }
+    
     protected void hrajTed() {
     	if (mTask.board.bily) {
     		mBilyClovek = false;

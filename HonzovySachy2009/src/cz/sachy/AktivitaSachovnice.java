@@ -30,6 +30,8 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	    menu.add(Menu.NONE, 1, Menu.NONE, "Flip board").setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 2, Menu.NONE, "Move").setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 3, Menu.NONE, "New game").setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 4, Menu.NONE, "Undo").setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 5, Menu.NONE, "Redo").setOnMenuItemClickListener(this);
 	    return true;
 	}
 	
@@ -56,6 +58,12 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			break;
 		case 3: 
 			mView.novaPartie();
+			break;
+		case 4: 
+			mView.undo();
+			break;
+		case 5: 
+			mView.redo();
 			break;
 		}
 		return true;
