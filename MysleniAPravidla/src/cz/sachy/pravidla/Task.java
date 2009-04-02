@@ -1121,31 +1121,45 @@ public boolean JeTam2(Vector tahy, int odkud, int kam) {
   return false;
 }
 
-public int DoplnTah(Vector tahy, int odkud, int kam) {
-  Iterator ti = tahy.iterator(); 
-  while (ti.hasNext()) {
-    int t = ((Integer)ti.next()).intValue();
-     /* Normalni tah*/
-   if((t>>15) == 0)  if(kam==(t&127) && odkud==(t>>7)) return t; else continue;
-/*Rosady*/
-   if (t==MBRoch) if(odkud==Pozice.e1 && kam==Pozice.g1)  return t; else continue;
-   if (t==VBRoch) if(odkud==Pozice.e1 && kam==Pozice.c1)  return t; else continue;
-   if (t==MCRoch) if(odkud==Pozice.e8 && kam==Pozice.g8)  return t; else continue;
-   if (t==VCRoch) if(odkud==Pozice.e8 && kam==Pozice.c8)  return t; else continue;
-  /*Promena bileho pesce*/
-   if ((t>>12)==12)
-     if(odkud==Pozice.a7+((t>>7)&7) && kam==Pozice.a8+((t>>4)&7))
-       return(t&(0xFFFF^(3<<10)))|(/*MessageBox.messageBox("Prom�na p�ce", "Vyberte figuru", MessageBox.MB_PROMENA3)*/3<<10);
-     else continue;
-  /*Promena cerneho pesce*/
-if ((t>>12)==13)
- if(odkud==Pozice.a2+((t>>7)&7) && kam==Pozice.a1+((t>>4)&7))
-  return(t&(0xFFFF^(3<<10)))|(/*MessageBox.messageBox("Prom�na p�ce", "Vyberte figuru", MessageBox.MB_PROMENA)*/3<<10);
- else continue;
-/* Brani mimochodem (nic jineho to uz byt nemuze)*/
-if(kam==(t&0x3fff&127) && odkud==((t&0x3fff)>>7)) return t; else continue;
-} /* konec while cyklu*/
- return 0;
- }
-  
-  }
+	/**
+	 * Makes a move from fields
+	 * @param tahy
+	 * @param fromField
+	 * @param toField
+	 * @return 0 if cancelled or error, otherwise move
+	 */
+	public int makeMove(Vector tahy, int fromField, int toField, PawnPromotionGUI gui) {
+		Iterator ti = tahy.iterator(); 
+		while (ti.hasNext()) {
+			int t = ((Integer)ti.next()).intValue();
+			/* Normalni tah*/
+			if((t>>15) == 0)  if(toField==(t&127) && fromField==(t>>7)) return t; else continue;
+			/*Rosady*/
+			if (t==MBRoch) if(fromField==Pozice.e1 && toField==Pozice.g1)  return t; else continue;
+			if (t==VBRoch) if(fromField==Pozice.e1 && toField==Pozice.c1)  return t; else continue;
+			if (t==MCRoch) if(fromField==Pozice.e8 && toField==Pozice.g8)  return t; else continue;
+			if (t==VCRoch) if(fromField==Pozice.e8 && toField==Pozice.c8)  return t; else continue;
+			/*Promena bileho pesce*/
+			if ((t>>12)==12)
+				if(fromField==Pozice.a7+((t>>7)&7) && toField==Pozice.a8+((t>>4)&7)) {
+					int prom = gui.promotion();
+					if (prom == 0) return 0;
+					prom -= 2;
+					return(t&(0xFFFF^(3<<10)))|(prom<<10);
+				}
+				else continue;
+			/*Promena cerneho pesce*/
+			if ((t>>12)==13)
+				if(fromField==Pozice.a2+((t>>7)&7) && toField==Pozice.a1+((t>>4)&7)) {
+					int prom = gui.promotion();
+					if (prom == 0) return 0;
+					prom -= 2;
+					return(t&(0xFFFF^(3<<10)))|(prom<<10);
+				}
+				else continue;
+			/* Brani mimochodem (nic jineho to uz byt nemuze)*/
+			if(toField==(t&0x3fff&127) && fromField==((t&0x3fff)>>7)) return t; else continue;
+		} /* konec while cyklu*/
+		return 0;
+	}
+}

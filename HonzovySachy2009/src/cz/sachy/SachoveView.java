@@ -28,9 +28,35 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import cz.sachy.mysleni.Minimax;
+import cz.sachy.pravidla.PawnPromotionGUI;
 import cz.sachy.pravidla.Pozice;
 import cz.sachy.pravidla.Task;
+
+class PawnPromotionGUIDlg implements PawnPromotionGUI {
+	View mParent;
+	
+	public PawnPromotionGUIDlg(View parent) {
+		mParent = parent;
+	}
+
+	@Override
+	public int promotion() {
+	/*	Dialog d = new Dialog(mParent.getContext());
+		d.setTitle("Pawn promotion");
+		d.show();
+		d.w*/
+		/*View v = new TextView(mParent.getContext());
+		v.setVisibility(View.VISIBLE);
+		v.bringToFront();
+		//mParent.showContextMenu();
+		 * 
+		 */
+		return 5;
+	}
+	
+}
 
 public class SachoveView extends View {
 	int mcx = 4;
@@ -127,7 +153,7 @@ public class SachoveView extends View {
 		}
 		int pole1 = Pozice.a1 + mox + 10 * moy;
 		if (mTask.JeTam2(t, pole1, pole)) {
-			int tah = mTask.DoplnTah(t, pole1, pole);
+			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIDlg(this));
 			tahni(tah);
 			return true;
 		}
@@ -237,7 +263,7 @@ public class SachoveView extends View {
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
     		if (mTask.JeTam2(t, pole1, pole)) {
-    			int tah = mTask.DoplnTah(t, pole1, pole);
+    			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIDlg(this));
     			tahni(tah);
     			return true;
     		}

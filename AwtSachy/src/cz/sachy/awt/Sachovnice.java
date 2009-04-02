@@ -22,10 +22,19 @@ import java.util.Vector;
 import javax.swing.SwingUtilities;
 
 import cz.sachy.mysleni.Minimax;
+import cz.sachy.pravidla.PawnPromotionGUI;
 import cz.sachy.pravidla.Pozice;
 import cz.sachy.pravidla.Task;
 import cz.sachy.pravidla.ZobrazPole;
 
+class PawnPromotionGUIMsgBx implements PawnPromotionGUI {
+
+	@Override
+	public int promotion() {
+		return MessageBox.messageBox("Pawn promotion", "", MessageBox.MB_PROMENA);
+	}
+	
+}
 
 @SuppressWarnings("serial")
 public class Sachovnice extends Component  implements KeyListener, ZobrazPole, MouseListener {
@@ -275,8 +284,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
     		if (mTask.JeTam2(t, pole1, pole)) {
-    			int tah = mTask.DoplnTah(t, pole1, pole);
-    			tahni(tah);
+    			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIMsgBx());
+    			if (tah != 0) tahni(tah);
     			return;
     		}
   		}
@@ -441,8 +450,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
     		if (mTask.JeTam2(t, pole1, pole)) {
-    			int tah = mTask.DoplnTah(t, pole1, pole);
-    			tahni(tah);
+    			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIMsgBx());
+    			if (tah != 0) tahni(tah);
     			return;
     		}
 		}
