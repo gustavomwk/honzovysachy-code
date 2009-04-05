@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 package cz.sachy;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -43,7 +44,10 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         mView = new SachoveView(this);
         setContentView(mView);
     }
-
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    	mView.replayPromotion(resultCode);
+    }
 
 	public boolean onMenuItemClick(MenuItem item) {
 		if (mView.isPremyslim()) {

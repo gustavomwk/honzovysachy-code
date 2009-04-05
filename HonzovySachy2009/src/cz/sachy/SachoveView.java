@@ -20,6 +20,7 @@ import java.util.Vector;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -28,35 +29,12 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 import cz.sachy.mysleni.Minimax;
-import cz.sachy.pravidla.PawnPromotionGUI;
+import cz.sachy.pravidla.PawnPromotionGUIQueen;
 import cz.sachy.pravidla.Pozice;
 import cz.sachy.pravidla.Task;
 
-class PawnPromotionGUIDlg implements PawnPromotionGUI {
-	View mParent;
-	
-	public PawnPromotionGUIDlg(View parent) {
-		mParent = parent;
-	}
 
-	@Override
-	public int promotion() {
-	/*	Dialog d = new Dialog(mParent.getContext());
-		d.setTitle("Pawn promotion");
-		d.show();
-		d.w*/
-		/*View v = new TextView(mParent.getContext());
-		v.setVisibility(View.VISIBLE);
-		v.bringToFront();
-		//mParent.showContextMenu();
-		 * 
-		 */
-		return 5;
-	}
-	
-}
 
 public class SachoveView extends View {
 	int mcx = 4;
@@ -72,6 +50,8 @@ public class SachoveView extends View {
 	Task mTask = new Task();
 	final Handler mHandler = new Handler();
 	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
+	int mFieldFrom;
+	int mFieldTo;
 	
 	protected boolean hrajeClovek() {
 		return !isPremyslim() && (mBilyClovek && mTask.board.bily ||
@@ -131,6 +111,12 @@ public class SachoveView extends View {
     	invalidate();
     }
     
+    public void replayPromotion(int type) {
+    	Vector t = mTask.nalezTahy();
+    	int tah = mTask.makeMove(t, mFieldFrom, mFieldTo, new PawnPromotionGUIQueen(type + 2));
+		tahni(tah);
+    }
+    
     public boolean onTouchEvent(MotionEvent event)  {
     	if (isPremyslim()) return false;
      	if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
@@ -153,7 +139,15 @@ public class SachoveView extends View {
 		}
 		int pole1 = Pozice.a1 + mox + 10 * moy;
 		if (mTask.JeTam2(t, pole1, pole)) {
-			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIDlg(this));
+			if (Math.abs(mTask.board.sch[pole1]) == 1 && (y == 7 || y == 0)) {
+				mFieldFrom = pole1;
+				mFieldTo = pole;
+				Intent result = new Intent();
+		        result.setClass(getContext(), PromotionActivity.class);
+				((Activity)(getContext())).startActivityForResult(result, 0);
+				return true;
+			}
+			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIQueen());
 			tahni(tah);
 			return true;
 		}
@@ -263,9 +257,18 @@ public class SachoveView extends View {
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
     		if (mTask.JeTam2(t, pole1, pole)) {
-    			int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIDlg(this));
-    			tahni(tah);
-    			return true;
+    			if (Math.abs(mTask.board.sch[pole1]) == 1 && (mcy == 7 || mcy == 0)) {
+    				mFieldFrom = pole1;
+    				mFieldTo = pole;
+    				Intent result = new Intent();
+    		        result.setClass(getContext(), PromotionActivity.class);
+    				((Activity)(getContext())).startActivityForResult(result, 0);
+    				return true;
+    			} else {
+    				int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIQueen());
+    				tahni(tah);
+    				return true;
+    			}
     		}
     		
     		return true;
