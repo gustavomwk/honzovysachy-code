@@ -272,7 +272,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 			break;
 		case 10:
 			if (!hrajeClovek()) return;
-    		Vector t = mTask.nalezTahy();
+    		Vector t = mTask.nalezTahyVector();
     		int pole = Pozice.a1 + mcx + 10 * mcy;
     		if (mTask.JeTam1(t, pole)) {
     			int stare = Pozice.a1 + mox + moy * 10;
@@ -434,7 +434,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 			int i = getI(me.getX());
 			int j = getJ(me.getY());
 			if (i < 0 || i > 7 || j < 0 || j > 7) return;
-			Vector t = mTask.nalezTahy();
+			Vector t = mTask.nalezTahyVector();
     		int pole = Pozice.a1 + i + 10 * j;
     		if (mTask.JeTam1(t, pole)) {
     			int stare = Pozice.a1 + mcx + mcy * 10;

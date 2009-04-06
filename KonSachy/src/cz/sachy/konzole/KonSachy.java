@@ -54,7 +54,7 @@ public class KonSachy {
 				continue;
 			}
 			if (s.equals("ta")) {
-				Vector t = task.nalezTahy();
+				Vector t = task.nalezTahyVector();
 				if (t.size() == 0) {
 					System.out.println("Neni tah");
 					continue;
@@ -72,7 +72,7 @@ public class KonSachy {
 				continue;
 			}
 			if (s.equals("tg")) {
-				Vector t = task.nalezTahy();
+				Vector t = task.nalezTahyVector();
 				for (int i = 0; i < t.size(); i++) {
 					System.out.print(task.tah2Str(t, ((Integer)(t.elementAt(i))).intValue()) + " ");
 				}
@@ -84,9 +84,9 @@ public class KonSachy {
 				int odkud = task.getOdkud();
 				int kam = task.getKam();
 				for (int i = odkud; i < kam; i++) {
-					System.out.print(task.tah2Str(new Vector(), task.mZasobnik.tahy[i]) + " (" + task.mZasobnik.hodnoty[i] + ") ");
+					System.out.print(task.tah2Str(new Vector(), task.mZasobnikTahu.tahy[i]) + " (" + task.mZasobnikTahu.hodnoty[i] + ") ");
 				}
-				task.mZasobnik.pos--;
+				task.mZasobnikTahu.pos--;
 				System.out.println();
 				continue;
 			}
@@ -102,7 +102,7 @@ public class KonSachy {
 				System.out.println("Koncim");
 				break;
 			}
-			Vector t = task.nalezTahy();
+			Vector t = task.nalezTahyVector();
 			for (int i = 0; i < t.size(); i++) {
 				int tah = ((Integer)(t.elementAt(i))).intValue();
 				if (s.equals(task.tah2Str(t, tah))) {

@@ -20,10 +20,10 @@ public class Task {
 	public static final int DRAW_3_REPETITION = 25;
 
 	// Move constants
-	  public static final int MBRoch = (7<<13);
-	  public static final int VBRoch = ((7<<13)|(1<<11));
-	  public static final int MCRoch = (15<<12);
-	  public static final int VCRoch = (31<<11);
+	public static final int MBRoch = (7<<13);
+	public static final int VBRoch = ((7<<13)|(1<<11));
+	public static final int MCRoch = (15<<12);
+	public static final int VCRoch = (31<<11);
 	
 	// End of game type
 	public int mEnd;
@@ -32,26 +32,28 @@ public class Task {
 	  
 	public int mIndexVPartii;
 	  
-	public ZasobnikTahu mZasobnik;
+	public ZasobnikTahu mZasobnikTahu;
 	  
+	int mIndexVZasobnikuTahu;
 	  
-	public Vector zasobnik;
+	public Vector mZasobnik;
 	  
-	public int indexVZasobniku;
-	  
-	int index;
+	public int mIndexVZasobniku;
 	
-	public Hash hashF;
+	public Hash mHashF;
+	
+	public boolean mExitThinking;
+	public long mTimeStart;
 	
 	public Pozice board;
 	public Task() {
 		board = new Pozice();
 	    mIndexVPartii = -1;
-	    indexVZasobniku = -1;
+	    mIndexVZasobniku = -1;
 	    mPartie = new Vector();
-	    zasobnik = new Vector();
-	    mZasobnik = new ZasobnikTahu();
-	    hashF = new Hash();
+	    mZasobnik = new Vector();
+	    mZasobnikTahu = new ZasobnikTahu();
+	    mHashF = new Hash();
 	}
 	
 	public String getEndOfGameString(int end) {
@@ -124,7 +126,7 @@ public class Task {
 	public int getEndOfGame() {
 		int i, bbs, bcs, cbs, ccs, cj, bj;
 		
-		 Vector v = nalezTahy();
+		 Vector v = nalezTahyVector();
 		 
 		 if (v.isEmpty()) {
 			 if (board.sach()) return (board.bily ? BLACK_WINS_MAT : WHITE_WINS_MAT); 
@@ -168,7 +170,7 @@ public class Task {
 		     tah = z.tah;
 		     mEnd = 0;
 		   } else {
-		     z = (ZasobnikStruct) zasobnik.elementAt(indexVZasobniku--);
+		     z = (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku--);
 		   }
 		   board.mimoch = z.mimoch;
 		   board.roch = z.roch;
@@ -467,78 +469,84 @@ public class Task {
 			    if (globalne) {
 			      ((ZasobnikStruct)mPartie.elementAt(mIndexVPartii)).brani = brani;
 			    } else {
-			      ((ZasobnikStruct)zasobnik.elementAt(indexVZasobniku)).brani = brani;
+			      ((ZasobnikStruct)mZasobnik.elementAt(mIndexVZasobniku)).brani = brani;
 			    }
 			  }
 			  
-			  protected void push(boolean globalne, boolean ukousniKonec, int tah) {
-			    if (globalne) {
-			      mIndexVPartii++;
-			      if (!ukousniKonec) return;
-			      if (mIndexVPartii >= mPartie.size()) {
-			        mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
-			      } else {
-			        ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).set(board.roch, board.mimoch, tah);
-			        if (ukousniKonec && mPartie.size() > mIndexVPartii + 1) {
-			          mPartie.setSize(mIndexVPartii + 1);
-			        }
-			      }
-			    } else {
-			      indexVZasobniku++;
-			      if (indexVZasobniku >= zasobnik.size()) {
-			        zasobnik.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
-			      } else {
-			        ((ZasobnikStruct) zasobnik.elementAt(indexVZasobniku)).set(board.roch, board.mimoch, tah);
-			      }
+	protected void push(boolean globalne, boolean ukousniKonec, int tah) {
+		if (globalne) {
+			mIndexVPartii++;
+			if (!ukousniKonec) return;
+			if (mIndexVPartii >= mPartie.size()) {
+				mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
+			} else {
+				((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).set(board.roch, board.mimoch, tah);
+			    if (ukousniKonec && mPartie.size() > mIndexVPartii + 1) {
+			       mPartie.setSize(mIndexVPartii + 1);
 			    }
-			  }
+			}
+		} else {
+			mIndexVZasobniku++;
+			if (mIndexVZasobniku >= mZasobnik.size()) {
+			  	mZasobnik.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
+			} else {
+			    ((ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku)).set(board.roch, board.mimoch, tah);
+			}
+	    }
+	}
 
+	protected Vector nalezXxxTahyVector(boolean all) {
+		if (all) {
+			nalezPseudolegalniTahyZasobnik();
+		} else {
+			nalezTahyZasobnik();
+		}
+		Vector t = new Vector();
+		int moveFrom = getOdkud(); 
+		int moveTo = getKam();
+		for (int i = moveFrom; i < moveTo; i++)
+			t.add(new Integer(mZasobnikTahu.tahy[i]));
+		mZasobnikTahu.pos--;
+		return t;		
+	}
+	
+	public Vector nalezTahyVector() {
+		return nalezXxxTahyVector(false);
+	}
 
-public Vector nalezTahy() {
-    Vector tahy = board.nalezPseudolegalniTahy2();
-    Vector t = new Vector();
-    Iterator i = tahy.iterator();
-    while (i.hasNext()) {
-      int tah = ((Integer) i.next()).intValue();
-      tahni(tah, false, false, null);
-      if (!board.sach(!board.bily)) {
-        t.add(new Integer(tah));
-      }
-      tahniZpet(tah, false, null);
-    }
-    tahy = t;
-    return t;
-  }
+	public Vector nalezPseudolegalniTahyVector() {
+		return nalezXxxTahyVector(true);
+	}
 
 public int getOdkud() {
-	return mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2];
+	return mZasobnikTahu.pos == 1 ? 0 : mZasobnikTahu.hranice[mZasobnikTahu.pos - 2];
   }
   
   public int getKam() {
-	  return mZasobnik.hranice[mZasobnik.pos - 1];
+	  return mZasobnikTahu.hranice[mZasobnikTahu.pos - 1];
   }
   private void zaradTah(int i, int j) {
-	    mZasobnik.tahy[index] = (i << 7) | j;
-	    mZasobnik.hodnoty[index] = HodnotaPozice.mStdCenyFigur[abs(board.sch[j])];
-	    index++;
+	    mZasobnikTahu.tahy[mIndexVZasobnikuTahu] = (i << 7) | j;
+	    mZasobnikTahu.hodnoty[mIndexVZasobnikuTahu] = HodnotaPozice.mStdCenyFigur[abs(board.sch[j])];
+	    mIndexVZasobnikuTahu++;
 	}
 	  
 	  private void zaradMimochodem(int i, int j) {
-		  mZasobnik.tahy[index] =  (1<<15) | ((i)<<7) | (j);
-		  index++;
+		  mZasobnikTahu.tahy[mIndexVZasobnikuTahu] =  (1<<15) | ((i)<<7) | (j);
+		  mIndexVZasobnikuTahu++;
 	  }
 	  
 	  private void zaradBilouPromenu(int p1, int p2, int fig) {
-		  mZasobnik.tahy[index] =  ((3<<14)|(fig<<10)|((p1-Pozice.a7)<<7)|((p2-Pozice.a8)<<4));
-		  if (mZasobnik.tahy[index] < 0) {
+		  mZasobnikTahu.tahy[mIndexVZasobnikuTahu] =  ((3<<14)|(fig<<10)|((p1-Pozice.a7)<<7)|((p2-Pozice.a8)<<4));
+		  if (mZasobnikTahu.tahy[mIndexVZasobnikuTahu] < 0) {
 			  System.out.println(toString());
 		  }
-		  index++;
+		  mIndexVZasobnikuTahu++;
 	  }
 	  
 	  private void zaradCernouPromenu(int p1, int p2, int fig) {
-		  mZasobnik.tahy[index] =  ((13<<12)|(fig<<10)|((p1-Pozice.a2)<<7)|((p2-Pozice.a1)<<4));
-		  index++;
+		  mZasobnikTahu.tahy[mIndexVZasobnikuTahu] =  ((13<<12)|(fig<<10)|((p1-Pozice.a2)<<7)|((p2-Pozice.a1)<<4));
+		  mIndexVZasobnikuTahu++;
 	  }
 	  
 
@@ -590,17 +598,17 @@ public int getOdkud() {
 	  
 	  
 	  private void zaradRosadu(int jakou) {
-		  mZasobnik.tahy[index] =  jakou;
-		  index++;
+		  mZasobnikTahu.tahy[mIndexVZasobnikuTahu] =  jakou;
+		  mIndexVZasobnikuTahu++;
 	  }
 
 
 public void nalezPseudolegalniTahyZasobnik() {
 	  int j, i; /*promenne pro for cykly*/
-	  if (mZasobnik.pos == 0) 
-		  index = 0;
+	  if (mZasobnikTahu.pos == 0) 
+		  mIndexVZasobnikuTahu = 0;
 	  else 
-		  index = mZasobnik.hranice[mZasobnik.pos - 1];
+		  mIndexVZasobnikuTahu = mZasobnikTahu.hranice[mZasobnikTahu.pos - 1];
 	    
 	    if (board.bily) {
 	     for (i = Pozice.a1; i <= Pozice.h8; i++)
@@ -711,29 +719,29 @@ public void nalezPseudolegalniTahyZasobnik() {
 	     }/* od switch*/
 	    } /* od for cyklu*/
 	    } /* od hraje cerny*/
-	    mZasobnik.hranice[mZasobnik.pos] = index;
-	    mZasobnik.pos++;
+	    mZasobnikTahu.hranice[mZasobnikTahu.pos] = mIndexVZasobnikuTahu;
+	    mZasobnikTahu.pos++;
 	    
 	    
 	    if (false) {
 	    int maxPos;
 	    int max;
 	    int tmp;
-	    for (i = (mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2]); i < index - 1; i++) {
+	    for (i = (mZasobnikTahu.pos == 1 ? 0 : mZasobnikTahu.hranice[mZasobnikTahu.pos - 2]); i < mIndexVZasobnikuTahu - 1; i++) {
 	    	maxPos = i;
-	    	max = mZasobnik.hodnoty[i];
-	    	for (j = i + 1; j < index; j++) {
-	    		  if (mZasobnik.hodnoty[j] > max) {
+	    	max = mZasobnikTahu.hodnoty[i];
+	    	for (j = i + 1; j < mIndexVZasobnikuTahu; j++) {
+	    		  if (mZasobnikTahu.hodnoty[j] > max) {
 	    			  maxPos = j;
-	    			  max = mZasobnik.hodnoty[j];
+	    			  max = mZasobnikTahu.hodnoty[j];
 	    		  }
 	    	}
 	    	if (maxPos != i) {
-	    		mZasobnik.hodnoty[maxPos] = mZasobnik.hodnoty[i] ;
-	    		mZasobnik.hodnoty[i] = max;
-	    		tmp = mZasobnik.tahy[maxPos];
-	    		mZasobnik.tahy[maxPos] = mZasobnik.tahy[i];
-	    		mZasobnik.tahy[i] = tmp;
+	    		mZasobnikTahu.hodnoty[maxPos] = mZasobnikTahu.hodnoty[i] ;
+	    		mZasobnikTahu.hodnoty[i] = max;
+	    		tmp = mZasobnikTahu.tahy[maxPos];
+	    		mZasobnikTahu.tahy[maxPos] = mZasobnikTahu.tahy[i];
+	    		mZasobnikTahu.tahy[i] = tmp;
 	    	}
 	    }
 	    }
@@ -747,10 +755,10 @@ public void nalezTahyZasobnik() {
 
 	boolean jeSach = false;
 	for (int i = odkud; i < kam; i++) {
-	   int tah = mZasobnik.tahy[i];
+	   int tah = mZasobnikTahu.tahy[i];
 	  tahni(tah, false, false, null);
 	  if (board.sach(!board.bily)) {
-		  mZasobnik.tahy[i] = 0;
+		  mZasobnikTahu.tahy[i] = 0;
 		  jeSach = true;
 	  }
 	  tahniZpet(tah, false, null);
@@ -761,25 +769,25 @@ public void nalezTahyZasobnik() {
 		int indexKam = odkud;
 		hlavni:
 		while (indexOdkud < kam) {
-			while (mZasobnik.tahy[indexOdkud] == 0) { 
+			while (mZasobnikTahu.tahy[indexOdkud] == 0) { 
 				indexOdkud++;
 				if (indexOdkud == kam) {
 					break hlavni; 
 				}
 			} 
-			mZasobnik.tahy[indexKam++] = mZasobnik.tahy[indexOdkud++];
+			mZasobnikTahu.tahy[indexKam++] = mZasobnikTahu.tahy[indexOdkud++];
 		}
-		mZasobnik.hranice[mZasobnik.pos - 1] = indexKam;
+		mZasobnikTahu.hranice[mZasobnikTahu.pos - 1] = indexKam;
 	}
 
 }
 
 public void nalezPseudolegalniBraniZasobnik() {
 	  int j, i; /*promenne pro for cykly*/
-	  if (mZasobnik.pos == 0) 
-		  index = 0;
+	  if (mZasobnikTahu.pos == 0) 
+		  mIndexVZasobnikuTahu = 0;
 	  else 
-		  index = mZasobnik.hranice[mZasobnik.pos - 1];
+		  mIndexVZasobnikuTahu = mZasobnikTahu.hranice[mZasobnikTahu.pos - 1];
 	    
 	    if (board.bily) {
 	     for (i = Pozice.a1; i <= Pozice.h8; i++)
@@ -868,29 +876,29 @@ public void nalezPseudolegalniBraniZasobnik() {
 	     }/* od switch*/
 	    } /* od for cyklu*/
 	    } /* od hraje cerny*/
-	    mZasobnik.hranice[mZasobnik.pos] = index;
-	    mZasobnik.pos++;
+	    mZasobnikTahu.hranice[mZasobnikTahu.pos] = mIndexVZasobnikuTahu;
+	    mZasobnikTahu.pos++;
 	    
 		
 	    
   	int maxPos;
   	int max;
   	int tmp;
-  	for (i = (mZasobnik.pos == 1 ? 0 : mZasobnik.hranice[mZasobnik.pos - 2]); i < index - 1; i++) {
+  	for (i = (mZasobnikTahu.pos == 1 ? 0 : mZasobnikTahu.hranice[mZasobnikTahu.pos - 2]); i < mIndexVZasobnikuTahu - 1; i++) {
   		maxPos = i;
-  		max = mZasobnik.hodnoty[i];
-  		for (j = i + 1; j < index; j++) {
-  			if (mZasobnik.hodnoty[j] > max) {
+  		max = mZasobnikTahu.hodnoty[i];
+  		for (j = i + 1; j < mIndexVZasobnikuTahu; j++) {
+  			if (mZasobnikTahu.hodnoty[j] > max) {
   				maxPos = j;
-  				max = mZasobnik.hodnoty[j];
+  				max = mZasobnikTahu.hodnoty[j];
   			}
   		}
   		if (maxPos != i) {
-  			mZasobnik.hodnoty[maxPos] = mZasobnik.hodnoty[i] ;
-  			mZasobnik.hodnoty[i] = max;
-  			tmp = mZasobnik.tahy[maxPos];
-  			mZasobnik.tahy[maxPos] = mZasobnik.tahy[i];
-  			mZasobnik.tahy[i] = tmp;
+  			mZasobnikTahu.hodnoty[maxPos] = mZasobnikTahu.hodnoty[i] ;
+  			mZasobnikTahu.hodnoty[i] = max;
+  			tmp = mZasobnikTahu.tahy[maxPos];
+  			mZasobnikTahu.tahy[maxPos] = mZasobnikTahu.tahy[i];
+  			mZasobnikTahu.tahy[i] = tmp;
   		}
   	}
   }

@@ -16,9 +16,6 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.sachy.pravidla;
 
-import java.util.Vector;
-
-
 public class Pozice {
 
 	public static final int a1 = 21;
@@ -165,49 +162,6 @@ public class Pozice {
     roch = 15;
     mimoch = 0;
   }
-   
-  private void zaradTah(Vector tahy, int i, int j) {
-    tahy.add(new Integer((i << 7) | j));
-  }
-  
-  private void zaradMimochodem(Vector tahy, int i, int j) {
-    tahy.add(new Integer( (1<<15) | ((i)<<7) | (j)));
-  }
-  
-  private void zaradBilouPromenu(Vector tahy, int p1, int p2, int fig) {
-    tahy.add(new Integer((3<<14)|(fig<<10)|((p1-a7)<<7)|((p2-a8)<<4)));
-  }
-  
-  private void zaradCernouPromenu(Vector tahy, int p1, int p2, int fig) {
-    tahy.add(new Integer((13<<12)|(fig<<10)|((p1-a2)<<7)|((p2-a1)<<4)));
-  }
-  
-
-  private void dlouhaBilaFigura(Vector tahy, int o1, int o2, int p) {
-    for(int j = o1; j <= o2; j++) {
-      for(int q = p + mOfsety[j]; sch[q] <= 0; q += mOfsety[j]) {
-        zaradTah(tahy, p, q);
-        if (sch[q] < 0) {
-          break;
-        }
-      }
-    }
-  }
-  
-  private void dlouhaCernaFigura(Vector tahy, int o1, int o2, int p) {
-    for(int j = o1; j <= o2; j++) {
-      for(int q = p + mOfsety[j]; sch[q] >= 0 && sch[q] < 7; q += mOfsety[j]) {
-        zaradTah(tahy, p, q);
-        if (sch[q] > 0) {
-          break;
-        }
-      }
-    }
-  }
-  
-  private void zaradRosadu(Vector tahy, int jakou) {
-    tahy.add(new Integer(jakou));
-  }
   
   public boolean ohrozeno(int i, boolean bilym) /*bilym - ohrozuje to pole bily*/
    {
@@ -284,129 +238,7 @@ public class Pozice {
     return sach(bily);
   }
   
-  
-  public Vector nalezPseudolegalniTahy2() {
-    int j, i; /*promenne pro for cykly*/
-    Vector tahy = new Vector();
-    
-    if (bily) {
-     for (i = a1; i <= h8; i++)
-      {if (sch[i] < 1 || sch[i] > 6) continue;
-       switch (sch[i]) {
-        case 1 : /*pesec*/
-         if (i < a7) /*tedy nehrozi promena*/ {
-           if (sch[i + 11] < 0) zaradTah(tahy, i, i + 11);
-           if (sch[i + 9] < 0) zaradTah(tahy, i, i + 9);
-           if (sch[i + 10] == 0) {
-             zaradTah(tahy, i, i + 10);
-             if (i <= h2 && sch[i + 20] == 0) zaradTah(tahy, i,i+20);
-           } /* pescem o 2*/
-           if (mimoch == i + 1) zaradMimochodem(tahy, i, i + 11); else
-           if (mimoch == i - 1) zaradMimochodem(tahy, i, i + 9);
-         }
-        else /* i>=a7 => promeny pesce*/
-         {if (sch[i + 10] == 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 10, j);
-          if (sch[i + 11] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 11, j);
-          if (sch[i + 9] < 0) for(j=3;j>=0;j--) zaradBilouPromenu(tahy, i, i + 9, j);
-         }
-      break;
-     case 2: /* kun*/
-      for (j = 8; j <= 15; j++)
-        if ((sch[i + mOfsety[j]]) <=0 ) zaradTah(tahy, i,i + mOfsety[j]);
-      break;
-     case 3: /* strelec*/
-       dlouhaBilaFigura(tahy, 4, 7, i);
-     break;
-     case 4: /* vez*/
-       dlouhaBilaFigura(tahy, 0, 3, i);
-     break;
-     case 5: /* dama*/
-       dlouhaBilaFigura(tahy, 0, 7, i);
-     break;
-     case 6: /* kral*/
-       for (j = 0; j <= 7; j++) 
-         if ((sch[i + mOfsety[j]]) <= 0) zaradTah(tahy, i, i + mOfsety[j]);
-       if (i == e1 && ((roch & 1) != 0) && (sch[i + 1] == 0) && (sch[i + 2] == 0) && (sch[h1] == 4)
-         && !ohrozeno(i + 1, false) && !ohrozeno(i, false))  {
-         zaradRosadu(tahy, Task.MBRoch);
-       }
-       if (i == e1 && ((roch & 2) != 0) && (sch[i - 1] == 0) && (sch[i - 2] == 0) && (sch[a1] == 4)
-         && !ohrozeno(i - 1, false) && !ohrozeno(i, false))  {
-         zaradRosadu(tahy, Task.VBRoch);
-       }
-       break; /* od krale */
-     }/* od switch*/
-   } /* od for cyklu*/
- } /* od hraje bily*/
-    else
-     {
-     for (i = a1; i <= h8; i++) {
-       if (sch[i] >=0 ) continue;
-       switch (sch[i]) {
-         case -1 : /*pesec*/
-         if (i>h2) /*tedy nehrozi promena*/ {
-           if (sch[i - 11] > 0 && sch[i - 11] < 7)
-             zaradTah(tahy, i, i - 11);
-           if (sch[i - 9] > 0 && sch[i - 9] < 7) 
-             zaradTah(tahy, i, i - 9);
-           if (sch[i - 10] == 0) /* policko pred pescem je volne*/ {
-             zaradTah(tahy, i, i - 10);
-             if (i >= a7 && sch[i - 20] == 0)
-               zaradTah(tahy, i, i-20);
-             } /* pescem o 2*/
-             if (mimoch == i + 1) zaradMimochodem(tahy, i, i - 9); else
-             if (mimoch == i - 1) zaradMimochodem(tahy, i, i - 11);
-           } else /* i<=h2 => promeny pesce*/ {
-             if (sch[i - 10] == 0)
-               for(j = 3; j >= 0; j--)
-                 zaradCernouPromenu(tahy, i, i - 10, j);
-             if (sch[i - 11] > 0 && sch[i - 11] < 7)
-               for(j = 3; j >= 0; j--)
-                 zaradCernouPromenu(tahy, i, i - 11, j);
-             if (sch[i - 9] > 0 && sch[i - 9] < 7)
-               for(j = 3; j >= 0; j--)
-                 zaradCernouPromenu(tahy, i, i - 9, j);
-           }
-      break;
-     case -2: /* kun*/
-      for (j = 8; j <= 15; j++)
-        if (sch[i + mOfsety[j]] >=0 && sch[i + mOfsety[j]]  <7)
-          zaradTah(tahy, i, i + mOfsety[j]);
-      break;
-     case -3: /* strelec*/
-       dlouhaCernaFigura(tahy, 4, 7, i);
-       break;
-     case -4: /* vez*/
-       dlouhaCernaFigura(tahy, 0, 3, i);
-       break;
-     case -5: /* dama*/
-       dlouhaCernaFigura(tahy, 0, 7, i);
-       break;
-     case -6: /* kral*/
-       for (j = 0; j <= 7; j++)
-         if (sch[i + mOfsety[j]] >= 0 && sch[i + mOfsety[j]] < 7)
-           zaradTah(tahy, i, i + mOfsety[j]);
-       if (i == e8 && (roch & 4) != 0 && sch[f8] == 0 && sch[g8] == 0  && (sch[h8] == -4)
-           && !ohrozeno(e8, true) && !ohrozeno(f8, true)) {
-         zaradRosadu(tahy, Task.MCRoch);
-       }
-       if (i == e8 && (roch & 8) != 0 && sch[d8] == 0 && sch[c8] == 0  && (sch[a8] == -4)
-         && !ohrozeno(e8, true) && !ohrozeno(d8, true)){
-       zaradRosadu(tahy, Task.VCRoch);
-      }
-      break;
-     }/* od switch*/
-    } /* od for cyklu*/
-    } /* od hraje cerny*/
-    return tahy;
-  }
-  
-  
-
-
-  
- 
-	public String toString() {
+  	public String toString() {
 		StringBuffer s = new StringBuffer();
 		for (int j = 7; j >= 0; j--) {
 			for (int i = 0; i <= 7; i++) {

@@ -53,35 +53,36 @@ public class Minimax {
 		int kam = task.getKam();
 		
 		if (kam - odkud == 0) {
-			task.mZasobnik.pos--;
+			task.mZasobnikTahu.pos--;
 			if (task.board.sach()) return -MAT;
 			return alfa;
 		}
 		hloubka--;
 		
 		for (int i = odkud; i < kam; i++) {
-			int t = task.mZasobnik.tahy[i];
-			//int hf = p.hashF.hash(p);
+			int t = task.mZasobnikTahu.tahy[i];
+
 			task.tahni(t, false, false, null);
 			h = dalOdMatu(alfabetaBrani(task, hloubka, blizKMatu(beta), blizKMatu(alfa)));
 			task.tahniZpet(t, false, null);
-			//int hg = p.hashF.hash(p);
-			//if (hg != hf) {
-			//	throw new RuntimeException("Jauvajs");
-			//}
+
 			if (h > alfa) {
 				alfa = h;
 				if (h >= beta) {
-					task.mZasobnik.pos--;
+					task.mZasobnikTahu.pos--;
 					return beta; 
 				}
 			}
 		}
-		task.mZasobnik.pos--;
+		task.mZasobnikTahu.pos--;
 		return alfa;
 	}
 
 	public static int alfabeta(Task task, int hloubka, int alfa, int beta) {
+		if (System.currentTimeMillis() > task.mTimeStart) {
+			task.mExitThinking = true;
+			return alfa;
+		}
 		if (hloubka == 0) return alfabetaBrani(task, 4, alfa, beta);
 		int h = HodnotaPozice.hodnotaPozice(task.board, alfa, beta);
 		if (h > MAT || h < -MAT) return h;
@@ -90,14 +91,14 @@ public class Minimax {
 		int kam = task.getKam();
 		
 		if (kam - odkud == 0) {
-			task.mZasobnik.pos--;
+			task.mZasobnikTahu.pos--;
 			if (task.board.sach()) return -MAT;
 			return 0;
 		}
 		hloubka--;
 		
 		for (int i = odkud; i < kam; i++) {
-			int t = task.mZasobnik.tahy[i];
+			int t = task.mZasobnikTahu.tahy[i];
 			//int hf = p.hashF.hash(p);
 			task.tahni(t, false, false, null);
 			h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(beta), blizKMatu(alfa)));
@@ -107,62 +108,67 @@ public class Minimax {
 			//	System.out.println(p.toString() + "\n" + p.tah2Str(t));
 			//	throw new RuntimeException("Jauvajs");
 			//}
+			if (task.mExitThinking) {
+				task.mZasobnikTahu.pos--;
+				return alfa;
+			}
 			if (h > alfa) {
 				alfa = h;
 				if (h >= beta) {
-					task.mZasobnik.pos--;
+					task.mZasobnikTahu.pos--;
 					return beta; 
 				}
 			}
 		}
-		task.mZasobnik.pos--;
+		task.mZasobnikTahu.pos--;
 		return alfa;
 	}
 	
 	public static int minimax(Task task, long casMs) {
-		long casStart = System.currentTimeMillis();
+		task.mTimeStart = System.currentTimeMillis() + casMs;
+		task.mExitThinking = false;
 		task.nalezTahyZasobnik();
 		
 		int odkud = task.getOdkud();
 		int kam = task.getKam();
 		if (kam - odkud == 0) {
-			task.mZasobnik.pos--;
+			task.mZasobnikTahu.pos--;
 			return 0;
 		}
 		switch (kam - odkud) {
-		case 0: task.mZasobnik.pos--;
+		case 0: task.mZasobnikTahu.pos--;
 			if (task.board.sach()) return -MAT;
 			return 0;
-		case 1: task.mZasobnik.pos--;
-			return task.mZasobnik.tahy[odkud];
+		case 1: task.mZasobnikTahu.pos--;
+			return task.mZasobnikTahu.tahy[odkud];
 		}
 		for (int hloubka = 0; hloubka < 10; hloubka++) {
 			int max = -MAT + 1;
 			for (int i = odkud; i < kam; i++) {
-				int t = task.mZasobnik.tahy[i];
-				int hf = task.hashF.hash(task.board);
+				int t = task.mZasobnikTahu.tahy[i];
+				int hf = task.mHashF.hash(task.board);
 				task.tahni(t, false, false, null);
 				int h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(MAT), blizKMatu(max)));
-				if (i == 0 || h > max) {
+				
+				if (!task.mExitThinking && i == 0 || h > max) {
 					max = h;
 					if (i != 0)
 					{
 						for (int j = i; j > odkud; j--)
-							task.mZasobnik.tahy[j] = task.mZasobnik.tahy[j - 1];
-						task.mZasobnik.tahy[odkud] = t;
+							task.mZasobnikTahu.tahy[j] = task.mZasobnikTahu.tahy[j - 1];
+						task.mZasobnikTahu.tahy[odkud] = t;
 					}
-					
 				}
 				task.tahniZpet(t, false, null);
-				int hg = task.hashF.hash(task.board);
+				int hg = task.mHashF.hash(task.board);
 				if (hg != hf) {
 					throw new RuntimeException("Error, board has changed!!!");
 				}
+				if (task.mExitThinking) break;
 			}
-			long casTed = System.currentTimeMillis();
-			if (casTed - casStart > casMs / 8) break;
+			if (task.mExitThinking) break;
 		}
-		task.mZasobnik.pos--;
-		return task.mZasobnik.tahy[odkud];
+		task.mZasobnikTahu.pos--;
+		return task.mZasobnikTahu.tahy[odkud];
 	}
 }

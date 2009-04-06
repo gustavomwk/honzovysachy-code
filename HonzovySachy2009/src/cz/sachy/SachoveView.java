@@ -92,14 +92,12 @@ public class SachoveView extends View {
     	moy = -1;
     	mTask.tahni(tah, true, true, null);
     	if (mTask.mEnd != 0) dlg(mTask.getEndOfGameString(mTask.mEnd));
-    	mTask.nalezTahy();
     	invalidate();
     	pripravTah();
     }
     
     protected void pripravTahHned() {
     	if (hrajeClovek()) {
-    		mTask.nalezTahy();
     	} else {
 			tahniPrograme();
     	}
@@ -112,7 +110,7 @@ public class SachoveView extends View {
     }
     
     public void replayPromotion(int type) {
-    	Vector t = mTask.nalezTahy();
+    	Vector t = mTask.nalezTahyVector();
     	int tah = mTask.makeMove(t, mFieldFrom, mFieldTo, new PawnPromotionGUIQueen(type + 2));
 		tahni(tah);
     }
@@ -129,7 +127,7 @@ public class SachoveView extends View {
     		y = 7 - y;
     	}
 
-    	Vector t = mTask.nalezTahy();
+    	Vector t = mTask.nalezTahyVector();
 		int pole = Pozice.a1 + x + 10 * y;
 		if (mTask.JeTam1(t, pole)) {
 			mcx = mox = x;
@@ -247,7 +245,7 @@ public class SachoveView extends View {
     		return true;
     	case KeyEvent.KEYCODE_DPAD_CENTER:
     		if (!hrajeClovek()) return true;
-    		Vector t = mTask.nalezTahy();
+    		Vector t = mTask.nalezTahyVector();
     		int pole = Pozice.a1 + mcx + 10 * mcy;
     		if (mTask.JeTam1(t, pole)) {
     			mox = mcx;
@@ -288,7 +286,7 @@ public class SachoveView extends View {
     	System.arraycopy(mTask.board.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		 public void run() {
-    			 mTask.nalezTahy();
+    			 mTask.nalezTahyVector();
     			 final int tah;
     			 tah = Minimax.minimax(mTask, 5000); 
     			 mHandler.post(
