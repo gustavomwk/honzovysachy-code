@@ -96,11 +96,16 @@ public class Minimax {
 			return 0;
 		}
 		hloubka--;
-		
+		boolean legalMove = false;
 		for (int i = odkud; i < kam; i++) {
 			int t = task.mZasobnikTahu.tahy[i];
 			//int hf = p.hashF.hash(p);
 			task.tahni(t, false, false, null);
+			if (task.board.sach(!task.board.bily)) {
+				task.tahniZpet(t, false, null);
+				continue;
+			}
+			legalMove = true;
 			h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(beta), blizKMatu(alfa)));
 			task.tahniZpet(t, false, null);
 			//int hg = p.hashF.hash(p);
@@ -121,6 +126,7 @@ public class Minimax {
 			}
 		}
 		task.mZasobnikTahu.pos--;
+		if (!legalMove) return task.board.sach() ? -MAT : 0;
 		return alfa;
 	}
 	
