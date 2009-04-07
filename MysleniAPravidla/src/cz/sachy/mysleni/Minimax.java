@@ -150,7 +150,7 @@ public class Minimax {
 				task.tahni(t, false, false, null);
 				int h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(MAT), blizKMatu(max)));
 				
-				if (!task.mExitThinking && i == 0 || h > max) {
+				if (!task.mExitThinking && (i == 0 || h > max)) {
 					max = h;
 					if (i != 0)
 					{
@@ -167,6 +167,7 @@ public class Minimax {
 				if (task.mExitThinking) break;
 			}
 			if (task.mExitThinking) break;
+			//System.out.println(hloubka + " " + Task.tah2StrNoBoard(task.mZasobnikTahu.tahy[odkud]));
 		}
 		task.mZasobnikTahu.pos--;
 		return task.mZasobnikTahu.tahy[odkud];
