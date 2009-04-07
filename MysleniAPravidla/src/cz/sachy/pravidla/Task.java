@@ -913,12 +913,12 @@ private static final int J_Radka = 1;
 private static final int J_Sloupec = 2;
 
 /* Je tah urcen jednoznacne ? (urcen je J_xxx) a tahy v uloze jsou nalezene */
-private boolean jednoZnacny(Vector tahy, int tah, int urcen)
- {int odkud, kam;
+	private boolean jednoZnacny(Vector tahy, int tah, int urcen) {
+		int odkud, kam;
 
- if (tah>>14 != 0) return true;/* Nenormalni tah je vzdy jednoznacny*/
-  kam=tah&127;
-  odkud=tah>>7;
+		if (tah >> 14 != 0) return true;/* Nenormalni tah je vzdy jednoznacny*/
+		kam = tah & 127;
+		odkud = tah >> 7;
 
   Iterator i = tahy.iterator();
 
@@ -935,72 +935,132 @@ private boolean jednoZnacny(Vector tahy, int tah, int urcen)
         case J_Sloupec: if(odkud%10==(t>>7)%10)return false; break;
       }
   }
-  return true;
- } 
+  		return true;
+	}
+	
+	/**
+	 * Converts move into string, does not depend on the board.
+	 * @param tah move
+	 * @return string like f1c3
+	 */
+	public static String tah2StrNoBoard(int tah) {
+		int odkud, kam;
+	    StringBuffer s = new StringBuffer();
 
-public String tah2Str(int tah) {
+	    if ((tah >> 14) == 0) /* Normalni tah*/ {
+	    	kam = tah & 127;
+	    	odkud = tah >> 7;
+	      	s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
+		    s.append((char)((odkud - Pozice.a1) / 10 + '1'));
+		    s.append((char)((kam - Pozice.a1)%10 + 'a'));
+		    s.append((char)((kam - Pozice.a1)/10 + '1'));
+	        return new String(s);
+	    }
+	  /* Nenormalni tah
+	     Mala rosada*/
+	    if (tah==MBRoch || tah==MCRoch) return "O-O";
+	    /*Velka rosada*/
+	    if (tah==VBRoch || tah==VCRoch) return "O-O-O";
+
+	  /*Promena bileho pesce*/
+	    if ((tah >> 12) == 12 || (tah >> 12) == 13) {
+	    	if ((tah >> 12) == 12) {
+	    		odkud = Pozice.a7 + ((tah >> 7) & 7);
+	    		kam = Pozice.a8 + ((tah >> 4) & 7);
+	    	} else {
+	    		odkud = Pozice.a2 + ((tah >> 7) & 7);
+	    		kam = Pozice.a1 + ((tah >> 4) & 7);
+	    	}
+	    	s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
+	    	s.append((char)((kam - Pozice.a1) / 10 + '1'));
+	    	switch ((tah >> 10) & 3) {
+	    	case 0: s.append('N'); break;
+	    	case 1: s.append('B'); break;
+	    	case 2: s.append('R'); break;
+	    	case 3: s.append('Q'); break;
+	    	}
+	    	return new String(s);
+	    }
+	    /* Brani mimochodem (nic jineho to uz byt nemuze)*/
+	    tah &= 0x3fff; /* odstraneni prvnich dvou bitu, aby se lepe siftovalo*/
+	    kam = tah & 127;
+	    odkud = tah >> 7;
+		s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
+		/* s[i++]=(odkud-a1)/10 + '1';*/
+		s.append('x');
+		s.append((char)((kam - Pozice.a1) % 10 + 'a'));
+		s.append((char)((kam - Pozice.a1) / 10 + '1'));
+		return new String(s);
+
+	}
+
+	public String tah2Str(int tah) {
 	    int odkud, kam;
 	    StringBuffer s = new StringBuffer();
 
 	    if ((tah >> 14) == 0) /* Normalni tah*/ {
-	      kam = tah & 127;
-	      odkud = tah >> 7;
+	    	kam = tah & 127;
+	    	odkud = tah >> 7;
 	      //i = 0;
-	    switch (abs(board.sch[odkud])) {
-	      case 1:
-	      if (board.sch[kam] != 0) s.append((char)('a' + (odkud - Pozice.a1) % 10));
-	      break;
-	      case 2: s.append('N'); break;
-	      case 3: s.append('B'); break;
-	      case 4: s.append('R'); break;
-	      case 5: s.append('Q'); break;
-	      case 6: s.append('K'); break;
-	    }
-	   if (abs(board.sch[odkud]) != 1) {
-	      s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
-	      s.append((char)((odkud - Pozice.a1) / 10 + '1'));
-	   }
-	   if (board.sch[kam] != 0) s.append('x');
-	   s.append((char)((kam - Pozice.a1)%10 + 'a'));
-	   s.append((char)((kam - Pozice.a1)/10 + '1'));
+		      switch (abs(board.sch[odkud])) {
+		      case 1:
+		    	  if (board.sch[kam] != 0) s.append((char)('a' + (odkud - Pozice.a1) % 10));
+		    	  break;
+		      case 2: s.append('N'); break;
+		      case 3: s.append('B'); break;
+		      case 4: s.append('R'); break;
+		      case 5: s.append('Q'); break;
+		      case 6: s.append('K'); break;
+		      }
+		      if (abs(board.sch[odkud]) != 1) {
+		    	  s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
+		    	  s.append((char)((odkud - Pozice.a1) / 10 + '1'));
+		      }
+		      if (board.sch[kam] != 0) s.append('x');
+		      s.append((char)((kam - Pozice.a1)%10 + 'a'));
+		      s.append((char)((kam - Pozice.a1)/10 + '1'));
 	     
-	    return new String(s);
-	  }
+		      return new String(s);
+	    }
 	  /* Nenormalni tah
 	     Mala rosada*/
-	  if (tah==MBRoch || tah==MCRoch) return "O-O";
-	  /*Velka rosada*/
-	  if (tah==VBRoch || tah==VCRoch) return "O-O-O";
+	    if (tah==MBRoch || tah==MCRoch) return "O-O";
+	    /*Velka rosada*/
+	    if (tah==VBRoch || tah==VCRoch) return "O-O-O";
 
 	  /*Promena bileho pesce*/
-	 if ((tah>>12)==12 || (tah>>12)==13 ) {
-	 if ((tah>>12)==12)
-	  {odkud=Pozice.a7+((tah>>7)&7);
-	   kam=Pozice.a8+((tah>>4)&7);}
-	  else
-	  {odkud=Pozice.a2+((tah>>7)&7);
-	   kam=Pozice.a1+((tah>>4)&7);}
-	   s.append((char)((odkud-Pozice.a1)%10 + 'a'));
-	   if (board.sch[kam] != 0) {s.append('x'); s.append((char)((kam-Pozice.a1)%10 + 'a'));}
-	   s.append((char)((kam-Pozice.a1)/10 + '1'));
-	   switch((tah>>10)&3){
-	   case 0: s.append('N'); break;
-	   case 1: s.append('B'); break;
-	   case 2: s.append('R'); break;
-	   case 3: s.append('Q'); break;
-	   }
-	   return new String(s);
-	  }
-	 /* Brani mimochodem (nic jineho to uz byt nemuze)*/
-	 tah&=0x3fff; /* odstraneni prvnich dvou bitu, aby se lepe siftovalo*/
-	 kam=tah&127;
-	 odkud=tah>>7;
-	 s.append((char)((odkud-Pozice.a1)%10 + 'a'));
-	/* s[i++]=(odkud-a1)/10 + '1';*/
-	 s.append('x');
-	 s.append((char)((kam-Pozice.a1)%10 + 'a'));
-	 s.append((char)((kam-Pozice.a1)/10 + '1'));
-	 return new String(s);
+	    if ((tah >> 12) == 12 || (tah >> 12) == 13) {
+	    	if ((tah >> 12) == 12) {
+	    		odkud = Pozice.a7 + ((tah >> 7) & 7);
+	    		kam = Pozice.a8 + ((tah >> 4) & 7);
+	    	} else {
+	    		odkud = Pozice.a2 + ((tah >> 7) & 7);
+	    		kam = Pozice.a1 + ((tah >> 4) & 7);
+	    	}
+	    	s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
+	    	if (board.sch[kam] != 0) {
+	    		s.append('x');
+	    		s.append((char)((kam-Pozice.a1) % 10 + 'a'));
+	    	}
+	    	s.append((char)((kam - Pozice.a1) / 10 + '1'));
+	    	switch ((tah >> 10) & 3) {
+	    	case 0: s.append('N'); break;
+	    	case 1: s.append('B'); break;
+	    	case 2: s.append('R'); break;
+	    	case 3: s.append('Q'); break;
+	    	}
+	    	return new String(s);
+	    }
+	    /* Brani mimochodem (nic jineho to uz byt nemuze)*/
+	    tah &= 0x3fff; /* odstraneni prvnich dvou bitu, aby se lepe siftovalo*/
+	    kam = tah & 127;
+	    odkud = tah >> 7;
+		s.append((char)((odkud - Pozice.a1) % 10 + 'a'));
+		/* s[i++]=(odkud-a1)/10 + '1';*/
+		s.append('x');
+		s.append((char)((kam - Pozice.a1) % 10 + 'a'));
+		s.append((char)((kam - Pozice.a1) / 10 + '1'));
+		return new String(s);
 	}
 
 public String tah2Str(Vector tahy, int tah) {
