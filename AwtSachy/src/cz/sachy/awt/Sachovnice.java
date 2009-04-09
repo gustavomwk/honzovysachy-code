@@ -22,6 +22,7 @@ import java.util.Vector;
 import javax.swing.SwingUtilities;
 
 import cz.sachy.mysleni.Minimax;
+import cz.sachy.mysleni.ThinkingOutput;
 import cz.sachy.pravidla.PawnPromotionGUI;
 import cz.sachy.pravidla.Pozice;
 import cz.sachy.pravidla.Task;
@@ -43,7 +44,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	static final Color mModra = new Color(0, 0, 255);
 	static final Color mZelena = new Color(0, 255, 0);
 	
-	
+	ThinkingOutput mOutput;
 	int mPoleXY;
 	int mOdstup;
 	int mHrana;
@@ -65,7 +66,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	}
 
 	
-	public Sachovnice(int poleXY, int odstup) {
+	public Sachovnice(int poleXY, int odstup, ThinkingOutput output) {
+		mOutput = output; 
 		addMouseListener(this);
 		addKeyListener(this);
 		mPoleXY = poleXY;
@@ -322,7 +324,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
     		 public void run() {
     			// mTask.board.nalezTahy();
     			 final int tah;
-    			 tah = Minimax.minimax(mTask, 5000); 
+    			 tah = Minimax.minimax(mTask, 5000, mOutput); 
     			 SwingUtilities.invokeLater(
     					 new Runnable() {
 

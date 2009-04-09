@@ -2,9 +2,23 @@ package cz.sachy.awt;
 
 import java.applet.Applet;
 import java.awt.Frame;
+import java.awt.Panel;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.BoxLayout;
+
+@SuppressWarnings("serial")
+class ChessPanel extends Panel {
+	public ChessPanel() {
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		ChessStringBox output = new ChessStringBox();
+		Sachovnice s = new Sachovnice(40, 10, output); 
+		add(s);
+		add(output);
+		addKeyListener(s);
+	}
+}
 
 @SuppressWarnings("serial")
 class SachFrame extends Frame implements WindowListener {
@@ -12,10 +26,8 @@ class SachFrame extends Frame implements WindowListener {
 	public SachFrame(String string, boolean inApplet) {
 		super(string);
 		mInApplet = inApplet;
-		//add(new Label("Does not work yet, please wait for the next version."));
-		Sachovnice s = new Sachovnice(40, 10); 
-		add(s);
-		addKeyListener(s);
+		Panel p = new ChessPanel();
+		add(p);
 		pack();
 	}
 
@@ -68,7 +80,7 @@ public class Starter extends Applet  {
 	
 	public void init()
     {
-		Sachovnice s = new Sachovnice(40, 10);
-		add(s);
+		Panel p = new ChessPanel();
+		add(p);
     }
 }

@@ -130,7 +130,7 @@ public class Minimax {
 		return alfa;
 	}
 	
-	public static int minimax(Task task, long casMs) {
+	public static int minimax(Task task, long casMs, ThinkingOutput output) {
 		task.mTimeStart = System.currentTimeMillis() + casMs;
 		task.mExitThinking = false;
 		task.nalezTahyZasobnik();
@@ -149,6 +149,7 @@ public class Minimax {
 			return task.mZasobnikTahu.tahy[odkud];
 		}
 		for (int hloubka = 0; hloubka < 10; hloubka++) {
+			if (output != null) output.depth(hloubka + 1);
 			int max = -MAT + 1;
 			for (int i = odkud; i < kam; i++) {
 				int t = task.mZasobnikTahu.tahy[i];

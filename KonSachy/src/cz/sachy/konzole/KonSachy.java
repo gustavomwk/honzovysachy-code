@@ -59,7 +59,7 @@ public class KonSachy {
 					System.out.println("Neni tah");
 					continue;
 				}
-				int tah = Minimax.minimax(task, 5000);
+				int tah = Minimax.minimax(task, 5000, null);
 				System.out.println(task.tah2Str(t, tah));
 				task.tahni(tah, true, true, null);
 				tiskniSachovnici(task.board);

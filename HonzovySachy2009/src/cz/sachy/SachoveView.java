@@ -288,7 +288,7 @@ public class SachoveView extends View {
     		 public void run() {
     			 mTask.nalezTahyVector();
     			 final int tah;
-    			 tah = Minimax.minimax(mTask, 5000); 
+    			 tah = Minimax.minimax(mTask, 5000, null); 
     			 mHandler.post(
     					 new Runnable() {
 
