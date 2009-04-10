@@ -156,7 +156,7 @@ public class Minimax {
 				int hf = task.mHashF.hash(task.board);
 				task.tahni(t, false, false, null);
 				int h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(MAT), blizKMatu(max)));
-				
+				task.tahniZpet(t, false, null);
 				if (!task.mExitThinking && (i == 0 || h > max)) {
 					max = h;
 					if (i != 0)
@@ -165,8 +165,11 @@ public class Minimax {
 							task.mZasobnikTahu.tahy[j] = task.mZasobnikTahu.tahy[j - 1];
 						task.mZasobnikTahu.tahy[odkud] = t;
 					}
+					if (output != null) {
+						output.bestMove(task.tah2Str(t), max);
+					}
 				}
-				task.tahniZpet(t, false, null);
+
 				int hg = task.mHashF.hash(task.board);
 				if (hg != hf) {
 					throw new RuntimeException("Error, board has changed!!!");
