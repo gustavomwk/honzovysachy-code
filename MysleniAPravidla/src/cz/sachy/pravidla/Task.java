@@ -283,41 +283,41 @@ public class Task {
 		   }
 		  } 
 		  
-		  public void tahni(int tah, boolean globalne,
-		      boolean ukousniKonec, ZobrazPole zobrazPole) {
+	public void tahni(int tah, boolean globalne,
+		boolean ukousniKonec, ZobrazPole zobrazPole) {
 		    
-		     int odkud,kam;
-		     byte co;
+		int odkud,kam;
+		byte co;
 		     
-		     if (globalne && !ukousniKonec) {
-		    	 tah = ((ZasobnikStruct)mPartie.elementAt(mIndexVPartii + 1)).tah;
-		     }
-		     push(globalne, ukousniKonec, tah);
-		     board.mimoch = 0; /*Vetsina tahu neni pescem o 2, pokud ano, osetri se*/
-		     board.bily = !board.bily;
+		if (globalne && !ukousniKonec) {
+			tah = ((ZasobnikStruct)mPartie.elementAt(mIndexVPartii + 1)).tah;
+		}
+		push(globalne, ukousniKonec, tah);
+		board.mimoch = 0; /*Vetsina tahu neni pescem o 2, pokud ano, osetri se*/
+		board.bily = !board.bily;
 		     
-		     if ((tah>>15) == 0) /* Normalni tah*/
-		      {kam = tah&127;
-		       odkud = tah>>7;
-		       if (/* bud cerny tahne pescem o 2*/
-		         odkud - kam == 20 && board.sch[odkud] == -1
-		                   /* a bily pesec ciha */
-		           && (board.sch[kam + 1] == 1 || board.sch[kam - 1] == 1)
-		           /* nebo bily tahne pescem o 2 */
-		           || odkud - kam == -20 && board.sch[odkud] == 1
-		                   /* a cerny pesec ciha */
-		           && (board.sch[kam + 1] == -1 || board.sch[kam - 1] == -1))
+		if ((tah>>15) == 0) /* Normalni tah*/ {
+			kam = tah & 127;
+			odkud = tah >> 7;
+			if (/* bud cerny tahne pescem o 2*/
+					odkud - kam == 20 && board.sch[odkud] == -1
+					/* a bily pesec ciha */
+					&& (board.sch[kam + 1] == 1 || board.sch[kam - 1] == 1)
+					/* nebo bily tahne pescem o 2 */
+					|| odkud - kam == -20 && board.sch[odkud] == 1
+					/* a cerny pesec ciha */
+					&& (board.sch[kam + 1] == -1 || board.sch[kam - 1] == -1))
 
-		         board.mimoch = (byte) kam;
+				board.mimoch = (byte) kam;
 		    /* Niceni rosad
 		      Pozn.: nejde dat vsude 'else', protoze napr. Va1xa8 nici obe velke rosady*/
-		       if (odkud == Pozice.e1) board.roch &= 12; else /* 1100b*/
-		       if (odkud == Pozice.e8) board.roch &= 3; else /* 0011b*/
-		     { if (kam == Pozice.a1 || odkud == Pozice.a1) board.roch &= 13;/*1101b*/
-		       if (kam == Pozice.h1 || odkud == Pozice.h1) board.roch &= 14;/*1110b*/
-		       if (kam == Pozice.a8 || odkud == Pozice.a8) board.roch &= 7; /*0111b*/
-		       if (kam == Pozice.h8 || odkud == Pozice.h8) board.roch &= 11;/*1011b*/
-		     }
+			if (odkud == Pozice.e1) board.roch &= 12; else /* 1100b*/
+				if (odkud == Pozice.e8) board.roch &= 3; else /* 0011b*/ {
+					if (kam == Pozice.a1 || odkud == Pozice.a1) board.roch &= 13;/*1101b*/
+					if (kam == Pozice.h1 || odkud == Pozice.h1) board.roch &= 14;/*1110b*/
+					if (kam == Pozice.a8 || odkud == Pozice.a8) board.roch &= 7; /*0111b*/
+					if (kam == Pozice.h8 || odkud == Pozice.h8) board.roch &= 11;/*1011b*/
+				}
 		   /* Ulozim si sebranou figuru*/
 		    push(board.sch[kam], globalne);
 		    /* zakladni rutina normalniho tahu:*/
