@@ -21,14 +21,16 @@ public class ZasobnikStruct {
   byte mimoch;
   public int tah;
   byte brani;
+  short mZmena;
   
-  public ZasobnikStruct(byte roch, byte mimoch, int tah) {
-    set(roch, mimoch, tah);
+  public ZasobnikStruct(byte roch, byte mimoch, int tah, short zmena) {
+    set(roch, mimoch, tah, zmena);
   }
   
-  public void set(byte roch, byte mimoch, int tah) {
+  public void set(byte roch, byte mimoch, int tah, short zmena) {
     this.roch = roch;
     this.mimoch = mimoch;
     this.tah = tah;
+    mZmena = zmena;
   }
 }

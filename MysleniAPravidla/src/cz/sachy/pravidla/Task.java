@@ -344,7 +344,7 @@ public class Task {
 		if (globalne && !ukousniKonec) {
 			tah = ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii + 1)).tah;
 		}
-		push(globalne, ukousniKonec, tah);
+		push(globalne, ukousniKonec, tah, (short) 0);
 		board.mimoch = 0; /* Vetsina tahu neni pescem o 2, pokud ano, osetri se */
 		board.bily = !board.bily;
 
@@ -557,28 +557,27 @@ public class Task {
 		}
 	}
 
-	protected void push(boolean globalne, boolean ukousniKonec, int tah) {
+	protected void push(boolean globalne, boolean ukousniKonec, int tah, short zmena) {
 		if (globalne) {
 			mIndexVPartii++;
 			if (!ukousniKonec)
 				return;
 			if (mIndexVPartii >= mPartie.size()) {
-				mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
+				mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah, zmena));
 			} else {
 				((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).set(
-						board.roch, board.mimoch, tah);
+						board.roch, board.mimoch, tah, zmena);
 				if (ukousniKonec && mPartie.size() > mIndexVPartii + 1) {
 					mPartie.setSize(mIndexVPartii + 1);
 				}
 			}
 		} else {
 			mIndexVZasobniku++;
-			if (mIndexVZasobniku >= mZasobnik.size()) {
-				mZasobnik
-						.add(new ZasobnikStruct(board.roch, board.mimoch, tah));
+				if (mIndexVZasobniku >= mZasobnik.size()) {
+				mZasobnik.add(new ZasobnikStruct(board.roch, board.mimoch, tah, zmena));
 			} else {
 				((ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku)).set(
-						board.roch, board.mimoch, tah);
+						board.roch, board.mimoch, tah, zmena);
 			}
 		}
 	}
