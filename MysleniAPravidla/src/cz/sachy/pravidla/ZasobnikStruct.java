@@ -16,21 +16,54 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.sachy.pravidla;
 
+import cz.sachy.mysleni.HodnotaPozice;
+
 public class ZasobnikStruct {
-  byte roch;
-  byte mimoch;
-  public int tah;
-  byte brani;
-  short mZmena;
-  
-  public ZasobnikStruct(byte roch, byte mimoch, int tah, short zmena) {
-    set(roch, mimoch, tah, zmena);
-  }
-  
-  public void set(byte roch, byte mimoch, int tah, short zmena) {
-    this.roch = roch;
-    this.mimoch = mimoch;
-    this.tah = tah;
-    mZmena = zmena;
-  }
+	byte mRoch;
+	byte mMimoch;
+	public int mTah;
+	byte mBrani;
+	short mZmena;
+
+	short mExtend;
+	byte mExtendType;
+	int mHashF;
+	public short mBm;
+	public short mCm;
+	byte mKam;
+	//int mValue;
+
+	public ZasobnikStruct(Task t) {
+		set(t);
+	}
+	
+	public void set(Task t)  {
+		Pozice p = t.board;
+		mRoch = p.roch;
+		mMimoch = p.mimoch;
+		mTah = 0;
+		mBrani = 0;
+		mZmena = 0;
+		mExtend = 0;
+		mExtendType = 0;
+		mHashF = t.mHashF.hash(p);
+		mBm = HodnotaPozice.bm(p);
+		mCm = HodnotaPozice.cm(p);
+
+		if (t.mIndexVPartii <= 0)
+			mKam = 0;
+		else
+			mKam = ((ZasobnikStruct)t.mPartie.elementAt(t.mIndexVPartii)).mKam;
+		
+	}
+
+	public ZasobnikStruct(byte roch, byte mimoch, int tah) {
+		set(roch, mimoch, tah);
+	}
+
+	public void set(byte roch, byte mimoch, int tah) {
+		mRoch = roch;
+		mMimoch = mimoch;
+		mTah = tah;
+	}
 }

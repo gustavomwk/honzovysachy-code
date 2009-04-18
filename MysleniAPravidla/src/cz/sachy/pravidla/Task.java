@@ -92,7 +92,7 @@ public class Task {
 	}
 
 	boolean importantMove() {
-		int t = ((ZasobnikStruct) (mPartie.elementAt(mIndexVPartii + 1))).tah;
+		int t = ((ZasobnikStruct) (mPartie.elementAt(mIndexVPartii + 1))).mTah;
 		if ((t & (1 << 15)) != 0) {
 			/* nenormalni tah */
 			if ((t & (1 << 14)) != 0)
@@ -219,13 +219,13 @@ public class Task {
 		ZasobnikStruct z;
 		if (globalne) {
 			z = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii--);
-			tah = z.tah;
+			tah = z.mTah;
 			mEnd = 0;
 		} else {
 			z = (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku--);
 		}
-		board.mimoch = z.mimoch;
-		board.roch = z.roch;
+		board.mimoch = z.mMimoch;
+		board.roch = z.mRoch;
 		board.bily = !board.bily;
 
 		if ((tah >> 15) == 0) /* Normalni tah */
@@ -233,7 +233,7 @@ public class Task {
 			kam = tah & 127;
 			odkud = tah >> 7;
 			board.sch[odkud] = board.sch[kam];
-			board.sch[kam] = z.brani;
+			board.sch[kam] = z.mBrani;
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(odkud);
 				zobrazPole.zobrazPole(kam);
@@ -309,7 +309,7 @@ public class Task {
 			odkud = Pozice.a7 + ((tah >> 7) & 7);
 			kam = Pozice.a8 + ((tah >> 4) & 7);
 			board.sch[odkud] = 1;
-			board.sch[kam] = z.brani;
+			board.sch[kam] = z.mBrani;
 			return;
 		}
 
@@ -318,7 +318,7 @@ public class Task {
 			odkud = Pozice.a2 + ((tah >> 7) & 7);
 			kam = Pozice.a1 + ((tah >> 4) & 7);
 			board.sch[odkud] = -1;
-			board.sch[kam] = z.brani;
+			board.sch[kam] = z.mBrani;
 			return;
 		}
 		/* Brani mimochodem (nic jineho to uz byt nemuze) */
@@ -342,9 +342,12 @@ public class Task {
 		byte co;
 
 		if (globalne && !ukousniKonec) {
-			tah = ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii + 1)).tah;
+			tah = ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii + 1)).mTah;
 		}
-		push(globalne, ukousniKonec, tah, (short) 0);
+		
+		ZasobnikStruct z = push(globalne, ukousniKonec, tah);
+		z.mBrani = 0;
+		
 		board.mimoch = 0; /* Vetsina tahu neni pescem o 2, pokud ano, osetri se */
 		board.bily = !board.bily;
 
@@ -381,7 +384,13 @@ public class Task {
 					board.roch &= 11;/* 1011b */
 			}
 			/* Ulozim si sebranou figuru */
-			push(board.sch[kam], globalne);
+			z.mBrani = board.sch[kam];
+			if (board.sch[kam] > 0)
+				z.mBm -= HodnotaPozice.mStdCenyFigur[board.sch[kam]];
+			else
+				z.mCm -= HodnotaPozice.mStdCenyFigur[-board.sch[kam]];
+			z.mKam = (byte)kam;
+			
 			/* zakladni rutina normalniho tahu: */
 			board.sch[kam] = board.sch[odkud];
 			board.sch[odkud] = 0;
@@ -402,7 +411,6 @@ public class Task {
 			board.sch[Pozice.h1] = 0;
 			board.sch[Pozice.f1] = 4;
 			board.roch &= 12;
-			push((byte) 0, globalne);
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e1);
 				zobrazPole.zobrazPole(Pozice.f1);
@@ -411,6 +419,7 @@ public class Task {
 			}
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
+			z.mKam = Pozice.g1;
 			return;
 		}
 		/* Velka bila rosada */
@@ -420,7 +429,6 @@ public class Task {
 			board.sch[Pozice.a1] = 0;
 			board.sch[Pozice.d1] = 4;
 			board.roch &= 12;
-			push((byte) 0, globalne);
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.a1);
 				zobrazPole.zobrazPole(Pozice.c1);
@@ -429,6 +437,7 @@ public class Task {
 			}
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
+			z.mKam = Pozice.c1;
 			return;
 		}
 		/* Mala cerna rosada */
@@ -438,7 +447,6 @@ public class Task {
 			board.sch[Pozice.h8] = 0;
 			board.sch[Pozice.f8] = -4;
 			board.roch &= 3;
-			push((byte) 0, globalne);
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e8);
 				zobrazPole.zobrazPole(Pozice.f8);
@@ -447,6 +455,7 @@ public class Task {
 			}
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
+			z.mKam = Pozice.g8;
 			return;
 		}
 		/* Velka cerna rosada */
@@ -456,7 +465,6 @@ public class Task {
 			board.sch[Pozice.a8] = 0;
 			board.sch[Pozice.d8] = -4;
 			board.roch &= 3;
-			push((byte) 0, globalne);
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.a8);
 				zobrazPole.zobrazPole(Pozice.c8);
@@ -465,6 +473,7 @@ public class Task {
 			}
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
+			z.mKam = Pozice.c8;
 			return;
 		}
 		/* Promena bileho pesce */
@@ -473,7 +482,10 @@ public class Task {
 			kam = (Pozice.a8 + ((tah >> 4) & 7));
 			co = (byte) (2 + ((tah >> 10) & 3));
 			/* Ulozim si, co jsem sebral */
-			push(board.sch[kam], globalne);
+			z.mBrani = board.sch[kam];
+			z.mBm += HodnotaPozice.mStdCenyFigur[co] - HodnotaPozice.mStdCenyFigur[1];
+			z.mCm -= HodnotaPozice.mStdCenyFigur[-board.sch[kam]];
+
 			board.sch[odkud] = 0;
 			board.sch[kam] = co;
 			if (kam == Pozice.a8) /*
@@ -501,7 +513,10 @@ public class Task {
 			co = (byte) (-(2 + ((tah >> 10) & 3)));
 
 			/* Ulozim si, co jsem sebral */
-			push(board.sch[kam], globalne);
+			z.mBrani = board.sch[kam];
+			z.mCm += HodnotaPozice.mStdCenyFigur[-co] - HodnotaPozice.mStdCenyFigur[1];
+			z.mBm -= HodnotaPozice.mStdCenyFigur[board.sch[kam]];
+			
 			board.sch[odkud] = 0;
 			board.sch[kam] = co;
 			if (kam == Pozice.a1) /*
@@ -520,6 +535,7 @@ public class Task {
 			}
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
+
 			return;
 		}
 		/* Brani mimochodem (nic jineho to uz byt nemuze) */
@@ -528,12 +544,14 @@ public class Task {
 		odkud = (tah >> 7);
 		if (odkud < kam) {
 			board.sch[kam - 10] = 0;
-			push((byte) -1, globalne);
+			z.mBrani = -1;
+			z.mCm -= HodnotaPozice.mStdCenyFigur[1];
 		}
 		/* to hral bily */
 		else {
 			board.sch[kam + 10] = 0;
-			push((byte) 1, globalne);
+			z.mBrani = 1;
+			z.mBm -= HodnotaPozice.mStdCenyFigur[1];
 		}
 		/* cerny */
 		board.sch[kam] = board.sch[odkud];
@@ -549,37 +567,46 @@ public class Task {
 		return;
 	}
 
-	protected void push(byte brani, boolean globalne) {
-		if (globalne) {
-			((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).brani = brani;
-		} else {
-			((ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku)).brani = brani;
-		}
+	public void push() {
+		mIndexVZasobniku = 0;
+		if (mZasobnik.size() > 0)
+			((ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku)).set(this);
+		else
+			mZasobnik.add(new ZasobnikStruct(this));
 	}
 
-	protected void push(boolean globalne, boolean ukousniKonec, int tah, short zmena) {
+	protected ZasobnikStruct push(boolean globalne, boolean ukousniKonec, int tah) {
+		ZasobnikStruct r;
+		
 		if (globalne) {
 			mIndexVPartii++;
 			if (!ukousniKonec)
-				return;
+				return (ZasobnikStruct) mPartie.elementAt(mIndexVPartii);
 			if (mIndexVPartii >= mPartie.size()) {
-				mPartie.add(new ZasobnikStruct(board.roch, board.mimoch, tah, zmena));
+				mPartie.add(r = new ZasobnikStruct(board.roch, board.mimoch, tah));
 			} else {
-				((ZasobnikStruct) mPartie.elementAt(mIndexVPartii)).set(
-						board.roch, board.mimoch, tah, zmena);
+				r = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii);
+				r.set(board.roch, board.mimoch, tah);
 				if (ukousniKonec && mPartie.size() > mIndexVPartii + 1) {
 					mPartie.setSize(mIndexVPartii + 1);
 				}
 			}
 		} else {
+			ZasobnikStruct old = mIndexVZasobniku >= 0 ? (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku) : null;
 			mIndexVZasobniku++;
-				if (mIndexVZasobniku >= mZasobnik.size()) {
-				mZasobnik.add(new ZasobnikStruct(board.roch, board.mimoch, tah, zmena));
+			if (mIndexVZasobniku >= mZasobnik.size()) {
+				mZasobnik.add(r = new ZasobnikStruct(board.roch, board.mimoch, tah));
 			} else {
-				((ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku)).set(
-						board.roch, board.mimoch, tah, zmena);
+				r = (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku);
+				r.set(board.roch, board.mimoch, tah);
+			}
+			if (old != null) {
+				r.mBm = old.mBm;
+				r.mCm = old.mCm;
+				r.mHashF = old.mHashF;
 			}
 		}
+		return r;
 	}
 
 	protected Vector nalezXxxTahyVector(boolean all) {

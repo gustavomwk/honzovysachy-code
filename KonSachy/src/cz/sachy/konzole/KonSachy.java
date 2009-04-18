@@ -67,7 +67,7 @@ public class KonSachy {
 			}
 			if (s.equals("tz")) {
 				if (task.mIndexVPartii >= 0)
-				task.tahniZpet(((ZasobnikStruct)(task.mPartie.elementAt(task.mIndexVPartii))).tah, true, null);
+				task.tahniZpet(((ZasobnikStruct)(task.mPartie.elementAt(task.mIndexVPartii))).mTah, true, null);
 					tiskniSachovnici(task.board);
 				continue;
 			}

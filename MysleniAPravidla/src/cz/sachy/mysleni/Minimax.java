@@ -34,7 +34,7 @@ public class Minimax {
 	
 	
 	public static int alfabetaBrani(Task task, int hloubka, int alfa, int beta) {
-		int h = HodnotaPozice.hodnotaPozice(task.board, alfa, beta);
+		int h = HodnotaPozice.hodnotaPozice(task, alfa, beta);
 		if (hloubka == 0) return h;
 		if (h > MAT || h < -MAT) return h;
 		boolean sach = task.board.sach();
@@ -84,7 +84,7 @@ public class Minimax {
 			return alfa;
 		}
 		if (hloubka == 0) return alfabetaBrani(task, 4, alfa, beta);
-		int h = HodnotaPozice.hodnotaPozice(task.board, alfa, beta);
+		int h = HodnotaPozice.hodnotaPozice(task, alfa, beta);
 		if (h > MAT || h < -MAT) return h;
 		task.nalezPseudolegalniTahyZasobnik();
 		int odkud = task.getOdkud();
@@ -130,22 +130,30 @@ public class Minimax {
 		return alfa;
 	}
 	
+	protected static void clear(Task task) {
+		task.mIndexVZasobniku--;
+		task.mZasobnikTahu.pos--;
+	}
+	
 	public static int minimax(Task task, long casMs, ThinkingOutput output) {
 		task.mTimeStart = System.currentTimeMillis() + casMs;
 		task.mExitThinking = false;
+		task.push();
 		task.nalezTahyZasobnik();
 		
 		int odkud = task.getOdkud();
 		int kam = task.getKam();
 		if (kam - odkud == 0) {
-			task.mZasobnikTahu.pos--;
+			clear(task);
 			return 0;
 		}
 		switch (kam - odkud) {
-		case 0: task.mZasobnikTahu.pos--;
+		case 0:
+			clear(task);
 			if (task.board.sach()) return -MAT;
 			return 0;
-		case 1: task.mZasobnikTahu.pos--;
+		case 1:
+			clear(task);
 			return task.mZasobnikTahu.tahy[odkud];
 		}
 		for (int hloubka = 0; hloubka < 10; hloubka++) {
@@ -179,7 +187,7 @@ public class Minimax {
 			if (task.mExitThinking) break;
 			//System.out.println(hloubka + " " + Task.tah2StrNoBoard(task.mZasobnikTahu.tahy[odkud]));
 		}
-		task.mZasobnikTahu.pos--;
+		clear(task);
 		return task.mZasobnikTahu.tahy[odkud];
 	}
 }
