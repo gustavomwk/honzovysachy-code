@@ -354,6 +354,8 @@ public class Task {
 		if ((tah >> 15) == 0) /* Normalni tah */{
 			kam = tah & 127;
 			odkud = tah >> 7;
+			if (board.sch[odkud] == 6) z.mBk = (byte) kam;
+			if (board.sch[odkud] == -6) z.mCk = (byte) kam;
 			if (/* bud cerny tahne pescem o 2 */
 			odkud - kam == 20 && board.sch[odkud] == -1
 			/* a bily pesec ciha */
@@ -420,6 +422,7 @@ public class Task {
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
 			z.mKam = Pozice.g1;
+			z.mBk = Pozice.g1;
 			return;
 		}
 		/* Velka bila rosada */
@@ -438,6 +441,7 @@ public class Task {
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
 			z.mKam = Pozice.c1;
+			z.mBk = Pozice.c1;
 			return;
 		}
 		/* Mala cerna rosada */
@@ -456,6 +460,7 @@ public class Task {
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
 			z.mKam = Pozice.g8;
+			z.mCk = Pozice.g8;
 			return;
 		}
 		/* Velka cerna rosada */
@@ -474,6 +479,7 @@ public class Task {
 			if (globalne && ukousniKonec)
 				mEnd = getEndOfGame();
 			z.mKam = Pozice.c8;
+			z.mCk = Pozice.g8;
 			return;
 		}
 		/* Promena bileho pesce */
@@ -604,6 +610,8 @@ public class Task {
 				r.mBm = old.mBm;
 				r.mCm = old.mCm;
 				r.mHashF = old.mHashF;
+				r.mBk = old.mBk;
+				r.mCk = old.mCk;
 			}
 		}
 		return r;

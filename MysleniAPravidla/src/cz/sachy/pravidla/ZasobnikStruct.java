@@ -31,6 +31,8 @@ public class ZasobnikStruct {
 	public short mBm;
 	public short mCm;
 	byte mKam;
+	byte mBk;
+	byte mCk;
 	//int mValue;
 
 	public ZasobnikStruct(Task t) {
@@ -54,6 +56,19 @@ public class ZasobnikStruct {
 			mKam = 0;
 		else
 			mKam = ((ZasobnikStruct)t.mPartie.elementAt(t.mIndexVPartii)).mKam;
+		mBk = mCk = 0;
+		// Find position of white and black kings
+		for (byte i = Pozice.a1; i <= Pozice.h8; i++)
+		{
+			if (p.sch[i] == 6) {
+				mBk = i;
+				if (mCk != 0) break;
+			}
+			if (p.sch[i] == -6) {
+				mCk = i;
+				if (mBk != 0) break;
+			}
+		}
 		
 	}
 
