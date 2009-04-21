@@ -31,8 +31,9 @@ public class ZasobnikStruct {
 	public short mBm;
 	public short mCm;
 	byte mKam;
-	byte mBk;
-	byte mCk;
+	public byte mBk;
+	public byte mCk;
+	public boolean mSach;
 	//int mValue;
 
 	public ZasobnikStruct(Task t) {
@@ -69,6 +70,7 @@ public class ZasobnikStruct {
 				if (mBk != 0) break;
 			}
 		}
+		mSach = p.bily ? p.ohrozeno(mBk, false) : p.ohrozeno(mCk, true);
 		
 	}
 

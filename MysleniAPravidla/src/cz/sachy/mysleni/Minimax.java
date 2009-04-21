@@ -17,6 +17,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 package cz.sachy.mysleni;
 
 import cz.sachy.pravidla.Task;
+import cz.sachy.pravidla.ZasobnikStruct;
 
 public class Minimax {
 	public static final int MAT = 30000;
@@ -86,6 +87,8 @@ public class Minimax {
 		if (hloubka == 0) return alfabetaBrani(task, 4, alfa, beta);
 		int h = HodnotaPozice.hodnotaPozice(task, alfa, beta);
 		if (h > MAT || h < -MAT) return h;
+		ZasobnikStruct z = (ZasobnikStruct) task.mZasobnik.elementAt(task.mIndexVZasobniku);
+		z.mSach = task.board.ohrozeno(task.board.bily ? z.mCk : z.mBk, !task.board.bily);
 		task.nalezPseudolegalniTahyZasobnik();
 		int odkud = task.getOdkud();
 		int kam = task.getKam();
