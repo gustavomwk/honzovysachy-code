@@ -44,6 +44,7 @@ public class Task {
 
 	public boolean mExitThinking;
 	public long mTimeStart;
+	public boolean mNullMove;
 
 	public Pozice board;
 
@@ -55,6 +56,8 @@ public class Task {
 		mZasobnik = new Vector();
 		mZasobnikTahu = new ZasobnikTahu();
 		mHashF = new Hash();
+		// TODO
+		mNullMove = true;
 	}
 
 	public String getEndOfGameString(int end) {

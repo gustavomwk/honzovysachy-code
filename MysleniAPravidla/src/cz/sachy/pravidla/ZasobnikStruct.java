@@ -27,7 +27,7 @@ public class ZasobnikStruct {
 
 	short mExtend;
 	byte mExtendType;
-	int mHashF;
+	public int mHashF;
 	public short mBm;
 	public short mCm;
 	byte mKam;

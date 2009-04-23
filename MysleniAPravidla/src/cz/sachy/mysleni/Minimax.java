@@ -79,6 +79,39 @@ public class Minimax {
 		return alfa;
 	}
 
+	protected static boolean nullMove(Task task, int prah, int hloubka) {
+		boolean b;
+		byte m;
+		ZasobnikStruct z = (ZasobnikStruct)task.mZasobnik.elementAt(task.mIndexVZasobniku);
+
+		switch (hloubka) {
+		    case 1: hloubka = 0; break;
+		    case 2: hloubka = 1; break;
+		    default: hloubka -= 2;
+		}
+
+	//task.VNT++;
+		z.mHashF ^= task.mHashF.mWhite;
+		task.board.bily = !task.board.bily;
+		m = task.board.mimoch;
+		task.board.mimoch = 0;
+
+		b =  (
+			    (hloubka > 0 ? -alfabeta(task, hloubka, -prah, 1 - prah)    : 
+			  -alfabetaBrani(task, 4, -prah, 1 - prah)
+			    )
+			    
+			    >= prah);
+			       
+		task.board.mimoch = m;
+		task.board.bily = !task.board.bily;
+
+		//task.VNT--;
+		z.mHashF ^= task.mHashF.mWhite;
+  
+		return b;
+	}
+	
 	public static int alfabeta(Task task, int hloubka, int alfa, int beta) {
 		if (System.currentTimeMillis() > task.mTimeStart) {
 			task.mExitThinking = true;
@@ -93,11 +126,13 @@ public class Minimax {
 		int odkud = task.getOdkud();
 		int kam = task.getKam();
 		
-		if (kam - odkud == 0) {
-			task.mZasobnikTahu.pos--;
-			if (task.board.sach()) return -MAT;
-			return 0;
-		}
+		 if (task.mNullMove && !z.mSach && beta < MAT - 100) {
+		      if (nullMove(task, beta, hloubka)) {
+		        task.mZasobnikTahu.pos--;
+		        return beta;
+		      } 
+		 }
+		
 		hloubka--;
 		boolean legalMove = false;
 		for (int i = odkud; i < kam; i++) {
@@ -129,7 +164,7 @@ public class Minimax {
 			}
 		}
 		task.mZasobnikTahu.pos--;
-		if (!legalMove) return task.board.sach() ? -MAT : 0;
+		if (!legalMove) return z.mSach ? -MAT : 0;
 		return alfa;
 	}
 	

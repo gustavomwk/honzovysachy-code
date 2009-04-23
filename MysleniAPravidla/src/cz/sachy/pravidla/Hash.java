@@ -4,7 +4,7 @@ public class Hash {
 
 		int[][] mF; //[13][99];
 	/* [od cerneho krale pres prazdne pole az po bileho krale][pole]*/
-		int mWhite;
+		public int mWhite;
 		int[] mCastle; //[16];
 		int[] mEp; //[69];
 		
