@@ -8,6 +8,8 @@ import java.awt.event.WindowListener;
 
 import javax.swing.BoxLayout;
 
+import cz.sachy.resouces.S;
+
 @SuppressWarnings("serial")
 class ChessPanel extends Panel {
 	public ChessPanel() {
@@ -69,7 +71,9 @@ public class Starter extends Applet  {
 
 	
 	public static void otevriOkno(boolean inApplet) {
-		SachFrame f = new SachFrame("Honzovy šachy for AWT", inApplet);
+		S.init("en");
+		
+		SachFrame f = new SachFrame(S.g("HONZOVY_SACHY"), inApplet);
 		f.addWindowListener(f);
 		f.setVisible(true);
 	}

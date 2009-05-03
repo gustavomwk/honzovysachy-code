@@ -16,6 +16,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.sachy;
 
+import cz.sachy.resouces.S;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -28,11 +29,11 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    super.onCreateOptionsMenu(menu);
-	    menu.add(Menu.NONE, 1, Menu.NONE, "Flip board").setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 2, Menu.NONE, "Move").setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 3, Menu.NONE, "New game").setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 4, Menu.NONE, "Undo").setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 5, Menu.NONE, "Redo").setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 1, Menu.NONE, S.g("FLIP_BOARD")).setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 2, Menu.NONE, S.g("MOVE")).setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 3, Menu.NONE, S.g("NEW_GAME")).setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 4, Menu.NONE, S.g("UNDO")).setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 5, Menu.NONE, S.g("REDO")).setOnMenuItemClickListener(this);
 	    return true;
 	}
 	
@@ -41,6 +42,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        S.init("en");
         mView = new SachoveView(this);
         setContentView(mView);
     }
@@ -51,7 +53,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 
 	public boolean onMenuItemClick(MenuItem item) {
 		if (mView.isPremyslim()) {
-			mView.dlg("thinking...");
+			mView.dlg(S.g("THINKING"));
 			return true;
 		}
 		switch (item.getItemId()) {

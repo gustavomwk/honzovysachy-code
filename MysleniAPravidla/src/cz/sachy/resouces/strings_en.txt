@@ -1,0 +1,7 @@
+HONZOVY_SACHY Honzovy \u0161achy
+FLIP_BOARD Flip board
+MOVE Move
+NEW_GAME New game
+UNDO Undo
+REDO Redo
+THINKING thinking...
