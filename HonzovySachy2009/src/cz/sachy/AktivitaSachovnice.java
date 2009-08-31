@@ -37,6 +37,11 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	    return true;
 	}
 	
+	@Override
+    protected void onSaveInstanceState(Bundle outState) {
+		// TODO save into a bundle
+	}
+	
 	
     /** Called when the activity is first created. */
     @Override
@@ -44,7 +49,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         super.onCreate(savedInstanceState);
         // if just CTRL + F12, savedInstanceState != null
         S.init("en");
-        mView = new SachoveView(this);
+        mView = new SachoveView(this, savedInstanceState);
         setContentView(mView);
     }
     @Override

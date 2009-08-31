@@ -25,6 +25,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -58,8 +59,11 @@ public class SachoveView extends View {
 			mCernyClovek && !mTask.board.bily);
 	}
 	
-    public SachoveView(Activity a) {
+    public SachoveView(Activity a, Bundle savedInstanceState) {
         super(a);
+        if (savedInstanceState != null) {
+        	// TODO read from Bundle
+        }
         setFocusable(true);
         mFigury = new Drawable[2][];
         mFigury[0] = new Drawable[6];
