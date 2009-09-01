@@ -48,7 +48,7 @@ public class SachoveView extends View {
 	boolean mCernyClovek = false;
 	boolean mPremyslim = false;
 	Drawable mFigury[][];
-	Task mTask = new Task();
+	Task mTask;
 	final Handler mHandler = new Handler();
 	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
 	int mFieldFrom;
@@ -59,10 +59,17 @@ public class SachoveView extends View {
 			mCernyClovek && !mTask.board.bily);
 	}
 	
-    public SachoveView(Activity a, Bundle savedInstanceState) {
+	public void saveInstanceState(Bundle bundle) {
+		// TODO do not save all task
+		bundle.putSerializable("TASK", mTask);
+	}
+	
+    public SachoveView(Activity a, Bundle bundle) {
         super(a);
-        if (savedInstanceState != null) {
-        	// TODO read from Bundle
+        if (bundle != null) {
+        	mTask = (Task)bundle.get("TASK");
+        } else {
+        	mTask = new Task();
         }
         setFocusable(true);
         mFigury = new Drawable[2][];

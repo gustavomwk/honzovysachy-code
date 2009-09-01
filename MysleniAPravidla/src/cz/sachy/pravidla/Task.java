@@ -1,11 +1,15 @@
 package cz.sachy.pravidla;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
 import cz.sachy.mysleni.HodnotaPozice;
 
-public class Task {
+public class Task implements Serializable {
+
+	private static final long serialVersionUID = 312052817537416519L;
+
 	// End game constants
 	public static final int NO_END = 0;
 
