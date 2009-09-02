@@ -122,7 +122,7 @@ public class HodnotaPozice {
 
 	public static int hodnotaPozice(Task t, int alfa, int beta) {
 		ZasobnikStruct z = (ZasobnikStruct) t.mZasobnik.elementAt(t.mIndexVZasobniku);
-		Pozice p = t.board;
+		Pozice p = t.mBoardComputing;
 		int bm = z.mBm;
 		int cm = z.mCm;
 		

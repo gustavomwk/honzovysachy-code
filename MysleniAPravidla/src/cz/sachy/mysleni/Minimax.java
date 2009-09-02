@@ -38,7 +38,7 @@ public class Minimax {
 		int h = HodnotaPozice.hodnotaPozice(task, alfa, beta);
 		if (hloubka == 0) return h;
 		if (h > MAT || h < -MAT) return h;
-		boolean sach = task.board.sach();
+		boolean sach = task.mBoardComputing.sach();
 		if (h > alfa && !sach) {
 			alfa = h;
 			if (h >= beta) {
@@ -55,7 +55,7 @@ public class Minimax {
 		
 		if (kam - odkud == 0) {
 			task.mZasobnikTahu.pos--;
-			if (task.board.sach()) return -MAT;
+			if (task.mBoardComputing.sach()) return -MAT;
 			return alfa;
 		}
 		hloubka--;
@@ -92,9 +92,9 @@ public class Minimax {
 
 	//task.VNT++;
 		z.mHashF ^= task.mHashF.mWhite;
-		task.board.bily = !task.board.bily;
-		m = task.board.mimoch;
-		task.board.mimoch = 0;
+		task.mBoardComputing.bily = !task.mBoardComputing.bily;
+		m = task.mBoardComputing.mimoch;
+		task.mBoardComputing.mimoch = 0;
 
 		b =  (
 			    (hloubka > 0 ? -alfabeta(task, hloubka, -prah, 1 - prah)    : 
@@ -103,8 +103,8 @@ public class Minimax {
 			    
 			    >= prah);
 			       
-		task.board.mimoch = m;
-		task.board.bily = !task.board.bily;
+		task.mBoardComputing.mimoch = m;
+		task.mBoardComputing.bily = !task.mBoardComputing.bily;
 
 		//task.VNT--;
 		z.mHashF ^= task.mHashF.mWhite;
@@ -121,7 +121,7 @@ public class Minimax {
 		int h = HodnotaPozice.hodnotaPozice(task, alfa, beta);
 		if (h > MAT || h < -MAT) return h;
 		ZasobnikStruct z = (ZasobnikStruct) task.mZasobnik.elementAt(task.mIndexVZasobniku);
-		z.mSach = task.board.ohrozeno(task.board.bily ? z.mCk : z.mBk, !task.board.bily);
+		z.mSach = task.mBoardComputing.ohrozeno(task.mBoardComputing.bily ? z.mCk : z.mBk, !task.mBoardComputing.bily);
 		task.nalezPseudolegalniTahyZasobnik();
 		int odkud = task.getOdkud();
 		int kam = task.getKam();
@@ -139,7 +139,7 @@ public class Minimax {
 			int t = task.mZasobnikTahu.tahy[i];
 			//int hf = p.hashF.hash(p);
 			task.tahni(t, false, false, null);
-			if (task.board.sach(!task.board.bily)) {
+			if (task.mBoardComputing.sach(!task.mBoardComputing.bily)) {
 				task.tahniZpet(t, false, null);
 				continue;
 			}
@@ -188,7 +188,7 @@ public class Minimax {
 		switch (kam - odkud) {
 		case 0:
 			clear(task);
-			if (task.board.sach()) return -MAT;
+			if (task.mBoardComputing.sach()) return -MAT;
 			return 0;
 		case 1:
 			clear(task);
@@ -199,7 +199,7 @@ public class Minimax {
 			int max = -MAT + 1;
 			for (int i = odkud; i < kam; i++) {
 				int t = task.mZasobnikTahu.tahy[i];
-				int hf = task.mHashF.hash(task.board);
+				int hf = task.mHashF.hash(task.mBoardComputing);
 				task.tahni(t, false, false, null);
 				int h = dalOdMatu(alfabeta(task, hloubka, blizKMatu(MAT), blizKMatu(max)));
 				task.tahniZpet(t, false, null);
@@ -216,7 +216,7 @@ public class Minimax {
 					}
 				}
 
-				int hg = task.mHashF.hash(task.board);
+				int hg = task.mHashF.hash(task.mBoardComputing);
 				if (hg != hf) {
 					throw new RuntimeException("Error, board has changed!!!");
 				}

@@ -33,6 +33,7 @@ import android.view.View;
 import cz.sachy.mysleni.Minimax;
 import cz.sachy.pravidla.PawnPromotionGUIQueen;
 import cz.sachy.pravidla.Pozice;
+import cz.sachy.pravidla.SavedTask;
 import cz.sachy.pravidla.Task;
 
 
@@ -50,27 +51,22 @@ public class SachoveView extends View {
 	Drawable mFigury[][];
 	Task mTask;
 	final Handler mHandler = new Handler();
-	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
+//	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
 	int mFieldFrom;
 	int mFieldTo;
 	
 	protected boolean hrajeClovek() {
-		return !isPremyslim() && (mBilyClovek && mTask.board.bily ||
-			mCernyClovek && !mTask.board.bily);
+		return !isPremyslim() && (mBilyClovek && mTask.mBoardComputing.bily ||
+			mCernyClovek && !mTask.mBoardComputing.bily);
 	}
 	
 	public void saveInstanceState(Bundle bundle) {
-		// TODO do not save all task
-		bundle.putSerializable("TASK", mTask);
+		bundle.putSerializable("TASK", mTask.getSavedTask());
 	}
 	
     public SachoveView(Activity a, Bundle bundle) {
         super(a);
-        if (bundle != null) {
-        	mTask = (Task)bundle.get("TASK");
-        } else {
-        	mTask = new Task();
-        }
+       	mTask = new Task(bundle == null ? null : (SavedTask)bundle.get("TASK") );
         setFocusable(true);
         mFigury = new Drawable[2][];
         mFigury[0] = new Drawable[6];
@@ -148,7 +144,7 @@ public class SachoveView extends View {
 		}
 		int pole1 = Pozice.a1 + mox + 10 * moy;
 		if (mTask.JeTam2(t, pole1, pole)) {
-			if (Math.abs(mTask.board.sch[pole1]) == 1 && (y == 7 || y == 0)) {
+			if (Math.abs(mTask.mBoardComputing.sch[pole1]) == 1 && (y == 7 || y == 0)) {
 				mFieldFrom = pole1;
 				mFieldTo = pole;
 				Intent result = new Intent();
@@ -169,11 +165,11 @@ public class SachoveView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
     	byte[] sch = null;
-    	if (isPremyslim()) {
+    /*	if (isPremyslim()) {
     		sch = mSchPriMysleni;
-    	} else {
-    		sch = mTask.board.sch;
-    	}
+    	} else {*/
+    		sch = mTask.mBoard.sch;
+    //	}
     	Rect r = new Rect();
     	getDrawingRect(r);
   		int w = r.right - r.left;//canvas.getWidth();
@@ -266,7 +262,7 @@ public class SachoveView extends View {
     		}
     		int pole1 = Pozice.a1 + mox + 10 * moy;
     		if (mTask.JeTam2(t, pole1, pole)) {
-    			if (Math.abs(mTask.board.sch[pole1]) == 1 && (mcy == 7 || mcy == 0)) {
+    			if (Math.abs(mTask.mBoardComputing.sch[pole1]) == 1 && (mcy == 7 || mcy == 0)) {
     				mFieldFrom = pole1;
     				mFieldTo = pole;
     				Intent result = new Intent();
@@ -294,19 +290,18 @@ public class SachoveView extends View {
     
     protected void tahniPrograme() {
     	mPremyslim = true;
-    	System.arraycopy(mTask.board.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
+ //   	System.arraycopy(mTask.mBoardComputing.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
-    		 public void run() {
-    			 mTask.nalezTahyVector();
-    			 final int tah;
-    			 tah = Minimax.minimax(mTask, 5000, null); 
-    			 mHandler.post(
-    					 new Runnable() {
-
-							public void run() {
-								mPremyslim = false;
-								if (tah != 0) 
-									tahni(tah);
+    		public void run() {
+    			mTask.nalezTahyVector();
+    			final int tah;
+    			tah = Minimax.minimax(mTask, 5000, null); 
+    			mHandler.post(
+    				new Runnable() {
+						public void run() {
+							mPremyslim = false;
+							if (tah != 0) 
+								tahni(tah);
 							}}
     					 );
     		 }
@@ -315,30 +310,30 @@ public class SachoveView extends View {
      }
     
     protected void novaPartie() {
-    	mTask = new Task();
+    	mTask = new Task(null);
     	invalidate();
     }
     
     protected void undo() {
-    	if (mTask.mIndexVPartii >= 0) {
+    	if (mTask.mIndexInGame >= 0) {
     		mTask.tahniZpet(0, true, null);
-    		mBilyClovek = mTask.board.bily;
-			mCernyClovek = !mTask.board.bily;
+    		mBilyClovek = mTask.mBoardComputing.bily;
+			mCernyClovek = !mTask.mBoardComputing.bily;
     		invalidate();
     	}
     }
     
     protected void redo() {
-    	if (mTask.mIndexVPartii + 1 < mTask.mPartie.size()) {
+    	if (mTask.mIndexInGame + 1 < mTask.mGame.size()) {
 			mTask.tahni(0, true, false, null);
-			mBilyClovek = mTask.board.bily;
-			mCernyClovek = !mTask.board.bily;
+			mBilyClovek = mTask.mBoardComputing.bily;
+			mCernyClovek = !mTask.mBoardComputing.bily;
 			invalidate();
 		}
     }
     
     protected void hrajTed() {
-    	if (mTask.board.bily) {
+    	if (mTask.mBoardComputing.bily) {
     		mBilyClovek = false;
     		mCernyClovek = true;
     	} else {

@@ -48,14 +48,14 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	int mPoleXY;
 	int mOdstup;
 	int mHrana;
-	Task mTask = new Task();
+	Task mTask = new Task(null);
 	Image bk, ck, bp, cp, bs, cs, bj, cj, bd, cd, bv, cv;
 	boolean mOtoceno;
 	int mcx = 4;
 	int mcy = 4;
 	int mox = -1;
 	int moy = -1;
-	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
+//	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
 	boolean mBilyClovek = true;
 	boolean mCernyClovek = false;
 	boolean mPremyslim = false;
@@ -141,8 +141,8 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	  	return mPremyslim;
 	}
 	protected boolean hrajeClovek() {
-		return !isPremyslim() && (mBilyClovek && mTask.board.bily ||
-			mCernyClovek && !mTask.board.bily);
+		return !isPremyslim() && (mBilyClovek && mTask.mBoard.bily ||
+			mCernyClovek && !mTask.mBoard.bily);
 	}
 
 
@@ -160,7 +160,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
        	g.setColor(c);
         g.fillRect(getX(x), getY(y), mPoleXY, mPoleXY);
         int p = Pozice.a1 + x + y * 10;
-        byte f = mPremyslim ? mSchPriMysleni[p] : mTask.board.sch[p];
+        byte f = mTask.mBoard.sch[p];
         if (f == 0) return;
       
         int xx = getX(x) + (mPoleXY - bp.getWidth(null)) / 2;
@@ -319,7 +319,6 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	
 	protected void tahniPrograme() {
     	mPremyslim = true;
-    	System.arraycopy(mTask.board.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		 public void run() {
     			// mTask.board.nalezTahy();
@@ -382,7 +381,7 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 				newGame.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						mTask = new Task();
+						mTask = new Task(null);
 						repaint();
 					}
 				});
@@ -403,10 +402,10 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 				undo.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						if (mTask.mIndexVPartii >= 0) {
+						if (mTask.mIndexInGame >= 0) {
 							mTask.tahniZpet(0, true, null);
-							mBilyClovek = mTask.board.bily;
-							mCernyClovek = !mTask.board.bily;
+							mBilyClovek = mTask.mBoard.bily;
+							mCernyClovek = !mTask.mBoard.bily;
 							repaint();
 						}
 					}
@@ -417,10 +416,10 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 				redo.addActionListener(new ActionListener(){
 					@Override
 					public void actionPerformed(ActionEvent arg0) {
-						if (mTask.mIndexVPartii + 1 < mTask.mPartie.size()) {
+						if (mTask.mIndexInGame + 1 < mTask.mGame.size()) {
 							mTask.tahni(0, true, false, null);
-							mBilyClovek = mTask.board.bily;
-							mCernyClovek = !mTask.board.bily;
+							mBilyClovek = mTask.mBoard.bily;
+							mCernyClovek = !mTask.mBoard.bily;
 							repaint();
 						}
 					}

@@ -29,7 +29,7 @@ import cz.sachy.pravidla.ZasobnikStruct;
 
 public class KonSachy {
 	private static void hlavniDosCyklus() {
-		Task task = new Task();
+		Task task = new Task(null);
 		BufferedReader br = new BufferedReader(new InputStreamReader(new DataInputStream(System.in)));
 		hlavni:
 		while (true) {
@@ -62,13 +62,13 @@ public class KonSachy {
 				int tah = Minimax.minimax(task, 5000, null);
 				System.out.println(task.tah2Str(t, tah));
 				task.tahni(tah, true, true, null);
-				tiskniSachovnici(task.board);
+				tiskniSachovnici(task.mBoardComputing);
 				continue;
 			}
 			if (s.equals("tz")) {
-				if (task.mIndexVPartii >= 0)
-				task.tahniZpet(((ZasobnikStruct)(task.mPartie.elementAt(task.mIndexVPartii))).mTah, true, null);
-					tiskniSachovnici(task.board);
+				if (task.mIndexInGame >= 0)
+				task.tahniZpet(((ZasobnikStruct)(task.mGame.elementAt(task.mIndexInGame))).mTah, true, null);
+					tiskniSachovnici(task.mBoardComputing);
 				continue;
 			}
 			if (s.equals("tg")) {
@@ -95,7 +95,7 @@ public class KonSachy {
 				continue;
 			}
 			if (s.equals("sa")) {
-				tiskniSachovnici(task.board);
+				tiskniSachovnici(task.mBoardComputing);
 				continue;
 			}
 			if (s.equals("ko")) {
@@ -107,7 +107,7 @@ public class KonSachy {
 				int tah = ((Integer)(t.elementAt(i))).intValue();
 				if (s.equals(task.tah2Str(t, tah))) {
 					task.tahni(tah, true, true, null);
-					tiskniSachovnici(task.board);
+					tiskniSachovnici(task.mBoardComputing);
 					continue hlavni;
 				}
 				

@@ -41,7 +41,7 @@ public class ZasobnikStruct {
 	}
 	
 	public void set(Task t)  {
-		Pozice p = t.board;
+		Pozice p = t.mBoardComputing;
 		mRoch = p.roch;
 		mMimoch = p.mimoch;
 		mTah = 0;
@@ -53,10 +53,10 @@ public class ZasobnikStruct {
 		mBm = HodnotaPozice.bm(p);
 		mCm = HodnotaPozice.cm(p);
 
-		if (t.mIndexVPartii <= 0)
+		if (t.mIndexInGame <= 0)
 			mKam = 0;
 		else
-			mKam = ((ZasobnikStruct)t.mPartie.elementAt(t.mIndexVPartii)).mKam;
+			mKam = ((ZasobnikStruct)t.mGame.elementAt(t.mIndexInGame)).mKam;
 		mBk = mCk = 0;
 		// Find position of white and black kings
 		for (byte i = Pozice.a1; i <= Pozice.h8; i++)

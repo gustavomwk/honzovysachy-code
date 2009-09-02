@@ -1,14 +1,13 @@
 package cz.sachy.pravidla;
 
-import java.io.Serializable;
 import java.util.Iterator;
 import java.util.Vector;
 
 import cz.sachy.mysleni.HodnotaPozice;
 
-public class Task implements Serializable {
+public class Task extends SavedTask {
 
-	private static final long serialVersionUID = 312052817537416519L;
+	private static final long serialVersionUID = 3579393683410168823L;
 
 	// End game constants
 	public static final int NO_END = 0;
@@ -29,13 +28,6 @@ public class Task implements Serializable {
 	public static final int MCRoch = (15 << 12);
 	public static final int VCRoch = (31 << 11);
 
-	// End of game type
-	public int mEnd;
-
-	public Vector mPartie;
-
-	public int mIndexVPartii;
-
 	public ZasobnikTahu mZasobnikTahu;
 
 	int mIndexVZasobnikuTahu;
@@ -50,13 +42,23 @@ public class Task implements Serializable {
 	public long mTimeStart;
 	public boolean mNullMove;
 
-	public Pozice board;
+	public Pozice mBoardComputing;
 
-	public Task() {
-		board = new Pozice();
-		mIndexVPartii = -1;
+	/**  @return deep copy of the task. */
+	public SavedTask getSavedTask() {
+		return new SavedTask(mEnd, (Vector)mGame.clone(), mIndexInGame, (Pozice)mBoard.clone());
+	}
+	
+	public Task(SavedTask task) {
+		super(NO_END, new Vector(), -1, new Pozice());
+		if (task != null) {
+			mEnd = task.mEnd;
+			mGame = task.mGame;
+			mIndexInGame = task.mIndexInGame;
+			mBoard = task.mBoard;
+		}
+		mBoardComputing = (Pozice)mBoard.clone();
 		mIndexVZasobniku = -1;
-		mPartie = new Vector();
 		mZasobnik = new Vector();
 		mZasobnikTahu = new ZasobnikTahu();
 		mHashF = new Hash();
@@ -99,7 +101,7 @@ public class Task implements Serializable {
 	}
 
 	boolean importantMove() {
-		int t = ((ZasobnikStruct) (mPartie.elementAt(mIndexVPartii + 1))).mTah;
+		int t = ((ZasobnikStruct) (mGame.elementAt(mIndexInGame + 1))).mTah;
 		if ((t & (1 << 15)) != 0) {
 			/* nenormalni tah */
 			if ((t & (1 << 14)) != 0)
@@ -116,8 +118,8 @@ public class Task implements Serializable {
 		} else
 		/* nenormalni tah */
 		{
-			if (board.sch[t & 127] != 0 || board.sch[t >> 7] == 1
-					|| board.sch[t >> 7] == -1)
+			if (mBoardComputing.sch[t & 127] != 0 || mBoardComputing.sch[t >> 7] == 1
+					|| mBoardComputing.sch[t >> 7] == -1)
 				return true;
 			else
 				return false;
@@ -130,16 +132,16 @@ public class Task implements Serializable {
 		Pozice pos;
 
 		dupl = 0;
-		pos = new Pozice(board);
+		pos = new Pozice(mBoardComputing);
 		for (i = 0; i < 100; i++) {
-			if (mIndexVPartii < 0)
+			if (mIndexInGame < 0)
 				break;
 			tahniZpet(0, true, null);
 			if (importantMove()) {
 				i++;
 				break;
 			}
-			if (pos.equals(board))
+			if (pos.equals(mBoardComputing))
 				if (++dupl == 2) {
 					i++;
 					break;
@@ -162,9 +164,9 @@ public class Task implements Serializable {
 		Vector v = nalezTahyVector();
 
 		if (v.isEmpty()) {
-			if (board.sach())
-				return (board.bily ? BLACK_WINS_MAT : WHITE_WINS_MAT);
-			return (board.bily ? DRAW_WHITE_IN_STALEMATE
+			if (mBoardComputing.sach())
+				return (mBoardComputing.bily ? BLACK_WINS_MAT : WHITE_WINS_MAT);
+			return (mBoardComputing.bily ? DRAW_WHITE_IN_STALEMATE
 					: DRAW_BLACK_IN_STALEMATE);
 		}
 
@@ -177,7 +179,7 @@ public class Task implements Serializable {
 
 		bbs = bcs = cbs = ccs = cj = bj = 0;
 		for (i = Pozice.a1; i <= Pozice.h8; i++) {
-			switch (board.sch[i]) {
+			switch (mBoardComputing.sch[i]) {
 			case 1:
 				return NO_END;
 			case 4:
@@ -225,22 +227,23 @@ public class Task implements Serializable {
 		int odkud, kam;
 		ZasobnikStruct z;
 		if (globalne) {
-			z = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii--);
+			z = (ZasobnikStruct) mGame.elementAt(mIndexInGame--);
 			tah = z.mTah;
 			mEnd = 0;
 		} else {
 			z = (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku--);
 		}
-		board.mimoch = z.mMimoch;
-		board.roch = z.mRoch;
-		board.bily = !board.bily;
+		mBoardComputing.mimoch = z.mMimoch;
+		mBoardComputing.roch = z.mRoch;
+		mBoardComputing.bily = !mBoardComputing.bily;
 
 		if ((tah >> 15) == 0) /* Normalni tah */
 		{
 			kam = tah & 127;
 			odkud = tah >> 7;
-			board.sch[odkud] = board.sch[kam];
-			board.sch[kam] = z.mBrani;
+			mBoardComputing.sch[odkud] = mBoardComputing.sch[kam];
+			mBoardComputing.sch[kam] = z.mBrani;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(odkud);
 				zobrazPole.zobrazPole(kam);
@@ -254,10 +257,11 @@ public class Task implements Serializable {
 		 * Mala bila rosada
 		 */
 		if (tah == MBRoch) {
-			board.sch[Pozice.e1] = 6;
-			board.sch[Pozice.g1] = 0;
-			board.sch[Pozice.h1] = 4;
-			board.sch[Pozice.f1] = 0;
+			mBoardComputing.sch[Pozice.e1] = 6;
+			mBoardComputing.sch[Pozice.g1] = 0;
+			mBoardComputing.sch[Pozice.h1] = 4;
+			mBoardComputing.sch[Pozice.f1] = 0;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e1);
 				zobrazPole.zobrazPole(Pozice.f1);
@@ -269,10 +273,11 @@ public class Task implements Serializable {
 
 		/* Velka bila rosada */
 		if (tah == VBRoch) {
-			board.sch[Pozice.e1] = 6;
-			board.sch[Pozice.c1] = 0;
-			board.sch[Pozice.a1] = 4;
-			board.sch[Pozice.d1] = 0;
+			mBoardComputing.sch[Pozice.e1] = 6;
+			mBoardComputing.sch[Pozice.c1] = 0;
+			mBoardComputing.sch[Pozice.a1] = 4;
+			mBoardComputing.sch[Pozice.d1] = 0;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e1);
 				zobrazPole.zobrazPole(Pozice.d1);
@@ -284,10 +289,11 @@ public class Task implements Serializable {
 
 		/* Mala cerna rosada */
 		if (tah == MCRoch) {
-			board.sch[Pozice.e8] = -6;
-			board.sch[Pozice.g8] = 0;
-			board.sch[Pozice.h8] = -4;
-			board.sch[Pozice.f8] = 0;
+			mBoardComputing.sch[Pozice.e8] = -6;
+			mBoardComputing.sch[Pozice.g8] = 0;
+			mBoardComputing.sch[Pozice.h8] = -4;
+			mBoardComputing.sch[Pozice.f8] = 0;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e8);
 				zobrazPole.zobrazPole(Pozice.f8);
@@ -298,10 +304,11 @@ public class Task implements Serializable {
 		}
 		/* Velka cerna rosada */
 		if (tah == VCRoch) {
-			board.sch[Pozice.e8] = -6;
-			board.sch[Pozice.c8] = 0;
-			board.sch[Pozice.a8] = -4;
-			board.sch[Pozice.d8] = 0;
+			mBoardComputing.sch[Pozice.e8] = -6;
+			mBoardComputing.sch[Pozice.c8] = 0;
+			mBoardComputing.sch[Pozice.a8] = -4;
+			mBoardComputing.sch[Pozice.d8] = 0;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e8);
 				zobrazPole.zobrazPole(Pozice.d8);
@@ -315,8 +322,10 @@ public class Task implements Serializable {
 		if ((tah >> 12) == 12) {
 			odkud = Pozice.a7 + ((tah >> 7) & 7);
 			kam = Pozice.a8 + ((tah >> 4) & 7);
-			board.sch[odkud] = 1;
-			board.sch[kam] = z.mBrani;
+			mBoardComputing.sch[odkud] = 1;
+			mBoardComputing.sch[kam] = z.mBrani;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
+			// TODO zobrazpole?
 			return;
 		}
 
@@ -324,22 +333,26 @@ public class Task implements Serializable {
 		if ((tah >> 12) == 13) {
 			odkud = Pozice.a2 + ((tah >> 7) & 7);
 			kam = Pozice.a1 + ((tah >> 4) & 7);
-			board.sch[odkud] = -1;
-			board.sch[kam] = z.mBrani;
+			mBoardComputing.sch[odkud] = -1;
+			mBoardComputing.sch[kam] = z.mBrani;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
+			// TODO zobrazpole?
 			return;
 		}
 		/* Brani mimochodem (nic jineho to uz byt nemuze) */
 		tah &= 0x3fff; /* odstraneni prvnich dvou bitu, aby se lepe siftovalo */
 		kam = (tah & 127);
 		odkud = (tah >> 7);
-		board.sch[kam] = 0;
+		mBoardComputing.sch[kam] = 0;
 		if (odkud < kam) {
-			board.sch[kam - 10] = -1; /* to hraje bily */
-			board.sch[odkud] = 1;
+			mBoardComputing.sch[kam - 10] = -1; /* to hraje bily */
+			mBoardComputing.sch[odkud] = 1;
 		} else {
-			board.sch[kam + 10] = 1; /* cerny */
-			board.sch[odkud] = -1;
+			mBoardComputing.sch[kam + 10] = 1; /* cerny */
+			mBoardComputing.sch[odkud] = -1;
 		}
+		if (globalne) mBoard = (Pozice)mBoardComputing.clone();
+		// TODO zobrazpole?
 	}
 
 	public void tahni(int tah, boolean globalne, boolean ukousniKonec,
@@ -349,60 +362,61 @@ public class Task implements Serializable {
 		byte co;
 
 		if (globalne && !ukousniKonec) {
-			tah = ((ZasobnikStruct) mPartie.elementAt(mIndexVPartii + 1)).mTah;
+			tah = ((ZasobnikStruct) mGame.elementAt(mIndexInGame + 1)).mTah;
 		}
 		
 		ZasobnikStruct z = push(globalne, ukousniKonec, tah);
 		z.mBrani = 0;
 		
-		board.mimoch = 0; /* Vetsina tahu neni pescem o 2, pokud ano, osetri se */
-		board.bily = !board.bily;
+		mBoardComputing.mimoch = 0; /* Vetsina tahu neni pescem o 2, pokud ano, osetri se */
+		mBoardComputing.bily = !mBoardComputing.bily;
 
 		if ((tah >> 15) == 0) /* Normalni tah */{
 			kam = tah & 127;
 			odkud = tah >> 7;
-			if (board.sch[odkud] == 6) z.mBk = (byte) kam;
-			if (board.sch[odkud] == -6) z.mCk = (byte) kam;
+			if (mBoardComputing.sch[odkud] == 6) z.mBk = (byte) kam;
+			if (mBoardComputing.sch[odkud] == -6) z.mCk = (byte) kam;
 			if (/* bud cerny tahne pescem o 2 */
-			odkud - kam == 20 && board.sch[odkud] == -1
+			odkud - kam == 20 && mBoardComputing.sch[odkud] == -1
 			/* a bily pesec ciha */
-			&& (board.sch[kam + 1] == 1 || board.sch[kam - 1] == 1)
+			&& (mBoardComputing.sch[kam + 1] == 1 || mBoardComputing.sch[kam - 1] == 1)
 			/* nebo bily tahne pescem o 2 */
-			|| odkud - kam == -20 && board.sch[odkud] == 1
+			|| odkud - kam == -20 && mBoardComputing.sch[odkud] == 1
 			/* a cerny pesec ciha */
-			&& (board.sch[kam + 1] == -1 || board.sch[kam - 1] == -1))
+			&& (mBoardComputing.sch[kam + 1] == -1 || mBoardComputing.sch[kam - 1] == -1))
 
-				board.mimoch = (byte) kam;
+				mBoardComputing.mimoch = (byte) kam;
 			/*
 			 * Niceni rosad Pozn.: nejde dat vsude 'else', protoze napr. Va1xa8
 			 * nici obe velke rosady
 			 */
 			if (odkud == Pozice.e1)
-				board.roch &= 12;
+				mBoardComputing.roch &= 12;
 			else /* 1100b */
 			if (odkud == Pozice.e8)
-				board.roch &= 3;
+				mBoardComputing.roch &= 3;
 			else /* 0011b */{
 				if (kam == Pozice.a1 || odkud == Pozice.a1)
-					board.roch &= 13;/* 1101b */
+					mBoardComputing.roch &= 13;/* 1101b */
 				if (kam == Pozice.h1 || odkud == Pozice.h1)
-					board.roch &= 14;/* 1110b */
+					mBoardComputing.roch &= 14;/* 1110b */
 				if (kam == Pozice.a8 || odkud == Pozice.a8)
-					board.roch &= 7; /* 0111b */
+					mBoardComputing.roch &= 7; /* 0111b */
 				if (kam == Pozice.h8 || odkud == Pozice.h8)
-					board.roch &= 11;/* 1011b */
+					mBoardComputing.roch &= 11;/* 1011b */
 			}
 			/* Ulozim si sebranou figuru */
-			z.mBrani = board.sch[kam];
-			if (board.sch[kam] > 0)
-				z.mBm -= HodnotaPozice.mStdCenyFigur[board.sch[kam]];
+			z.mBrani = mBoardComputing.sch[kam];
+			if (mBoardComputing.sch[kam] > 0)
+				z.mBm -= HodnotaPozice.mStdCenyFigur[mBoardComputing.sch[kam]];
 			else
-				z.mCm -= HodnotaPozice.mStdCenyFigur[-board.sch[kam]];
+				z.mCm -= HodnotaPozice.mStdCenyFigur[-mBoardComputing.sch[kam]];
 			z.mKam = (byte)kam;
 			
 			/* zakladni rutina normalniho tahu: */
-			board.sch[kam] = board.sch[odkud];
-			board.sch[odkud] = 0;
+			mBoardComputing.sch[kam] = mBoardComputing.sch[odkud];
+			mBoardComputing.sch[odkud] = 0;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(odkud);
 				zobrazPole.zobrazPole(kam);
@@ -415,11 +429,12 @@ public class Task implements Serializable {
 		 * Nenormalni tah Mala bila rosada
 		 */
 		if (tah == MBRoch) {
-			board.sch[Pozice.e1] = 0;
-			board.sch[Pozice.g1] = 6;
-			board.sch[Pozice.h1] = 0;
-			board.sch[Pozice.f1] = 4;
-			board.roch &= 12;
+			mBoardComputing.sch[Pozice.e1] = 0;
+			mBoardComputing.sch[Pozice.g1] = 6;
+			mBoardComputing.sch[Pozice.h1] = 0;
+			mBoardComputing.sch[Pozice.f1] = 4;
+			mBoardComputing.roch &= 12;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e1);
 				zobrazPole.zobrazPole(Pozice.f1);
@@ -434,11 +449,12 @@ public class Task implements Serializable {
 		}
 		/* Velka bila rosada */
 		if (tah == VBRoch) {
-			board.sch[Pozice.e1] = 0;
-			board.sch[Pozice.c1] = 6;
-			board.sch[Pozice.a1] = 0;
-			board.sch[Pozice.d1] = 4;
-			board.roch &= 12;
+			mBoardComputing.sch[Pozice.e1] = 0;
+			mBoardComputing.sch[Pozice.c1] = 6;
+			mBoardComputing.sch[Pozice.a1] = 0;
+			mBoardComputing.sch[Pozice.d1] = 4;
+			mBoardComputing.roch &= 12;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.a1);
 				zobrazPole.zobrazPole(Pozice.c1);
@@ -453,11 +469,12 @@ public class Task implements Serializable {
 		}
 		/* Mala cerna rosada */
 		if (tah == MCRoch) {
-			board.sch[Pozice.e8] = 0;
-			board.sch[Pozice.g8] = -6;
-			board.sch[Pozice.h8] = 0;
-			board.sch[Pozice.f8] = -4;
-			board.roch &= 3;
+			mBoardComputing.sch[Pozice.e8] = 0;
+			mBoardComputing.sch[Pozice.g8] = -6;
+			mBoardComputing.sch[Pozice.h8] = 0;
+			mBoardComputing.sch[Pozice.f8] = -4;
+			mBoardComputing.roch &= 3;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.e8);
 				zobrazPole.zobrazPole(Pozice.f8);
@@ -472,11 +489,12 @@ public class Task implements Serializable {
 		}
 		/* Velka cerna rosada */
 		if (tah == VCRoch) {
-			board.sch[Pozice.e8] = 0;
-			board.sch[Pozice.c8] = -6;
-			board.sch[Pozice.a8] = 0;
-			board.sch[Pozice.d8] = -4;
-			board.roch &= 3;
+			mBoardComputing.sch[Pozice.e8] = 0;
+			mBoardComputing.sch[Pozice.c8] = -6;
+			mBoardComputing.sch[Pozice.a8] = 0;
+			mBoardComputing.sch[Pozice.d8] = -4;
+			mBoardComputing.roch &= 3;
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(Pozice.a8);
 				zobrazPole.zobrazPole(Pozice.c8);
@@ -495,22 +513,22 @@ public class Task implements Serializable {
 			kam = (Pozice.a8 + ((tah >> 4) & 7));
 			co = (byte) (2 + ((tah >> 10) & 3));
 			/* Ulozim si, co jsem sebral */
-			z.mBrani = board.sch[kam];
+			z.mBrani = mBoardComputing.sch[kam];
 			z.mBm += HodnotaPozice.mStdCenyFigur[co] - HodnotaPozice.mStdCenyFigur[1];
-			z.mCm -= HodnotaPozice.mStdCenyFigur[-board.sch[kam]];
-
-			board.sch[odkud] = 0;
-			board.sch[kam] = co;
+			z.mCm -= HodnotaPozice.mStdCenyFigur[-mBoardComputing.sch[kam]];
+			mBoardComputing.sch[odkud] = 0;
+			mBoardComputing.sch[kam] = co;
 			if (kam == Pozice.a8) /*
 								 * meni pesce na a8, mohl sezrat vez =>
 								 * rosady...
 								 */
-				board.roch &= 7; /* 0111b */
+				mBoardComputing.roch &= 7; /* 0111b */
 			if (kam == Pozice.h8) /*
 								 * meni pesce na h8, mohl sezrat vez =>
 								 * rosady...
 								 */
-				board.roch &= 11; /* 1011b */
+				mBoardComputing.roch &= 11; /* 1011b */
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(odkud);
 				zobrazPole.zobrazPole(kam);
@@ -526,22 +544,23 @@ public class Task implements Serializable {
 			co = (byte) (-(2 + ((tah >> 10) & 3)));
 
 			/* Ulozim si, co jsem sebral */
-			z.mBrani = board.sch[kam];
+			z.mBrani = mBoardComputing.sch[kam];
 			z.mCm += HodnotaPozice.mStdCenyFigur[-co] - HodnotaPozice.mStdCenyFigur[1];
-			z.mBm -= HodnotaPozice.mStdCenyFigur[board.sch[kam]];
+			z.mBm -= HodnotaPozice.mStdCenyFigur[mBoardComputing.sch[kam]];
 			
-			board.sch[odkud] = 0;
-			board.sch[kam] = co;
+			mBoardComputing.sch[odkud] = 0;
+			mBoardComputing.sch[kam] = co;
 			if (kam == Pozice.a1) /*
 								 * meni pesce na a1, mohl sezrat vez =>
 								 * rosady...
 								 */
-				board.roch &= 13; /* 1101b */
+				mBoardComputing.roch &= 13; /* 1101b */
 			if (kam == Pozice.h1) /*
 								 * meni pesce na h1, mohl sezrat vez =>
 								 * rosady...
 								 */
-				board.roch &= 14; /* 1110b */
+				mBoardComputing.roch &= 14; /* 1110b */
+			if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 			if (zobrazPole != null) {
 				zobrazPole.zobrazPole(odkud);
 				zobrazPole.zobrazPole(kam);
@@ -556,19 +575,20 @@ public class Task implements Serializable {
 		kam = (tah & 127);
 		odkud = (tah >> 7);
 		if (odkud < kam) {
-			board.sch[kam - 10] = 0;
+			mBoardComputing.sch[kam - 10] = 0;
 			z.mBrani = -1;
 			z.mCm -= HodnotaPozice.mStdCenyFigur[1];
 		}
 		/* to hral bily */
 		else {
-			board.sch[kam + 10] = 0;
+			mBoardComputing.sch[kam + 10] = 0;
 			z.mBrani = 1;
 			z.mBm -= HodnotaPozice.mStdCenyFigur[1];
 		}
 		/* cerny */
-		board.sch[kam] = board.sch[odkud];
-		board.sch[odkud] = 0;
+		mBoardComputing.sch[kam] = mBoardComputing.sch[odkud];
+		mBoardComputing.sch[odkud] = 0;
+		if (globalne) mBoard = (Pozice)mBoardComputing.clone();
 		if (zobrazPole != null) {
 			zobrazPole.zobrazPole(odkud);
 			zobrazPole.zobrazPole(kam);
@@ -592,26 +612,26 @@ public class Task implements Serializable {
 		ZasobnikStruct r;
 		
 		if (globalne) {
-			mIndexVPartii++;
+			mIndexInGame++;
 			if (!ukousniKonec)
-				return (ZasobnikStruct) mPartie.elementAt(mIndexVPartii);
-			if (mIndexVPartii >= mPartie.size()) {
-				mPartie.add(r = new ZasobnikStruct(board.roch, board.mimoch, tah));
+				return (ZasobnikStruct) mGame.elementAt(mIndexInGame);
+			if (mIndexInGame >= mGame.size()) {
+				mGame.add(r = new ZasobnikStruct(mBoardComputing.roch, mBoardComputing.mimoch, tah));
 			} else {
-				r = (ZasobnikStruct) mPartie.elementAt(mIndexVPartii);
-				r.set(board.roch, board.mimoch, tah);
-				if (ukousniKonec && mPartie.size() > mIndexVPartii + 1) {
-					mPartie.setSize(mIndexVPartii + 1);
+				r = (ZasobnikStruct) mGame.elementAt(mIndexInGame);
+				r.set(mBoardComputing.roch, mBoardComputing.mimoch, tah);
+				if (ukousniKonec && mGame.size() > mIndexInGame + 1) {
+					mGame.setSize(mIndexInGame + 1);
 				}
 			}
 		} else {
 			ZasobnikStruct old = mIndexVZasobniku >= 0 ? (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku) : null;
 			mIndexVZasobniku++;
 			if (mIndexVZasobniku >= mZasobnik.size()) {
-				mZasobnik.add(r = new ZasobnikStruct(board.roch, board.mimoch, tah));
+				mZasobnik.add(r = new ZasobnikStruct(mBoardComputing.roch, mBoardComputing.mimoch, tah));
 			} else {
 				r = (ZasobnikStruct) mZasobnik.elementAt(mIndexVZasobniku);
-				r.set(board.roch, board.mimoch, tah);
+				r.set(mBoardComputing.roch, mBoardComputing.mimoch, tah);
 			}
 			if (old != null) {
 				r.mBm = old.mBm;
@@ -658,7 +678,7 @@ public class Task implements Serializable {
 
 	private void zaradTah(int i, int j) {
 		mZasobnikTahu.tahy[mIndexVZasobnikuTahu] = (i << 7) | j;
-		mZasobnikTahu.hodnoty[mIndexVZasobnikuTahu] = HodnotaPozice.mStdCenyFigur[abs(board.sch[j])];
+		mZasobnikTahu.hodnoty[mIndexVZasobnikuTahu] = HodnotaPozice.mStdCenyFigur[abs(mBoardComputing.sch[j])];
 		mIndexVZasobnikuTahu++;
 	}
 
@@ -684,9 +704,9 @@ public class Task implements Serializable {
 
 	private void dlouhaBilaFigura(int o1, int o2, int p) {
 		for (int j = o1; j <= o2; j++) {
-			for (int q = p + Pozice.mOfsety[j]; board.sch[q] <= 0; q += Pozice.mOfsety[j]) {
+			for (int q = p + Pozice.mOfsety[j]; mBoardComputing.sch[q] <= 0; q += Pozice.mOfsety[j]) {
 				zaradTah(p, q);
-				if (board.sch[q] < 0) {
+				if (mBoardComputing.sch[q] < 0) {
 					break;
 				}
 			}
@@ -695,10 +715,10 @@ public class Task implements Serializable {
 
 	private void dlouhaCernaFigura(int o1, int o2, int p) {
 		for (int j = o1; j <= o2; j++) {
-			for (int q = p + Pozice.mOfsety[j]; board.sch[q] >= 0
-					&& board.sch[q] < 7; q += Pozice.mOfsety[j]) {
+			for (int q = p + Pozice.mOfsety[j]; mBoardComputing.sch[q] >= 0
+					&& mBoardComputing.sch[q] < 7; q += Pozice.mOfsety[j]) {
 				zaradTah(p, q);
-				if (board.sch[q] > 0) {
+				if (mBoardComputing.sch[q] > 0) {
 					break;
 				}
 			}
@@ -707,9 +727,9 @@ public class Task implements Serializable {
 
 	private void dlouhaBilaFiguraBrani(int o1, int o2, int p) {
 		for (int j = o1; j <= o2; j++) {
-			for (int q = p + Pozice.mOfsety[j]; board.sch[q] <= 0; q += Pozice.mOfsety[j]) {
+			for (int q = p + Pozice.mOfsety[j]; mBoardComputing.sch[q] <= 0; q += Pozice.mOfsety[j]) {
 
-				if (board.sch[q] < 0) {
+				if (mBoardComputing.sch[q] < 0) {
 					zaradTah(p, q);
 					break;
 				}
@@ -719,10 +739,10 @@ public class Task implements Serializable {
 
 	private void dlouhaCernaFiguraBrani(int o1, int o2, int p) {
 		for (int j = o1; j <= o2; j++) {
-			for (int q = p + Pozice.mOfsety[j]; board.sch[q] >= 0
-					&& board.sch[q] < 7; q += Pozice.mOfsety[j]) {
+			for (int q = p + Pozice.mOfsety[j]; mBoardComputing.sch[q] >= 0
+					&& mBoardComputing.sch[q] < 7; q += Pozice.mOfsety[j]) {
 
-				if (board.sch[q] > 0) {
+				if (mBoardComputing.sch[q] > 0) {
 					zaradTah(p, q);
 					break;
 				}
@@ -742,42 +762,42 @@ public class Task implements Serializable {
 		else
 			mIndexVZasobnikuTahu = mZasobnikTahu.hranice[mZasobnikTahu.pos - 1];
 
-		if (board.bily) {
+		if (mBoardComputing.bily) {
 			for (i = Pozice.a1; i <= Pozice.h8; i++) {
-				if (board.sch[i] < 1 || board.sch[i] > 6)
+				if (mBoardComputing.sch[i] < 1 || mBoardComputing.sch[i] > 6)
 					continue;
-				switch (board.sch[i]) {
+				switch (mBoardComputing.sch[i]) {
 				case 1: /* pesec */
 					if (i < Pozice.a7) /* tedy nehrozi promena */{
-						if (board.sch[i + 11] < 0)
+						if (mBoardComputing.sch[i + 11] < 0)
 							zaradTah(i, i + 11);
-						if (board.sch[i + 9] < 0)
+						if (mBoardComputing.sch[i + 9] < 0)
 							zaradTah(i, i + 9);
-						if (board.sch[i + 10] == 0) {
+						if (mBoardComputing.sch[i + 10] == 0) {
 							zaradTah(i, i + 10);
-							if (i <= Pozice.h2 && board.sch[i + 20] == 0)
+							if (i <= Pozice.h2 && mBoardComputing.sch[i + 20] == 0)
 								zaradTah(i, i + 20);
 						} /* pescem o 2 */
-						if (board.mimoch == i + 1)
+						if (mBoardComputing.mimoch == i + 1)
 							zaradMimochodem(i, i + 11);
-						else if (board.mimoch == i - 1)
+						else if (mBoardComputing.mimoch == i - 1)
 							zaradMimochodem(i, i + 9);
 					} else /* i>=a7 => promeny pesce */
 					{
-						if (board.sch[i + 10] == 0)
+						if (mBoardComputing.sch[i + 10] == 0)
 							for (j = 3; j >= 0; j--)
 								zaradBilouPromenu(i, i + 10, j);
-						if (board.sch[i + 11] < 0)
+						if (mBoardComputing.sch[i + 11] < 0)
 							for (j = 3; j >= 0; j--)
 								zaradBilouPromenu(i, i + 11, j);
-						if (board.sch[i + 9] < 0)
+						if (mBoardComputing.sch[i + 9] < 0)
 							for (j = 3; j >= 0; j--)
 								zaradBilouPromenu(i, i + 9, j);
 					}
 					break;
 				case 2: /* kun */
 					for (j = 8; j <= 15; j++)
-						if ((board.sch[i + Pozice.mOfsety[j]]) <= 0)
+						if ((mBoardComputing.sch[i + Pozice.mOfsety[j]]) <= 0)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 					break;
 				case 3: /* strelec */
@@ -791,22 +811,22 @@ public class Task implements Serializable {
 					break;
 				case 6: /* kral */
 					for (j = 0; j <= 7; j++)
-						if ((board.sch[i + Pozice.mOfsety[j]]) <= 0)
+						if ((mBoardComputing.sch[i + Pozice.mOfsety[j]]) <= 0)
 							zaradTah(i, i + Pozice.mOfsety[j]);
-					if (i == Pozice.e1 && ((board.roch & 1) != 0)
-							&& (board.sch[i + 1] == 0)
-							&& (board.sch[i + 2] == 0)
-							&& (board.sch[Pozice.h1] == 4)
-							&& !board.ohrozeno(i + 1, false)
-							&& !board.ohrozeno(i, false)) {
+					if (i == Pozice.e1 && ((mBoardComputing.roch & 1) != 0)
+							&& (mBoardComputing.sch[i + 1] == 0)
+							&& (mBoardComputing.sch[i + 2] == 0)
+							&& (mBoardComputing.sch[Pozice.h1] == 4)
+							&& !mBoardComputing.ohrozeno(i + 1, false)
+							&& !mBoardComputing.ohrozeno(i, false)) {
 						zaradRosadu(MBRoch);
 					}
-					if (i == Pozice.e1 && ((board.roch & 2) != 0)
-							&& (board.sch[i - 1] == 0)
-							&& (board.sch[i - 2] == 0)
-							&& (board.sch[Pozice.a1] == 4)
-							&& !board.ohrozeno(i - 1, false)
-							&& !board.ohrozeno(i, false)) {
+					if (i == Pozice.e1 && ((mBoardComputing.roch & 2) != 0)
+							&& (mBoardComputing.sch[i - 1] == 0)
+							&& (mBoardComputing.sch[i - 2] == 0)
+							&& (mBoardComputing.sch[Pozice.a1] == 4)
+							&& !mBoardComputing.ohrozeno(i - 1, false)
+							&& !mBoardComputing.ohrozeno(i, false)) {
 						zaradRosadu(VBRoch);
 					}
 					break; /* od krale */
@@ -815,43 +835,43 @@ public class Task implements Serializable {
 		} /* od hraje bily */
 		else {
 			for (i = Pozice.a1; i <= Pozice.h8; i++) {
-				if (board.sch[i] >= 0)
+				if (mBoardComputing.sch[i] >= 0)
 					continue;
-				switch (board.sch[i]) {
+				switch (mBoardComputing.sch[i]) {
 				case -1: /* pesec */
 					if (i > Pozice.h2) /* tedy nehrozi promena */{
-						if (board.sch[i - 11] > 0 && board.sch[i - 11] < 7)
+						if (mBoardComputing.sch[i - 11] > 0 && mBoardComputing.sch[i - 11] < 7)
 							zaradTah(i, i - 11);
-						if (board.sch[i - 9] > 0 && board.sch[i - 9] < 7)
+						if (mBoardComputing.sch[i - 9] > 0 && mBoardComputing.sch[i - 9] < 7)
 							zaradTah(i, i - 9);
-						if (board.sch[i - 10] == 0) /*
+						if (mBoardComputing.sch[i - 10] == 0) /*
 													 * policko pred pescem je
 													 * volne
 													 */{
 							zaradTah(i, i - 10);
-							if (i >= Pozice.a7 && board.sch[i - 20] == 0)
+							if (i >= Pozice.a7 && mBoardComputing.sch[i - 20] == 0)
 								zaradTah(i, i - 20);
 						} /* pescem o 2 */
-						if (board.mimoch == i + 1)
+						if (mBoardComputing.mimoch == i + 1)
 							zaradMimochodem(i, i - 9);
-						else if (board.mimoch == i - 1)
+						else if (mBoardComputing.mimoch == i - 1)
 							zaradMimochodem(i, i - 11);
 					} else /* i<=h2 => promeny pesce */{
-						if (board.sch[i - 10] == 0)
+						if (mBoardComputing.sch[i - 10] == 0)
 							for (j = 3; j >= 0; j--)
 								zaradCernouPromenu(i, i - 10, j);
-						if (board.sch[i - 11] > 0 && board.sch[i - 11] < 7)
+						if (mBoardComputing.sch[i - 11] > 0 && mBoardComputing.sch[i - 11] < 7)
 							for (j = 3; j >= 0; j--)
 								zaradCernouPromenu(i, i - 11, j);
-						if (board.sch[i - 9] > 0 && board.sch[i - 9] < 7)
+						if (mBoardComputing.sch[i - 9] > 0 && mBoardComputing.sch[i - 9] < 7)
 							for (j = 3; j >= 0; j--)
 								zaradCernouPromenu(i, i - 9, j);
 					}
 					break;
 				case -2: /* kun */
 					for (j = 8; j <= 15; j++)
-						if (board.sch[i + Pozice.mOfsety[j]] >= 0
-								&& board.sch[i + Pozice.mOfsety[j]] < 7)
+						if (mBoardComputing.sch[i + Pozice.mOfsety[j]] >= 0
+								&& mBoardComputing.sch[i + Pozice.mOfsety[j]] < 7)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 					break;
 				case -3: /* strelec */
@@ -865,23 +885,23 @@ public class Task implements Serializable {
 					break;
 				case -6: /* kral */
 					for (j = 0; j <= 7; j++)
-						if (board.sch[i + Pozice.mOfsety[j]] >= 0
-								&& board.sch[i + Pozice.mOfsety[j]] < 7)
+						if (mBoardComputing.sch[i + Pozice.mOfsety[j]] >= 0
+								&& mBoardComputing.sch[i + Pozice.mOfsety[j]] < 7)
 							zaradTah(i, i + Pozice.mOfsety[j]);
-					if (i == Pozice.e8 && (board.roch & 4) != 0
-							&& board.sch[Pozice.f8] == 0
-							&& board.sch[Pozice.g8] == 0
-							&& (board.sch[Pozice.h8] == -4)
-							&& !board.ohrozeno(Pozice.e8, true)
-							&& !board.ohrozeno(Pozice.f8, true)) {
+					if (i == Pozice.e8 && (mBoardComputing.roch & 4) != 0
+							&& mBoardComputing.sch[Pozice.f8] == 0
+							&& mBoardComputing.sch[Pozice.g8] == 0
+							&& (mBoardComputing.sch[Pozice.h8] == -4)
+							&& !mBoardComputing.ohrozeno(Pozice.e8, true)
+							&& !mBoardComputing.ohrozeno(Pozice.f8, true)) {
 						zaradRosadu(MCRoch);
 					}
-					if (i == Pozice.e8 && (board.roch & 8) != 0
-							&& board.sch[Pozice.d8] == 0
-							&& board.sch[Pozice.c8] == 0
-							&& (board.sch[Pozice.a8] == -4)
-							&& !board.ohrozeno(Pozice.e8, true)
-							&& !board.ohrozeno(Pozice.d8, true)) {
+					if (i == Pozice.e8 && (mBoardComputing.roch & 8) != 0
+							&& mBoardComputing.sch[Pozice.d8] == 0
+							&& mBoardComputing.sch[Pozice.c8] == 0
+							&& (mBoardComputing.sch[Pozice.a8] == -4)
+							&& !mBoardComputing.ohrozeno(Pozice.e8, true)
+							&& !mBoardComputing.ohrozeno(Pozice.d8, true)) {
 						zaradRosadu(VCRoch);
 					}
 					break;
@@ -926,7 +946,7 @@ public class Task implements Serializable {
 		for (int i = odkud; i < kam; i++) {
 			int tah = mZasobnikTahu.tahy[i];
 			tahni(tah, false, false, null);
-			if (board.sach(!board.bily)) {
+			if (mBoardComputing.sach(!mBoardComputing.bily)) {
 				mZasobnikTahu.tahy[i] = 0;
 				jeSach = true;
 			}
@@ -957,37 +977,37 @@ public class Task implements Serializable {
 		else
 			mIndexVZasobnikuTahu = mZasobnikTahu.hranice[mZasobnikTahu.pos - 1];
 
-		if (board.bily) {
+		if (mBoardComputing.bily) {
 			for (i = Pozice.a1; i <= Pozice.h8; i++) {
-				if (board.sch[i] < 1 || board.sch[i] > 6)
+				if (mBoardComputing.sch[i] < 1 || mBoardComputing.sch[i] > 6)
 					continue;
-				switch (board.sch[i]) {
+				switch (mBoardComputing.sch[i]) {
 				case 1: /* pesec */
 					if (i < Pozice.a7) /* tedy nehrozi promena */{
-						if (board.sch[i + 11] < 0)
+						if (mBoardComputing.sch[i + 11] < 0)
 							zaradTah(i, i + 11);
-						if (board.sch[i + 9] < 0)
+						if (mBoardComputing.sch[i + 9] < 0)
 							zaradTah(i, i + 9);
-						if (board.mimoch == i + 1)
+						if (mBoardComputing.mimoch == i + 1)
 							zaradMimochodem(i, i + 11);
-						else if (board.mimoch == i - 1)
+						else if (mBoardComputing.mimoch == i - 1)
 							zaradMimochodem(i, i + 9);
 					} else /* i>=a7 => promeny pesce */
 					{
-						if (board.sch[i + 10] == 0)
+						if (mBoardComputing.sch[i + 10] == 0)
 							for (j = 3; j >= 0; j--)
 								zaradBilouPromenu(i, i + 10, j);
-						if (board.sch[i + 11] < 0)
+						if (mBoardComputing.sch[i + 11] < 0)
 							for (j = 3; j >= 0; j--)
 								zaradBilouPromenu(i, i + 11, j);
-						if (board.sch[i + 9] < 0)
+						if (mBoardComputing.sch[i + 9] < 0)
 							for (j = 3; j >= 0; j--)
 								zaradBilouPromenu(i, i + 9, j);
 					}
 					break;
 				case 2: /* kun */
 					for (j = 8; j <= 15; j++)
-						if ((board.sch[i + Pozice.mOfsety[j]]) < 0)
+						if ((mBoardComputing.sch[i + Pozice.mOfsety[j]]) < 0)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 					break;
 				case 3: /* strelec */
@@ -1001,7 +1021,7 @@ public class Task implements Serializable {
 					break;
 				case 6: /* kral */
 					for (j = 0; j <= 7; j++)
-						if ((board.sch[i + Pozice.mOfsety[j]]) < 0)
+						if ((mBoardComputing.sch[i + Pozice.mOfsety[j]]) < 0)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 
 					break; /* od krale */
@@ -1010,36 +1030,36 @@ public class Task implements Serializable {
 		} /* od hraje bily */
 		else {
 			for (i = Pozice.a1; i <= Pozice.h8; i++) {
-				if (board.sch[i] >= 0)
+				if (mBoardComputing.sch[i] >= 0)
 					continue;
-				switch (board.sch[i]) {
+				switch (mBoardComputing.sch[i]) {
 				case -1: /* pesec */
 					if (i > Pozice.h2) /* tedy nehrozi promena */{
-						if (board.sch[i - 11] > 0 && board.sch[i - 11] < 7)
+						if (mBoardComputing.sch[i - 11] > 0 && mBoardComputing.sch[i - 11] < 7)
 							zaradTah(i, i - 11);
-						if (board.sch[i - 9] > 0 && board.sch[i - 9] < 7)
+						if (mBoardComputing.sch[i - 9] > 0 && mBoardComputing.sch[i - 9] < 7)
 							zaradTah(i, i - 9);
 
-						if (board.mimoch == i + 1)
+						if (mBoardComputing.mimoch == i + 1)
 							zaradMimochodem(i, i - 9);
-						else if (board.mimoch == i - 1)
+						else if (mBoardComputing.mimoch == i - 1)
 							zaradMimochodem(i, i - 11);
 					} else /* i<=h2 => promeny pesce */{
-						if (board.sch[i - 10] == 0)
+						if (mBoardComputing.sch[i - 10] == 0)
 							for (j = 3; j >= 0; j--)
 								zaradCernouPromenu(i, i - 10, j);
-						if (board.sch[i - 11] > 0 && board.sch[i - 11] < 7)
+						if (mBoardComputing.sch[i - 11] > 0 && mBoardComputing.sch[i - 11] < 7)
 							for (j = 3; j >= 0; j--)
 								zaradCernouPromenu(i, i - 11, j);
-						if (board.sch[i - 9] > 0 && board.sch[i - 9] < 7)
+						if (mBoardComputing.sch[i - 9] > 0 && mBoardComputing.sch[i - 9] < 7)
 							for (j = 3; j >= 0; j--)
 								zaradCernouPromenu(i, i - 9, j);
 					}
 					break;
 				case -2: /* kun */
 					for (j = 8; j <= 15; j++)
-						if (board.sch[i + Pozice.mOfsety[j]] > 0
-								&& board.sch[i + Pozice.mOfsety[j]] < 7)
+						if (mBoardComputing.sch[i + Pozice.mOfsety[j]] > 0
+								&& mBoardComputing.sch[i + Pozice.mOfsety[j]] < 7)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 					break;
 				case -3: /* strelec */
@@ -1053,8 +1073,8 @@ public class Task implements Serializable {
 					break;
 				case -6: /* kral */
 					for (j = 0; j <= 7; j++)
-						if (board.sch[i + Pozice.mOfsety[j]] > 0
-								&& board.sch[i + Pozice.mOfsety[j]] < 7)
+						if (mBoardComputing.sch[i + Pozice.mOfsety[j]] > 0
+								&& mBoardComputing.sch[i + Pozice.mOfsety[j]] < 7)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 
 					break;
@@ -1113,7 +1133,7 @@ public class Task implements Serializable {
 			if (((t >> 14) == 0) && /* normalni tah */
 			((t & 127) == kam) && /* na stejne policko */
 			(odkud != (t >> 7)) && /* z jineho policka */
-			((board.sch[odkud]) == (board.sch[t >> 7])) /* stejnou figurkou */
+			((mBoardComputing.sch[odkud]) == (mBoardComputing.sch[t >> 7])) /* stejnou figurkou */
 			)
 				switch (urcen) {
 				case J_Nic:
@@ -1208,9 +1228,9 @@ public class Task implements Serializable {
 			kam = tah & 127;
 			odkud = tah >> 7;
 			// i = 0;
-			switch (abs(board.sch[odkud])) {
+			switch (abs(mBoardComputing.sch[odkud])) {
 			case 1:
-				if (board.sch[kam] != 0)
+				if (mBoardComputing.sch[kam] != 0)
 					s.append((char) ('a' + (odkud - Pozice.a1) % 10));
 				break;
 			case 2:
@@ -1229,11 +1249,11 @@ public class Task implements Serializable {
 				s.append('K');
 				break;
 			}
-			if (abs(board.sch[odkud]) != 1) {
+			if (abs(mBoardComputing.sch[odkud]) != 1) {
 				s.append((char) ((odkud - Pozice.a1) % 10 + 'a'));
 				s.append((char) ((odkud - Pozice.a1) / 10 + '1'));
 			}
-			if (board.sch[kam] != 0)
+			if (mBoardComputing.sch[kam] != 0)
 				s.append('x');
 			s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 			s.append((char) ((kam - Pozice.a1) / 10 + '1'));
@@ -1259,7 +1279,7 @@ public class Task implements Serializable {
 				kam = Pozice.a1 + ((tah >> 4) & 7);
 			}
 			s.append((char) ((odkud - Pozice.a1) % 10 + 'a'));
-			if (board.sch[kam] != 0) {
+			if (mBoardComputing.sch[kam] != 0) {
 				s.append('x');
 				s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 			}
@@ -1300,9 +1320,9 @@ public class Task implements Serializable {
 			kam = tah & 127;
 			odkud = tah >> 7;
 			// i = 0;
-			switch (abs(board.sch[odkud])) {
+			switch (abs(mBoardComputing.sch[odkud])) {
 			case 1:
-				if (board.sch[kam] != 0)
+				if (mBoardComputing.sch[kam] != 0)
 					s.append((char) ('a' + (odkud - Pozice.a1) % 10));
 				break;
 			case 2:
@@ -1321,7 +1341,7 @@ public class Task implements Serializable {
 				s.append('K');
 				break;
 			}
-			if (abs(board.sch[odkud]) != 1) {
+			if (abs(mBoardComputing.sch[odkud]) != 1) {
 				if (!jednoZnacny(tahy, tah, J_Nic)) /* Zkusim Da1 */
 				{ /* Tak Dha1 */
 					if (jednoZnacny(tahy, tah, J_Sloupec))
@@ -1339,7 +1359,7 @@ public class Task implements Serializable {
 					}
 				}
 			}
-			if (board.sch[kam] != 0)
+			if (mBoardComputing.sch[kam] != 0)
 				s.append('x');
 			s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 			s.append((char) ((kam - Pozice.a1) / 10 + '1'));
@@ -1365,7 +1385,7 @@ public class Task implements Serializable {
 				kam = Pozice.a1 + ((tah >> 4) & 7);
 			}
 			s.append((char) ((odkud - Pozice.a1) % 10 + 'a'));
-			if (board.sch[kam] != 0) {
+			if (mBoardComputing.sch[kam] != 0) {
 				s.append('x');
 				s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 			}
