@@ -1,4 +1,4 @@
-package cz.sachy.awt;
+package cz.honzovysachy.awt;
 
 import java.awt.*;
 import java.awt.event.*;

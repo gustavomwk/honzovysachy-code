@@ -1,4 +1,4 @@
-package cz.sachy.pravidla;
+package cz.honzovysachy.pravidla;
 
 public class Hash {
 

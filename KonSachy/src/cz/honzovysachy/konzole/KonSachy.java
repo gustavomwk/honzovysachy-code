@@ -14,7 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package cz.sachy.konzole;
+package cz.honzovysachy.konzole;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
@@ -22,10 +22,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Vector;
 
-import cz.sachy.mysleni.Minimax;
-import cz.sachy.pravidla.Pozice;
-import cz.sachy.pravidla.Task;
-import cz.sachy.pravidla.ZasobnikStruct;
+import cz.honzovysachy.mysleni.Minimax;
+import cz.honzovysachy.pravidla.Pozice;
+import cz.honzovysachy.pravidla.Task;
+import cz.honzovysachy.pravidla.ZasobnikStruct;
 
 public class KonSachy {
 	private static void hlavniDosCyklus() {

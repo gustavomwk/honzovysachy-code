@@ -1,9 +1,9 @@
-package cz.sachy.pravidla;
+package cz.honzovysachy.pravidla;
 
 import java.util.Iterator;
 import java.util.Vector;
 
-import cz.sachy.mysleni.HodnotaPozice;
+import cz.honzovysachy.mysleni.HodnotaPozice;
 
 public class Task extends SavedTask {
 
@@ -814,19 +814,22 @@ public class Task extends SavedTask {
 						if ((mBoardComputing.sch[i + Pozice.mOfsety[j]]) <= 0)
 							zaradTah(i, i + Pozice.mOfsety[j]);
 					if (i == Pozice.e1 && ((mBoardComputing.roch & 1) != 0)
-							&& (mBoardComputing.sch[i + 1] == 0)
-							&& (mBoardComputing.sch[i + 2] == 0)
+							&& (mBoardComputing.sch[Pozice.f1] == 0)
+							&& (mBoardComputing.sch[Pozice.g1] == 0)
 							&& (mBoardComputing.sch[Pozice.h1] == 4)
-							&& !mBoardComputing.ohrozeno(i + 1, false)
-							&& !mBoardComputing.ohrozeno(i, false)) {
+							&& !mBoardComputing.ohrozeno(Pozice.e1, false)
+							&& !mBoardComputing.ohrozeno(Pozice.f1, false)
+							&& !mBoardComputing.ohrozeno(Pozice.g1, false)) {
 						zaradRosadu(MBRoch);
 					}
 					if (i == Pozice.e1 && ((mBoardComputing.roch & 2) != 0)
-							&& (mBoardComputing.sch[i - 1] == 0)
-							&& (mBoardComputing.sch[i - 2] == 0)
+							&& (mBoardComputing.sch[Pozice.d1] == 0)
+							&& (mBoardComputing.sch[Pozice.c1] == 0)
+							&& (mBoardComputing.sch[Pozice.b1] == 0)
 							&& (mBoardComputing.sch[Pozice.a1] == 4)
-							&& !mBoardComputing.ohrozeno(i - 1, false)
-							&& !mBoardComputing.ohrozeno(i, false)) {
+							&& !mBoardComputing.ohrozeno(Pozice.e1, false)
+							&& !mBoardComputing.ohrozeno(Pozice.d1, false)
+							&& !mBoardComputing.ohrozeno(Pozice.c1, false)) {
 						zaradRosadu(VBRoch);
 					}
 					break; /* od krale */
@@ -892,6 +895,7 @@ public class Task extends SavedTask {
 							&& mBoardComputing.sch[Pozice.f8] == 0
 							&& mBoardComputing.sch[Pozice.g8] == 0
 							&& (mBoardComputing.sch[Pozice.h8] == -4)
+							&& !mBoardComputing.ohrozeno(Pozice.g8, true)
 							&& !mBoardComputing.ohrozeno(Pozice.e8, true)
 							&& !mBoardComputing.ohrozeno(Pozice.f8, true)) {
 						zaradRosadu(MCRoch);
@@ -899,7 +903,9 @@ public class Task extends SavedTask {
 					if (i == Pozice.e8 && (mBoardComputing.roch & 8) != 0
 							&& mBoardComputing.sch[Pozice.d8] == 0
 							&& mBoardComputing.sch[Pozice.c8] == 0
+							&& mBoardComputing.sch[Pozice.b8] == 0
 							&& (mBoardComputing.sch[Pozice.a8] == -4)
+							&& !mBoardComputing.ohrozeno(Pozice.c8, true)
 							&& !mBoardComputing.ohrozeno(Pozice.e8, true)
 							&& !mBoardComputing.ohrozeno(Pozice.d8, true)) {
 						zaradRosadu(VCRoch);

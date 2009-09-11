@@ -14,10 +14,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package cz.sachy.mysleni;
+package cz.honzovysachy.mysleni;
 
-import cz.sachy.pravidla.Task;
-import cz.sachy.pravidla.ZasobnikStruct;
+import cz.honzovysachy.pravidla.Task;
+import cz.honzovysachy.pravidla.ZasobnikStruct;
 
 public class Minimax {
 	public static final int MAT = 30000;
@@ -121,7 +121,7 @@ public class Minimax {
 		int h = HodnotaPozice.hodnotaPozice(task, alfa, beta);
 		if (h > MAT || h < -MAT) return h;
 		ZasobnikStruct z = (ZasobnikStruct) task.mZasobnik.elementAt(task.mIndexVZasobniku);
-		z.mSach = task.mBoardComputing.ohrozeno(task.mBoardComputing.bily ? z.mCk : z.mBk, !task.mBoardComputing.bily);
+		z.mSach = task.mBoardComputing.ohrozeno(task.mBoardComputing.bily ? z.mBk : z.mCk, !task.mBoardComputing.bily);
 		task.nalezPseudolegalniTahyZasobnik();
 		int odkud = task.getOdkud();
 		int kam = task.getKam();

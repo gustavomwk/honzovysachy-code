@@ -14,11 +14,11 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package cz.sachy.mysleni;
+package cz.honzovysachy.mysleni;
 
-import cz.sachy.pravidla.Pozice;
-import cz.sachy.pravidla.Task;
-import cz.sachy.pravidla.ZasobnikStruct;
+import cz.honzovysachy.pravidla.Pozice;
+import cz.honzovysachy.pravidla.Task;
+import cz.honzovysachy.pravidla.ZasobnikStruct;
 
 public class HodnotaPozice {
 	

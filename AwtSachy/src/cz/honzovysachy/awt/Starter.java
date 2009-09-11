@@ -1,4 +1,4 @@
-package cz.sachy.awt;
+package cz.honzovysachy.awt;
 
 import java.applet.Applet;
 import java.awt.Frame;
@@ -8,7 +8,7 @@ import java.awt.event.WindowListener;
 
 import javax.swing.BoxLayout;
 
-import cz.sachy.resouces.S;
+import cz.honzovysachy.resouces.S;
 
 @SuppressWarnings("serial")
 class ChessPanel extends Panel {

@@ -5,7 +5,7 @@
  * should not be modified by hand.
  */
 
-package cz.sachy;
+package cz.honzovysachy;
 
 public final class R {
     public static final class attr {

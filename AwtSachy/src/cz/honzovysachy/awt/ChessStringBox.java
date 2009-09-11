@@ -1,11 +1,11 @@
-package cz.sachy.awt;
+package cz.honzovysachy.awt;
 
 import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.Label;
 import java.awt.Panel;
 
-import cz.sachy.mysleni.ThinkingOutput;
+import cz.honzovysachy.mysleni.ThinkingOutput;
 
 @SuppressWarnings("serial")
 public class ChessStringBox extends Panel implements ThinkingOutput {

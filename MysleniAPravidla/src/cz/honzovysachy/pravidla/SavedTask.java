@@ -1,4 +1,4 @@
-package cz.sachy.pravidla;
+package cz.honzovysachy.pravidla;
 
 import java.io.Serializable;
 import java.util.Vector;

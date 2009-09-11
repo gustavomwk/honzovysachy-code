@@ -1,4 +1,4 @@
-package cz.sachy;
+package cz.honzovysachy;
 
 import android.app.ListActivity;
 import android.os.Bundle;

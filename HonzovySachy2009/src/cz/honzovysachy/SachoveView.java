@@ -14,7 +14,7 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package cz.sachy;
+package cz.honzovysachy;
 
 import java.util.Vector;
 
@@ -30,11 +30,11 @@ import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import cz.sachy.mysleni.Minimax;
-import cz.sachy.pravidla.PawnPromotionGUIQueen;
-import cz.sachy.pravidla.Pozice;
-import cz.sachy.pravidla.SavedTask;
-import cz.sachy.pravidla.Task;
+import cz.honzovysachy.mysleni.Minimax;
+import cz.honzovysachy.pravidla.PawnPromotionGUIQueen;
+import cz.honzovysachy.pravidla.Pozice;
+import cz.honzovysachy.pravidla.SavedTask;
+import cz.honzovysachy.pravidla.Task;
 
 
 

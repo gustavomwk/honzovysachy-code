@@ -14,11 +14,15 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package cz.sachy.pravidla;
+package cz.honzovysachy.pravidla;
 
-import cz.sachy.mysleni.HodnotaPozice;
+import java.io.Serializable;
 
-public class ZasobnikStruct {
+import cz.honzovysachy.mysleni.HodnotaPozice;
+
+public class ZasobnikStruct implements Serializable {
+
+	private static final long serialVersionUID = 7144765288324404163L;
 	byte mRoch;
 	byte mMimoch;
 	public int mTah;

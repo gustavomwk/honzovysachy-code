@@ -14,10 +14,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package cz.sachy.pravidla;
+package cz.honzovysachy.pravidla;
 
-public class Pozice {
+import java.io.Serializable;
 
+public class Pozice implements Serializable {
+
+	private static final long serialVersionUID = -3860865188824003550L;
 	public static final int a1 = 21;
 	public static final int b1 = 22;
 	public static final int c1 = 23;
@@ -88,14 +91,14 @@ public class Pozice {
 		100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
 		100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
 	    //     a    b    c    d    e    f    g    h
-	    100,   0,   0,   0,   0,   0,   0,   0,  -6, 100, // 1
+	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 1
 	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 2
-	    100,   0,   0,   0,   0,   0,   6,   4,   0, 100, // 3
+	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 3
 	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 4
-	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 5
-	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 6
-	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 7
-	    100,   0,   0,   0,   0,   0,   0,   0,   0, 100, // 8
+	    100,   0,  -2,   0,   0,   0,   0,   0,   0, 100, // 5
+	    100,   0,  -6,   0,  -4,   0,   0,   0,   0, 100, // 6
+	    100,   0,   0,   0,   0,   0,   1,   0,   0, 100, // 7
+	    100,   0,   6,   0,   0,   0,   0,   0,   0, 100, // 8
 	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100,
 	    100, 100, 100, 100, 100, 100, 100, 100, 100, 100
 	};

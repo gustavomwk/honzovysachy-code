@@ -1,4 +1,4 @@
-package cz.sachy.awt;
+package cz.honzovysachy.awt;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -21,12 +21,12 @@ import java.util.Vector;
 
 import javax.swing.SwingUtilities;
 
-import cz.sachy.mysleni.Minimax;
-import cz.sachy.mysleni.ThinkingOutput;
-import cz.sachy.pravidla.PawnPromotionGUI;
-import cz.sachy.pravidla.Pozice;
-import cz.sachy.pravidla.Task;
-import cz.sachy.pravidla.ZobrazPole;
+import cz.honzovysachy.mysleni.Minimax;
+import cz.honzovysachy.mysleni.ThinkingOutput;
+import cz.honzovysachy.pravidla.PawnPromotionGUI;
+import cz.honzovysachy.pravidla.Pozice;
+import cz.honzovysachy.pravidla.Task;
+import cz.honzovysachy.pravidla.ZobrazPole;
 
 class PawnPromotionGUIMsgBx implements PawnPromotionGUI {
 

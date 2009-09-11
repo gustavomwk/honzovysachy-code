@@ -1,4 +1,4 @@
-package cz.sachy.resouces;
+package cz.honzovysachy.resouces;
 
 import java.net.URL;
 import java.util.Properties;
@@ -8,7 +8,6 @@ public class S {
 
 	public static void init(String language) {
 		URL url = S.class.getResource("strings_" + language + ".txt");
-		System.out.println(url);
 		strings = new Properties();
 		try {
 			strings.load(url.openStream());
