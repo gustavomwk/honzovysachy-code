@@ -128,6 +128,7 @@ public class SachoveView extends View {
     	if (mPole <= 0 || !hrajeClovek()) return false;
     	int x = (int)((event.getX() + 0.5) / mPole);
     	int y = (int)((event.getY() + 0.5) / mPole);
+    	if (x > 7 || x < 0 || y > 7 || y < 0) return false;
     	if (mOtoceno) {
     		x = 7 - x;
     	} else {
