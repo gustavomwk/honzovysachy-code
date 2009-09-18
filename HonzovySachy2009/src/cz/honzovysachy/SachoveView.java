@@ -16,6 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.honzovysachy;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Vector;
 
 import android.app.Activity;
@@ -25,7 +29,6 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.os.Bundle;
 import android.os.Handler;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
@@ -33,40 +36,59 @@ import android.view.View;
 import cz.honzovysachy.mysleni.Minimax;
 import cz.honzovysachy.pravidla.PawnPromotionGUIQueen;
 import cz.honzovysachy.pravidla.Pozice;
-import cz.honzovysachy.pravidla.SavedTask;
 import cz.honzovysachy.pravidla.Task;
 
 
 
 public class SachoveView extends View {
-	int mcx = 4;
-	int mcy = 4;
-	int mox = -1;
-	int moy = -1;
-    int mPole = -1;
-	boolean mOtoceno = false;
-	boolean mBilyClovek = true;
-	boolean mCernyClovek = false;
-	boolean mPremyslim = false;
+	SavedTaskAndroid mSavedTaskAndroid;
+	boolean mThinking = false;
+
+	int mFieldFrom;
+	int mFieldTo;	
+	
 	Drawable mFigury[][];
 	Task mTask;
 	final Handler mHandler = new Handler();
-//	byte[] mSchPriMysleni = new byte[Pozice.h8 + 1];
-	int mFieldFrom;
-	int mFieldTo;
 	
 	protected boolean hrajeClovek() {
-		return !isPremyslim() && (mBilyClovek && mTask.mBoardComputing.bily ||
-			mCernyClovek && !mTask.mBoardComputing.bily);
+		return !isPremyslim() && (mSavedTaskAndroid.mWhitePerson && mTask.mBoardComputing.bily ||
+				mSavedTaskAndroid.mBlackPerson && !mTask.mBoardComputing.bily);
 	}
 	
-	public void saveInstanceState(Bundle bundle) {
-		bundle.putSerializable("TASK", mTask.getSavedTask());
+	public boolean trySave () {
+		try {
+	    	FileOutputStream f = getContext().openFileOutput("soubor", 0);
+	    	ObjectOutputStream o = new ObjectOutputStream(f);
+	    	o.writeObject(new SavedTaskChessAndroid(mSavedTaskAndroid, mTask.getSavedTask()));
+	    	o.close();
+		} catch (Exception e) {
+			return false;
+		}
+		return true;
 	}
 	
-    public SachoveView(Activity a, Bundle bundle) {
+	public SavedTaskChessAndroid tryLoad() {
+		SavedTaskChessAndroid task = null;
+		try {
+			FileInputStream f = getContext().openFileInput("soubor");
+			ObjectInputStream o = new ObjectInputStream(f);
+			task = (SavedTaskChessAndroid)o.readObject();
+			o.close();
+	       } catch (Exception e) {};
+	       return task;
+	}
+	
+    public SachoveView(Activity a) {
         super(a);
-       	mTask = new Task(bundle == null ? null : (SavedTask)bundle.get("TASK") );
+        SavedTaskChessAndroid saved = tryLoad();
+        if (saved == null) {
+        	mSavedTaskAndroid = new SavedTaskAndroid();
+        	mTask = new Task(null);
+        } else {
+        	mSavedTaskAndroid = saved.mSavedTaskAndroid;
+        	mTask = new Task(saved.mSavedTaskChess);
+        }
         setFocusable(true);
         mFigury = new Drawable[2][];
         mFigury[0] = new Drawable[6];
@@ -95,8 +117,8 @@ public class SachoveView extends View {
     }
     
     public void tahni(int tah) {
-    	mox = -1;
-    	moy = -1;
+    	mSavedTaskAndroid.mox = -1;
+    	mSavedTaskAndroid.moy = -1;
     	mTask.tahni(tah, true, true, null);
     	if (mTask.mEnd != 0) dlg(mTask.getEndOfGameString(mTask.mEnd));
     	invalidate();
@@ -112,7 +134,7 @@ public class SachoveView extends View {
     }
     
     public void otoc() {
-    	mOtoceno = !mOtoceno;
+    	mSavedTaskAndroid.mFlipped = !mSavedTaskAndroid.mFlipped;
     	invalidate();
     }
     
@@ -125,11 +147,11 @@ public class SachoveView extends View {
     public boolean onTouchEvent(MotionEvent event)  {
     	if (isPremyslim()) return false;
      	if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
-    	if (mPole <= 0 || !hrajeClovek()) return false;
-    	int x = (int)((event.getX() + 0.5) / mPole);
-    	int y = (int)((event.getY() + 0.5) / mPole);
+    	if (mSavedTaskAndroid.mPole <= 0 || !hrajeClovek()) return false;
+    	int x = (int)((event.getX() + 0.5) / mSavedTaskAndroid.mPole);
+    	int y = (int)((event.getY() + 0.5) / mSavedTaskAndroid.mPole);
     	if (x > 7 || x < 0 || y > 7 || y < 0) return false;
-    	if (mOtoceno) {
+    	if (mSavedTaskAndroid.mFlipped) {
     		x = 7 - x;
     	} else {
     		y = 7 - y;
@@ -138,12 +160,12 @@ public class SachoveView extends View {
     	Vector t = mTask.nalezTahyVector();
 		int pole = Pozice.a1 + x + 10 * y;
 		if (mTask.JeTam1(t, pole)) {
-			mcx = mox = x;
-			mcy = moy = y;
+			mSavedTaskAndroid.mcx = mSavedTaskAndroid.mox = x;
+			mSavedTaskAndroid.mcy = mSavedTaskAndroid.moy = y;
 			invalidate();
 			return true;
 		}
-		int pole1 = Pozice.a1 + mox + 10 * moy;
+		int pole1 = Pozice.a1 + mSavedTaskAndroid.mox + 10 * mSavedTaskAndroid.moy;
 		if (mTask.JeTam2(t, pole1, pole)) {
 			if (Math.abs(mTask.mBoardComputing.sch[pole1]) == 1 && (y == 7 || y == 0)) {
 				mFieldFrom = pole1;
@@ -157,8 +179,8 @@ public class SachoveView extends View {
 			tahni(tah);
 			return true;
 		}
-		mcx = x;
-		mcy = y;
+		mSavedTaskAndroid.mcx = x;
+		mSavedTaskAndroid.mcy = y;
 		
 		return true;
     }
@@ -175,8 +197,8 @@ public class SachoveView extends View {
     	getDrawingRect(r);
   		int w = r.right - r.left;//canvas.getWidth();
    		int h = r.bottom - r.top;//canvas.getHeight() - 50;
-        mPole = (w < h ? w : h);
-        mPole >>= 3;
+   		mSavedTaskAndroid.mPole = (w < h ? w : h);
+   		mSavedTaskAndroid.mPole >>= 3;
         
         Paint bila = new Paint();
         bila.setARGB(255, 200, 200, 200);
@@ -194,22 +216,22 @@ public class SachoveView extends View {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
             	Paint p;
-            	if (clovek && mox == i && moy == j) {
+            	if (clovek && mSavedTaskAndroid.mox == i && mSavedTaskAndroid.moy == j) {
             		p = zelena;
             	} else
-            	if (clovek && mcx == i && mcy == j) {
+            	if (clovek && mSavedTaskAndroid.mcx == i && mSavedTaskAndroid.mcy == j) {
             		p = modra;
             	} else {
             		p = ((((i + j) & 1) == 1) ? bila : cerna);
             	}
-            	int sx = (mOtoceno ? 7 - i : i) * mPole;
-            	int sy = (mOtoceno ? j : 7 - j) * mPole;
-                canvas.drawRect(new Rect(sx, sy, sx + mPole, sy + mPole), p);
+            	int sx = (mSavedTaskAndroid.mFlipped ? 7 - i : i) * mSavedTaskAndroid.mPole;
+            	int sy = (mSavedTaskAndroid.mFlipped ? j : 7 - j) * mSavedTaskAndroid.mPole;
+                canvas.drawRect(new Rect(sx, sy, sx + mSavedTaskAndroid.mPole, sy + mSavedTaskAndroid.mPole), p);
                 byte co = sch[Pozice.a1 + i + 10 * j];
                 
                 if (co != 0 && co > -7 && co < 7) {
                 	Drawable dr = mFigury[co > 0 ? 1 : 0][co > 0 ? co -1 : -co - 1];
-                	dr.setBounds(sx, sy, sx + mPole, sy + mPole);
+                	dr.setBounds(sx, sy, sx + mSavedTaskAndroid.mPole, sy + mSavedTaskAndroid.mPole);
                 	dr.draw(canvas);
                 }
             }
@@ -227,43 +249,49 @@ public class SachoveView extends View {
     	if (isPremyslim()) return false;
     	switch (keyCode) {
     	case KeyEvent.KEYCODE_DPAD_UP:
-    		if (!mOtoceno && mcy < 7 || mOtoceno && mcy > 0) {
-    			if (mOtoceno) mcy--; else mcy++;
+    		if (!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy < 7 ||
+    			mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy > 0) {
+    			if (mSavedTaskAndroid.mFlipped)
+    				mSavedTaskAndroid.mcy--;
+    			else mSavedTaskAndroid.mcy++;
     			invalidate();
     		}
     		return true;
     	
     	case KeyEvent.KEYCODE_DPAD_DOWN:
-    		if (mOtoceno && mcy < 7 || !mOtoceno && mcy > 0) {
-    			if (mOtoceno) mcy++; else mcy--;
+    		if (mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy < 7 ||
+    			!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy > 0) {
+    			if (mSavedTaskAndroid.mFlipped) mSavedTaskAndroid.mcy++; else mSavedTaskAndroid.mcy--;
     			invalidate();
     		}
     		return true;
     	case KeyEvent.KEYCODE_DPAD_RIGHT:
-    		if (!mOtoceno && mcx < 7 || mOtoceno && mcx > 0) {
-    			if (mOtoceno) mcx--; else mcx++;
+    		if (!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx < 7 || mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx > 0) {
+    			if (mSavedTaskAndroid.mFlipped) mSavedTaskAndroid.mcx--; else mSavedTaskAndroid.mcx++;
     			invalidate();
     		}
     		return true;
     	case KeyEvent.KEYCODE_DPAD_LEFT:
-    		if (mOtoceno && mcx < 7 || !mOtoceno && mcx > 0) {
-    			if (mOtoceno) mcx++; else mcx--;
+    		if (mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx < 7 ||
+    			!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx > 0) {
+    			if (mSavedTaskAndroid.mFlipped)
+    				mSavedTaskAndroid.mcx++; else mSavedTaskAndroid.mcx--;
     			invalidate();
     		}
     		return true;
     	case KeyEvent.KEYCODE_DPAD_CENTER:
     		if (!hrajeClovek()) return true;
     		Vector t = mTask.nalezTahyVector();
-    		int pole = Pozice.a1 + mcx + 10 * mcy;
+    		int pole = Pozice.a1 + mSavedTaskAndroid.mcx + 10 * mSavedTaskAndroid.mcy;
     		if (mTask.JeTam1(t, pole)) {
-    			mox = mcx;
-    			moy = mcy;
+    			mSavedTaskAndroid.mox = mSavedTaskAndroid.mcx;
+    			mSavedTaskAndroid.moy = mSavedTaskAndroid.mcy;
     			invalidate();
     			return true;
     		}
-    		int pole1 = Pozice.a1 + mox + 10 * moy;
+    		int pole1 = Pozice.a1 + mSavedTaskAndroid.mox + 10 * mSavedTaskAndroid.moy;
     		if (mTask.JeTam2(t, pole1, pole)) {
-    			if (Math.abs(mTask.mBoardComputing.sch[pole1]) == 1 && (mcy == 7 || mcy == 0)) {
+    			if (Math.abs(mTask.mBoardComputing.sch[pole1]) == 1 && (mSavedTaskAndroid.mcy == 7 || mSavedTaskAndroid.mcy == 0)) {
     				mFieldFrom = pole1;
     				mFieldTo = pole;
     				Intent result = new Intent();
@@ -283,14 +311,14 @@ public class SachoveView extends View {
     }
     
     public boolean isPremyslim() {
-    	return mPremyslim;
+    	return mThinking;
     }
     
     
     
     
     protected void tahniPrograme() {
-    	mPremyslim = true;
+    	mThinking = true;
  //   	System.arraycopy(mTask.mBoardComputing.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		public void run() {
@@ -300,7 +328,7 @@ public class SachoveView extends View {
     			mHandler.post(
     				new Runnable() {
 						public void run() {
-							mPremyslim = false;
+							mThinking = false;
 							if (tah != 0) 
 								tahni(tah);
 							}}
@@ -318,8 +346,8 @@ public class SachoveView extends View {
     protected void undo() {
     	if (mTask.mIndexInGame >= 0) {
     		mTask.tahniZpet(0, true, null);
-    		mBilyClovek = mTask.mBoardComputing.bily;
-			mCernyClovek = !mTask.mBoardComputing.bily;
+    		mSavedTaskAndroid.mWhitePerson = mTask.mBoardComputing.bily;
+    		mSavedTaskAndroid.mBlackPerson = !mTask.mBoardComputing.bily;
     		invalidate();
     	}
     }
@@ -327,19 +355,19 @@ public class SachoveView extends View {
     protected void redo() {
     	if (mTask.mIndexInGame + 1 < mTask.mGame.size()) {
 			mTask.tahni(0, true, false, null);
-			mBilyClovek = mTask.mBoardComputing.bily;
-			mCernyClovek = !mTask.mBoardComputing.bily;
+			mSavedTaskAndroid.mWhitePerson = mTask.mBoardComputing.bily;
+			mSavedTaskAndroid.mBlackPerson = !mTask.mBoardComputing.bily;
 			invalidate();
 		}
     }
     
     protected void hrajTed() {
     	if (mTask.mBoardComputing.bily) {
-    		mBilyClovek = false;
-    		mCernyClovek = true;
+    		mSavedTaskAndroid.mWhitePerson = false;
+    		mSavedTaskAndroid.mBlackPerson = true;
     	} else {
-    		mBilyClovek = true;
-    		mCernyClovek = false;
+    		mSavedTaskAndroid.mWhitePerson = true;
+    		mSavedTaskAndroid.mBlackPerson = false;
     	}
     //	this.mcx = this.mcy = this.mcx = this.mcy  
     	invalidate();

@@ -39,16 +39,21 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	
 	@Override
     protected void onSaveInstanceState(Bundle outState) {
-		mView.saveInstanceState(outState);
+		
 	}
 	
+    @Override
+    protected void onStop() {
+       super.onStop();
+       mView.trySave();
+    }
 	
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         S.init("en");
-        mView = new SachoveView(this, savedInstanceState);
+        mView = new SachoveView(this);
         setContentView(mView);
     }
     @Override
