@@ -62,7 +62,6 @@ public class Task extends SavedTask {
 		mZasobnik = new Vector();
 		mZasobnikTahu = new ZasobnikTahu();
 		mHashF = new Hash();
-		// TODO
 		mNullMove = true;
 	}
 

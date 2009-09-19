@@ -340,6 +340,12 @@ public class SachoveView extends View {
     
     protected void novaPartie() {
     	mTask = new Task(null);
+    	mSavedTaskAndroid.mox = -1;
+    	mSavedTaskAndroid.moy = -1;
+    	mSavedTaskAndroid.mcx = 0;
+    	mSavedTaskAndroid.mcy = 0;
+    	mSavedTaskAndroid.mBlackPerson = false;
+    	mSavedTaskAndroid.mWhitePerson = true;
     	invalidate();
     }
     
