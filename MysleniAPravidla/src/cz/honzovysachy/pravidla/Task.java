@@ -1,5 +1,7 @@
 package cz.honzovysachy.pravidla;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -7,6 +9,8 @@ import cz.honzovysachy.mysleni.HodnotaPozice;
 
 public class Task extends SavedTask {
 
+	public int hodPos;
+	
 	private static final long serialVersionUID = 3579393683410168823L;
 
 	// End game constants
@@ -1601,5 +1605,51 @@ public class Task extends SavedTask {
 				continue;
 		} /* konec while cyklu */
 		return 0;
+	}
+	
+	
+	public static void putc(char c, FileOutputStream f) throws IOException {
+		f.write((int)c);
+	}
+	
+	public static void fputs(String s, FileOutputStream f)  throws IOException {
+		for (int i = 0; i < s.length(); i++)
+			putc(s.charAt(i), f);
+	}
+	
+	public static void puts(String s, FileOutputStream f)  throws IOException {
+		fputs(s, f);
+		putc('\n', f);
+	}
+	
+	public void savePNG(FileOutputStream f, boolean close) throws IOException {
+		puts(
+				"[Event \"Protecting Europe\"]\n" +
+				"[Site \"Kosovo Polje\"]\n" +
+				"[Date \"1389.06.28\"]\n" +
+				"[Round \"1\"]\n" +
+				"[White \"Obilic, Milos\"]\n" +
+				"[Black \"Murad, Sultan\"]\n" +
+				"[Result \"1-0\"]\n" +
+				"[ECO \"B00\"]\n" +
+				"[WhiteElo \"2850\"]\n" +
+				"[BlackElo \"1521\"]\n" +
+				"[PlyCount \"25\"]\n"
+				, f);
+		int index = mIndexInGame;
+		while (mIndexInGame >= 0) {
+			tahniZpet(0, true, null);
+		}
+		while (mIndexInGame < index) {
+			if ((mIndexInGame & 1) == 1) {
+				fputs(Integer.toString((mIndexInGame + 3) / 2, 10) + ".", f);
+				putc(' ', f);
+			}
+			fputs("tah", f);
+			if ((mIndexInGame & 7) == 6) putc('\n', f); else putc(' ', f);
+			
+			tahni(0, true, false, null);
+		}
+		if (close) f.close();
 	}
 }

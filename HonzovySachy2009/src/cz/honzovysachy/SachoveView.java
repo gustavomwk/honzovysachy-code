@@ -123,6 +123,7 @@ public class SachoveView extends View {
     	if (mTask.mEnd != 0) dlg(mTask.getEndOfGameString(mTask.mEnd));
     	invalidate();
     	pripravTah();
+    	//dlg("Pozic bylo " + mTask.hodPos);
     }
     
     protected void pripravTahHned() {
@@ -319,7 +320,6 @@ public class SachoveView extends View {
     
     protected void tahniPrograme() {
     	mThinking = true;
- //   	System.arraycopy(mTask.mBoardComputing.sch, 0, mSchPriMysleni, 0, Pozice.h8 + 1);
     	Thread t = new Thread() {
     		public void run() {
     			mTask.nalezTahyVector();

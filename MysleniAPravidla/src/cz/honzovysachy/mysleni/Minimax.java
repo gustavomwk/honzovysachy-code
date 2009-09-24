@@ -173,7 +173,10 @@ public class Minimax {
 		task.mZasobnikTahu.pos--;
 	}
 	
+	
+	
 	public static int minimax(Task task, long casMs, ThinkingOutput output) {
+		task.hodPos = 0;
 		task.mTimeStart = System.currentTimeMillis() + casMs;
 		task.mExitThinking = false;
 		task.push();
@@ -226,6 +229,7 @@ public class Minimax {
 			//System.out.println(hloubka + " " + Task.tah2StrNoBoard(task.mZasobnikTahu.tahy[odkud]));
 		}
 		clear(task);
+		System.out.println(task.hodPos);
 		return task.mZasobnikTahu.tahy[odkud];
 	}
 }

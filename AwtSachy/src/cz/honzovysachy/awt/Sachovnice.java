@@ -16,6 +16,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
 
@@ -221,6 +223,12 @@ public class Sachovnice extends Component  implements KeyListener, ZobrazPole, M
 	    	g.setFont(new Font("Dialog", Font.BOLD, mPoleXY / 3));
 	    	g.setColor(new Color(0xFF, 0, 0));
 	    	g.drawString(mTask.getEndOfGameString(mTask.mEnd), 50, 50);
+	    	
+	    	//
+	    	try{
+	    	mTask.savePNG(new FileOutputStream("/home/honza/moje.pgn"), true);
+	    	} catch (IOException e) {};
+	    	//
 	    }
 	  }
 	
