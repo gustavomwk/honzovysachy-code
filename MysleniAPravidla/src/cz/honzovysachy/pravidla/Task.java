@@ -1229,7 +1229,7 @@ public class Task extends SavedTask {
 
 	}
 
-	public String tah2Str(int tah) {
+	public String tah2Str(int tah, Pozice p) {
 		int odkud, kam;
 		StringBuffer s = new StringBuffer();
 
@@ -1237,9 +1237,9 @@ public class Task extends SavedTask {
 			kam = tah & 127;
 			odkud = tah >> 7;
 			// i = 0;
-			switch (abs(mBoardComputing.sch[odkud])) {
+			switch (abs(p.sch[odkud])) {
 			case 1:
-				if (mBoardComputing.sch[kam] != 0)
+				if (p.sch[kam] != 0)
 					s.append((char) ('a' + (odkud - Pozice.a1) % 10));
 				break;
 			case 2:
@@ -1258,11 +1258,11 @@ public class Task extends SavedTask {
 				s.append('K');
 				break;
 			}
-			if (abs(mBoardComputing.sch[odkud]) != 1) {
+			if (abs(p.sch[odkud]) != 1) {
 				s.append((char) ((odkud - Pozice.a1) % 10 + 'a'));
 				s.append((char) ((odkud - Pozice.a1) / 10 + '1'));
 			}
-			if (mBoardComputing.sch[kam] != 0)
+			if (p.sch[kam] != 0)
 				s.append('x');
 			s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 			s.append((char) ((kam - Pozice.a1) / 10 + '1'));
@@ -1288,7 +1288,7 @@ public class Task extends SavedTask {
 				kam = Pozice.a1 + ((tah >> 4) & 7);
 			}
 			s.append((char) ((odkud - Pozice.a1) % 10 + 'a'));
-			if (mBoardComputing.sch[kam] != 0) {
+			if (p.sch[kam] != 0) {
 				s.append('x');
 				s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 			}
@@ -1321,7 +1321,7 @@ public class Task extends SavedTask {
 		return new String(s);
 	}
 
-	public String tah2Str(Vector tahy, int tah) {
+	public String tah2Str(Vector tahy, int tah, boolean cz) {
 		int odkud, kam;
 		StringBuffer s = new StringBuffer();
 
@@ -1335,16 +1335,16 @@ public class Task extends SavedTask {
 					s.append((char) ('a' + (odkud - Pozice.a1) % 10));
 				break;
 			case 2:
-				s.append('J');
+				s.append(cz ? 'J' : 'N');
 				break;
 			case 3:
-				s.append('S');
+				s.append(cz ? 'S' : 'B');
 				break;
 			case 4:
-				s.append('V');
+				s.append(cz ? 'V' : 'R');
 				break;
 			case 5:
-				s.append('D');
+				s.append(cz? 'D' : 'Q');
 				break;
 			case 6:
 				s.append('K');
@@ -1401,16 +1401,16 @@ public class Task extends SavedTask {
 			s.append((char) ((kam - Pozice.a1) / 10 + '1'));
 			switch ((tah >> 10) & 3) {
 			case 0:
-				s.append('J');
+				s.append(cz ? 'J' : 'N');
 				break;
 			case 1:
-				s.append('S');
+				s.append(cz ? 'S' : 'B');
 				break;
 			case 2:
-				s.append('V');
+				s.append(cz ? 'V' : 'R');
 				break;
 			case 3:
-				s.append('D');
+				s.append(cz ? 'D' : 'Q');
 				break;
 			}
 			return new String(s);
@@ -1424,11 +1424,6 @@ public class Task extends SavedTask {
 		s.append('x');
 		s.append((char) ((kam - Pozice.a1) % 10 + 'a'));
 		s.append((char) ((kam - Pozice.a1) / 10 + '1'));
-		s.append(' ');
-		s.append('e');
-		s.append('.');
-		s.append('p');
-		s.append('.');
 		return new String(s);
 	}
 
@@ -1630,7 +1625,7 @@ public class Task extends SavedTask {
 				"[Round \"1\"]\n" +
 				"[White \"Obilic, Milos\"]\n" +
 				"[Black \"Murad, Sultan\"]\n" +
-				"[Result \"1-0\"]\n" +
+				"[Result \"*\"]\n" +
 				"[ECO \"B00\"]\n" +
 				"[WhiteElo \"2850\"]\n" +
 				"[BlackElo \"1521\"]\n" +
@@ -1645,11 +1640,12 @@ public class Task extends SavedTask {
 				fputs(Integer.toString((mIndexInGame + 3) / 2, 10) + ".", f);
 				putc(' ', f);
 			}
-			fputs("tah", f);
+			fputs(tah2Str(nalezPseudolegalniTahyVector(), ((ZasobnikStruct) mGame.elementAt(mIndexInGame + 1)).mTah, false), f);
 			if ((mIndexInGame & 7) == 6) putc('\n', f); else putc(' ', f);
 			
 			tahni(0, true, false, null);
 		}
+		fputs(" *\n", f);
 		if (close) f.close();
 	}
 }

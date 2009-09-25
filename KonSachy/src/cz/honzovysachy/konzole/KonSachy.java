@@ -60,7 +60,7 @@ public class KonSachy {
 					continue;
 				}
 				int tah = Minimax.minimax(task, 5000, null);
-				System.out.println(task.tah2Str(t, tah));
+				System.out.println(task.tah2Str(t, tah, true));
 				task.tahni(tah, true, true, null);
 				tiskniSachovnici(task.mBoardComputing);
 				continue;
@@ -74,7 +74,7 @@ public class KonSachy {
 			if (s.equals("tg")) {
 				Vector t = task.nalezTahyVector();
 				for (int i = 0; i < t.size(); i++) {
-					System.out.print(task.tah2Str(t, ((Integer)(t.elementAt(i))).intValue()) + " ");
+					System.out.print(task.tah2Str(t, ((Integer)(t.elementAt(i))).intValue(), true) + " ");
 				}
 				System.out.println();
 				continue;
@@ -84,7 +84,7 @@ public class KonSachy {
 				int odkud = task.getOdkud();
 				int kam = task.getKam();
 				for (int i = odkud; i < kam; i++) {
-					System.out.print(task.tah2Str(new Vector(), task.mZasobnikTahu.tahy[i]) + " (" + task.mZasobnikTahu.hodnoty[i] + ") ");
+					System.out.print(task.tah2Str(new Vector(), task.mZasobnikTahu.tahy[i], true) + " (" + task.mZasobnikTahu.hodnoty[i] + ") ");
 				}
 				task.mZasobnikTahu.pos--;
 				System.out.println();
@@ -105,7 +105,7 @@ public class KonSachy {
 			Vector t = task.nalezTahyVector();
 			for (int i = 0; i < t.size(); i++) {
 				int tah = ((Integer)(t.elementAt(i))).intValue();
-				if (s.equals(task.tah2Str(t, tah))) {
+				if (s.equals(task.tah2Str(t, tah, true))) {
 					task.tahni(tah, true, true, null);
 					tiskniSachovnici(task.mBoardComputing);
 					continue hlavni;

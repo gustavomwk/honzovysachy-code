@@ -16,8 +16,10 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.honzovysachy;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Vector;
@@ -378,6 +380,17 @@ public class SachoveView extends View {
     //	this.mcx = this.mcy = this.mcx = this.mcy  
     	invalidate();
     	tahniPrograme();
+    }
+    
+    public void save() {
+    	try {
+    		String filename = "/sdcard/" + "file" + ".pgn";
+    		mTask.savePNG(/*getContext().openFileOutput(filename, 0)*/
+    				new FileOutputStream(new File(filename)), true);
+    		dlg("Saved as " + filename + ".");
+    	} catch (IOException e) {
+    		dlg("Save error");
+    	}
     }
     
 }

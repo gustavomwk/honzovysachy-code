@@ -5,3 +5,4 @@ NEW_GAME New game
 UNDO Undo
 REDO Redo
 THINKING thinking...
+SAVE_GAME Save game

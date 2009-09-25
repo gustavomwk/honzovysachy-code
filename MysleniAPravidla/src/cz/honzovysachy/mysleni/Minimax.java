@@ -215,7 +215,7 @@ public class Minimax {
 						task.mZasobnikTahu.tahy[odkud] = t;
 					}
 					if (output != null) {
-						output.bestMove(task.tah2Str(t), max);
+						output.bestMove(task.tah2Str(t, task.mBoardComputing), max);
 					}
 				}
 
