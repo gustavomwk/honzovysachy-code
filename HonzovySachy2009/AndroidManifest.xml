@@ -11,5 +11,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".PromotionActivity" android:label="Pawn promotion" android:theme="@android:style/Theme.Dialog" />
+        <activity android:name=".PGNSaveActivity" android:label="Save PGN"/>
     </application>
 </manifest> 

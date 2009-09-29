@@ -377,20 +377,27 @@ public class SachoveView extends View {
     		mSavedTaskAndroid.mWhitePerson = true;
     		mSavedTaskAndroid.mBlackPerson = false;
     	}
-    //	this.mcx = this.mcy = this.mcx = this.mcy  
     	invalidate();
     	tahniPrograme();
     }
-    
-    public void save() {
+
+    public void save(Intent data) {
     	try {
+    		
+    		PGNHeaderData pgnData = (PGNHeaderData) data.getSerializableExtra("PGNHeader");
+    		
     		String filename = "/sdcard/" + "file" + ".pgn";
-    		mTask.savePNG(/*getContext().openFileOutput(filename, 0)*/
-    				new FileOutputStream(new File(filename)), true);
+    		mTask.savePNG(
+				new FileOutputStream(new File(filename)), true);
     		dlg("Saved as " + filename + ".");
-    	} catch (IOException e) {
-    		dlg("Save error");
-    	}
+		} catch (IOException e) {
+			dlg("Save error");
+		}
     }
     
-}
+    public void save() {
+   		Intent result = new Intent();
+        result.setClass(getContext(), PGNSaveActivity.class);
+		((Activity)(getContext())).startActivityForResult(result, 0);
+    }
+ }

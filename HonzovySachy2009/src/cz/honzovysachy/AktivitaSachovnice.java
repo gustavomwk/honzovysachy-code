@@ -59,7 +59,11 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-    	mView.replayPromotion(resultCode);
+    	if (resultCode < 10) {
+    		mView.replayPromotion(resultCode);
+    		return;
+    	}
+    	mView.save(data);
     }
 
 	public boolean onMenuItemClick(MenuItem item) {
