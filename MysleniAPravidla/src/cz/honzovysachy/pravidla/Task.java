@@ -1617,19 +1617,18 @@ public class Task extends SavedTask {
 		putc('\n', f);
 	}
 	
-	public void savePNG(FileOutputStream f, boolean close) throws IOException {
+	public void savePNG(FileOutputStream f, boolean close, PGNHeaderData header) throws IOException {
 		puts(
-				"[Event \"Protecting Europe\"]\n" +
+				"[Event \"" + header.mEvent + "\"]\n" +
 				"[Site \"Kosovo Polje\"]\n" +
 				"[Date \"1389.06.28\"]\n" +
 				"[Round \"1\"]\n" +
-				"[White \"Obilic, Milos\"]\n" +
-				"[Black \"Murad, Sultan\"]\n" +
+				"[White \"" + header.mWhite + "\"]\n" +
+				"[Black \"" + header.mBlack + "\"]\n" +
 				"[Result \"*\"]\n" +
-				"[ECO \"B00\"]\n" +
-				"[WhiteElo \"2850\"]\n" +
-				"[BlackElo \"1521\"]\n" +
-				"[PlyCount \"25\"]\n"
+				"[WhiteElo \"" + header.mWhiteElo + "\"]\n" +
+				"[BlackElo \"" + header.mBlackElo + "\"]\n" +
+				"[PlyCount \"" + mGame.size() +"\"]\n"
 				, f);
 		int index = mIndexInGame;
 		while (mIndexInGame >= 0) {

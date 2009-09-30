@@ -41,6 +41,7 @@ public class PGNSaveActivity extends Activity {
                 				iWhiteElo,
                 				iBlackElo, 1));
                 setResult(10, result);
+                finish();
             }
         });
         

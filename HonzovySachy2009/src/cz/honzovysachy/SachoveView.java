@@ -393,7 +393,7 @@ public class SachoveView extends View {
     		}
     		if (pgnData == null) return;
     		mTask.savePNG(
-				new FileOutputStream(new File(pgnData.mFileName)), true);
+				new FileOutputStream(new File(pgnData.mFileName)), true, pgnData);
     		dlg("Saved as " + pgnData.mFileName + ".");
 		} catch (IOException e) {
 			dlg("Save error");
