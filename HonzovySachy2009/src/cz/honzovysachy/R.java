@@ -26,17 +26,18 @@ public final class R {
         public static final int icon=0x7f02000c;
     }
     public static final class id {
-        public static final int black=0x7f050004;
-        public static final int blackelo=0x7f05000a;
-        public static final int blackelostatic=0x7f050009;
-        public static final int blackstatic=0x7f050003;
-        public static final int event=0x7f050006;
-        public static final int eventstatic=0x7f050005;
-        public static final int filename=0x7f050000;
-        public static final int save=0x7f05000b;
-        public static final int white=0x7f050001;
-        public static final int whiteelo=0x7f050008;
-        public static final int whiteelostatic=0x7f050007;
+        public static final int black=0x7f050005;
+        public static final int blackelo=0x7f05000b;
+        public static final int blackelostatic=0x7f05000a;
+        public static final int blackstatic=0x7f050004;
+        public static final int event=0x7f050007;
+        public static final int eventstatic=0x7f050006;
+        public static final int filename=0x7f050001;
+        public static final int filenamestatic=0x7f050000;
+        public static final int save=0x7f05000c;
+        public static final int white=0x7f050003;
+        public static final int whiteelo=0x7f050009;
+        public static final int whiteelostatic=0x7f050008;
         public static final int whitestatic=0x7f050002;
     }
     public static final class layout {

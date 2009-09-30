@@ -388,7 +388,6 @@ public class SachoveView extends View {
     		try {
     		 pgnData = (PGNHeaderData) data.getSerializableExtra("PGNHeader");
     		} catch (Exception e) {
-    			e.printStackTrace();
     			return;
     		}
     		if (pgnData == null) return;
