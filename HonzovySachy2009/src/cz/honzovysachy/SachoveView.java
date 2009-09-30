@@ -384,12 +384,17 @@ public class SachoveView extends View {
     public void save(Intent data) {
     	try {
     		
-    		PGNHeaderData pgnData = (PGNHeaderData) data.getSerializableExtra("PGNHeader");
-    		
-    		String filename = "/sdcard/" + "file" + ".pgn";
+    		PGNHeaderData pgnData;
+    		try {
+    		 pgnData = (PGNHeaderData) data.getSerializableExtra("PGNHeader");
+    		} catch (Exception e) {
+    			e.printStackTrace();
+    			return;
+    		}
+    		if (pgnData == null) return;
     		mTask.savePNG(
-				new FileOutputStream(new File(filename)), true);
-    		dlg("Saved as " + filename + ".");
+				new FileOutputStream(new File(pgnData.mFileName)), true);
+    		dlg("Saved as " + pgnData.mFileName + ".");
 		} catch (IOException e) {
 			dlg("Save error");
 		}
