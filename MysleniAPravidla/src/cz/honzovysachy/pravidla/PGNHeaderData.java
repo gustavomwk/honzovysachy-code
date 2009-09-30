@@ -1,4 +1,4 @@
-package cz.honzovysachy;
+package cz.honzovysachy.pravidla;
 
 import java.io.Serializable;
 

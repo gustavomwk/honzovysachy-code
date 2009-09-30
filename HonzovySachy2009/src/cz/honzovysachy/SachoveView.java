@@ -36,6 +36,7 @@ import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import cz.honzovysachy.mysleni.Minimax;
+import cz.honzovysachy.pravidla.PGNHeaderData;
 import cz.honzovysachy.pravidla.PawnPromotionGUIQueen;
 import cz.honzovysachy.pravidla.Pozice;
 import cz.honzovysachy.pravidla.Task;

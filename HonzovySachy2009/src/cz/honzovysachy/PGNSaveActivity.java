@@ -1,5 +1,6 @@
 package cz.honzovysachy;
 
+import cz.honzovysachy.pravidla.PGNHeaderData;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
