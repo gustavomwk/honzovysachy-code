@@ -400,6 +400,11 @@ public class SachoveView extends View {
 		}
     }
     
+    public void hh() {
+    	mSavedTaskAndroid.mBlackPerson = true;
+    	mSavedTaskAndroid.mWhitePerson = true;
+    }
+    
     public void save() {
    		Intent result = new Intent();
         result.setClass(getContext(), PGNSaveActivity.class);

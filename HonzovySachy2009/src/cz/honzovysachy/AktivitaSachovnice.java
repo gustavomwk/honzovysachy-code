@@ -35,6 +35,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	    menu.add(Menu.NONE, 4, Menu.NONE, S.g("UNDO")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 5, Menu.NONE, S.g("REDO")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 6, Menu.NONE, S.g("SAVE_GAME")).setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 7, Menu.NONE, S.g("HUMAN_OPONENT")).setOnMenuItemClickListener(this);
 	    return true;
 	}
 	
@@ -88,6 +89,9 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			break;
 		case 6: 
 			mView.save();
+			break;
+		case 7: 
+			mView.hh();
 			break;
 		}
 		return true;

@@ -6,3 +6,4 @@ UNDO Undo
 REDO Redo
 THINKING thinking...
 SAVE_GAME Save game
+HUMAN_OPONENT Human-human
