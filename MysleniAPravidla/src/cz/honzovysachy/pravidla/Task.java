@@ -1618,14 +1618,17 @@ public class Task extends SavedTask {
 	}
 	
 	public void savePNG(FileOutputStream f, boolean close, PGNHeaderData header) throws IOException {
+		String result = PGNHeaderData.RESULTS[0];
+		if (header.mResult > 0 && header.mResult < PGNHeaderData.RESULTS.length)
+			result = PGNHeaderData.RESULTS[header.mResult];
 		puts(
 				"[Event \"" + header.mEvent + "\"]\n" +
 				"[Site \"Kosovo Polje\"]\n" +
 				"[Date \"1389.06.28\"]\n" +
-				"[Round \"1\"]\n" +
+				"[Round \"" + header.mRound + "\"]\n" +
 				"[White \"" + header.mWhite + "\"]\n" +
 				"[Black \"" + header.mBlack + "\"]\n" +
-				"[Result \"*\"]\n" +
+				"[Result \"" + result + "\"]\n" +
 				"[WhiteElo \"" + header.mWhiteElo + "\"]\n" +
 				"[BlackElo \"" + header.mBlackElo + "\"]\n" +
 				"[PlyCount \"" + mGame.size() +"\"]\n"

@@ -4,14 +4,10 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent">
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+<TableRow>
 <TextView android:id="@+id/filenamestatic"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -20,11 +16,14 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="/sdcard/game.pgn"/>
-</LinearLayout>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+</TableRow>
+<TableRow>
+<Button android:id="@+id/save"
+   android:text="save"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"/>
+</TableRow> 
+<TableRow>
 <TextView android:id="@+id/whitestatic"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -33,11 +32,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="white"/>
-</LinearLayout>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+</TableRow>
+<TableRow>
 <TextView android:id="@+id/blackstatic"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -47,11 +43,19 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="black"/>
-</LinearLayout>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+</TableRow>
+<TableRow>
+<TextView android:id="@+id/resultstatic"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:text="result:"/>
+<Spinner android:id="@+id/result"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:drawSelectorOnTop="true"
+        />
+</TableRow>
+<TableRow>
 <TextView android:id="@+id/eventstatic"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -60,11 +64,38 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="event"/>
-</LinearLayout>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+</TableRow>
+<TableRow>
+<TextView android:id="@+id/sitestatic"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal">
+    android:text="site:"/>
+<EditText android:id="@+id/site"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Prague"/>
+</TableRow>
+<TableRow>
+<TextView android:id="@+id/datestatic"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="date:"/>
+<Button android:id="@+id/date"
+   android:text="2009-10-1"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"/>
+</TableRow>
+<TableRow>
+<TextView android:id="@+id/roundstatic"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="round:"/>
+<EditText android:id="@+id/round"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="1"/>
+</TableRow>
+<TableRow>
 <TextView android:id="@+id/whiteelostatic"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -73,11 +104,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="2000"/>
-</LinearLayout>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal">
+</TableRow>
+<TableRow>
 <TextView android:id="@+id/blackelostatic"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
@@ -86,10 +114,6 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text="2000"/>
-</LinearLayout>
-<Button android:id="@+id/save"
-   android:text="save"
-   android:layout_width="wrap_content"
-   android:layout_height="wrap_content"/>  
-</LinearLayout>
+</TableRow>
+</TableLayout>
 </ScrollView>

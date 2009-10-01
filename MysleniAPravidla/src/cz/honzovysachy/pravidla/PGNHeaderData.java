@@ -10,20 +10,23 @@ public class PGNHeaderData implements Serializable {
 	public String mWhite;
 	public String mBlack;
 	public String mEvent;
+	public int mRound;
 	public int mWhiteElo;
 	public int mBlackElo;
 	public int mResult;
 	
-	public PGNHeaderData(String fileName, String white, String black, String event, int whiteElo,
+	public PGNHeaderData(String fileName, String white, String black, String event, int round, int whiteElo,
 			int blackElo, int result)
 	{
 		mFileName = fileName;
 		mWhite = white;
 		mBlack = black;
 		mEvent = event;
+		mRound = round;
 		mWhiteElo = whiteElo;
 		mBlackElo = blackElo;
 		mResult = result;
 	}
-
+	
+	public static final String[] RESULTS = {"*", "1-0", "0-1", "1/2-1/2"};
 }
