@@ -30,6 +30,7 @@ public class PGNSaveActivity extends Activity implements OnDateSetListener {
         final EditText white = (EditText)findViewById(R.id.white);
         final EditText black = (EditText)findViewById(R.id.black);
         final EditText event = (EditText)findViewById(R.id.event);
+        final EditText site = (EditText)findViewById(R.id.site);
         final EditText round = (EditText)findViewById(R.id.round);
         final EditText whiteelo = (EditText)findViewById(R.id.whiteelo);
         final EditText blackelo = (EditText)findViewById(R.id.blackelo);
@@ -68,10 +69,14 @@ public class PGNSaveActivity extends Activity implements OnDateSetListener {
                 				white.getText().toString(),
                 				black.getText().toString(),
                 				event.getText().toString(),
+                				site.getText().toString(),
                 				iRound,
                 				iWhiteElo,
                 				iBlackElo,
-                				gameResult.getSelectedItemPosition()));
+                				gameResult.getSelectedItemPosition(),
+                				mYear,
+                				mMonth,
+                				mDay));
                 setResult(10, result);
                 finish();
             }

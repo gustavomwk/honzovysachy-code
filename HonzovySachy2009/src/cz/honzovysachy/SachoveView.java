@@ -355,8 +355,9 @@ public class SachoveView extends View {
     protected void undo() {
     	if (mTask.mIndexInGame >= 0) {
     		mTask.tahniZpet(0, true, null);
-    		mSavedTaskAndroid.mWhitePerson = mTask.mBoardComputing.bily;
-    		mSavedTaskAndroid.mBlackPerson = !mTask.mBoardComputing.bily;
+    		boolean tmp = mSavedTaskAndroid.mWhitePerson;
+    		mSavedTaskAndroid.mWhitePerson = mSavedTaskAndroid.mBlackPerson;
+    		mSavedTaskAndroid.mBlackPerson = tmp;
     		invalidate();
     	}
     }

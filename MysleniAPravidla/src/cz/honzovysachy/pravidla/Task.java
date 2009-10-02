@@ -1623,8 +1623,8 @@ public class Task extends SavedTask {
 			result = PGNHeaderData.RESULTS[header.mResult];
 		puts(
 				"[Event \"" + header.mEvent + "\"]\n" +
-				"[Site \"Kosovo Polje\"]\n" +
-				"[Date \"1389.06.28\"]\n" +
+				"[Site \"" + header.mSite + "\"]\n" +
+				"[Date \"" + header.mYear + "." + header.mMonth + "." + header.mDay + "\"]\n" +
 				"[Round \"" + header.mRound + "\"]\n" +
 				"[White \"" + header.mWhite + "\"]\n" +
 				"[Black \"" + header.mBlack + "\"]\n" +
