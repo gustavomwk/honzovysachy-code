@@ -1647,7 +1647,7 @@ public class Task extends SavedTask {
 			
 			tahni(0, true, false, null);
 		}
-		fputs(" *\n", f);
+		fputs(" " + result + "\n", f);
 		if (close) f.close();
 	}
 }
