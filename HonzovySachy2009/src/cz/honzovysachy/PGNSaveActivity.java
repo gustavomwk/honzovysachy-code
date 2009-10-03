@@ -75,7 +75,7 @@ public class PGNSaveActivity extends Activity implements OnDateSetListener {
                 				iBlackElo,
                 				gameResult.getSelectedItemPosition(),
                 				mYear,
-                				mMonth,
+                				mMonth + 1,
                 				mDay));
                 setResult(10, result);
                 finish();
@@ -97,6 +97,10 @@ public class PGNSaveActivity extends Activity implements OnDateSetListener {
 	@Override
 	public void onDateSet(DatePicker view, int year, int monthOfYear,
 			int dayOfMonth) {
+		mYear = year;
+		mMonth = monthOfYear;
+		mDay = dayOfMonth;
+		
 		Button date = (Button)findViewById(R.id.date);
 		date.setText(year + "-" + (monthOfYear + 1) + "-" +dayOfMonth);
 		

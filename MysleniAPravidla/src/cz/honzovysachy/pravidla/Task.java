@@ -1617,17 +1617,21 @@ public class Task extends SavedTask {
 		putc('\n', f);
 	}
 	
+	private static String removeQuotes(String s) {
+		return s.replace('"', ' ');
+	}
+	
 	public void savePNG(FileOutputStream f, boolean close, PGNHeaderData header) throws IOException {
 		String result = PGNHeaderData.RESULTS[0];
 		if (header.mResult > 0 && header.mResult < PGNHeaderData.RESULTS.length)
 			result = PGNHeaderData.RESULTS[header.mResult];
 		puts(
-				"[Event \"" + header.mEvent + "\"]\n" +
-				"[Site \"" + header.mSite + "\"]\n" +
+				"[Event \"" + removeQuotes(header.mEvent) + "\"]\n" +
+				"[Site \"" + removeQuotes(header.mSite) + "\"]\n" +
 				"[Date \"" + header.mYear + "." + header.mMonth + "." + header.mDay + "\"]\n" +
 				"[Round \"" + header.mRound + "\"]\n" +
-				"[White \"" + header.mWhite + "\"]\n" +
-				"[Black \"" + header.mBlack + "\"]\n" +
+				"[White \"" + removeQuotes(header.mWhite) + "\"]\n" +
+				"[Black \"" + removeQuotes(header.mBlack) + "\"]\n" +
 				"[Result \"" + result + "\"]\n" +
 				"[WhiteElo \"" + header.mWhiteElo + "\"]\n" +
 				"[BlackElo \"" + header.mBlackElo + "\"]\n" +
