@@ -352,22 +352,34 @@ public class SachoveView extends View {
     	invalidate();
     }
     
+    protected void setPersonsAfterUndoRedo() {
+    	boolean hh = mSavedTaskAndroid.mWhitePerson && mSavedTaskAndroid.mBlackPerson;
+		if (!hh) {
+			if (mTask.mBoard.bily) {
+				mSavedTaskAndroid.mWhitePerson = true;
+				mSavedTaskAndroid.mBlackPerson = false;
+			} else {
+				mSavedTaskAndroid.mBlackPerson = true;
+				mSavedTaskAndroid.mWhitePerson = false;
+			}
+		}
+    }
+    
     protected void undo() {
     	if (mTask.mIndexInGame >= 0) {
     		mTask.tahniZpet(0, true, null);
-    		boolean tmp = mSavedTaskAndroid.mWhitePerson;
-    		mSavedTaskAndroid.mWhitePerson = mSavedTaskAndroid.mBlackPerson;
-    		mSavedTaskAndroid.mBlackPerson = tmp;
+    		setPersonsAfterUndoRedo();
     		invalidate();
+    		pripravTah();
     	}
     }
     
     protected void redo() {
     	if (mTask.mIndexInGame + 1 < mTask.mGame.size()) {
 			mTask.tahni(0, true, false, null);
-			mSavedTaskAndroid.mWhitePerson = mTask.mBoardComputing.bily;
-			mSavedTaskAndroid.mBlackPerson = !mTask.mBoardComputing.bily;
+			setPersonsAfterUndoRedo();
 			invalidate();
+			pripravTah();
 		}
     }
     
