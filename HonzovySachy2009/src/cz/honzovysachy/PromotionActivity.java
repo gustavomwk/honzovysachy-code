@@ -1,5 +1,6 @@
 package cz.honzovysachy;
 
+import cz.honzovysachy.resouces.S;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -33,5 +34,5 @@ public class PromotionActivity extends ListActivity {
         	
         });
     }
-	private String[] mStrings = {"Knight", "Bishop", "Rook", "Queen"};
+	private String[] mStrings = {S.g("KNIGHT"), S.g("BISHOP"), S.g("ROOK"), S.g("QUEEN")};
 }

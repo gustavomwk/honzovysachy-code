@@ -40,6 +40,7 @@ import cz.honzovysachy.pravidla.PGNHeaderData;
 import cz.honzovysachy.pravidla.PawnPromotionGUIQueen;
 import cz.honzovysachy.pravidla.Pozice;
 import cz.honzovysachy.pravidla.Task;
+import cz.honzovysachy.resouces.S;
 
 
 
@@ -192,11 +193,8 @@ public class SachoveView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
     	byte[] sch = null;
-    /*	if (isPremyslim()) {
-    		sch = mSchPriMysleni;
-    	} else {*/
-    		sch = mTask.mBoard.sch;
-    //	}
+   		sch = mTask.mBoard.sch;
+
     	Rect r = new Rect();
     	getDrawingRect(r);
   		int w = r.right - r.left;//canvas.getWidth();
@@ -407,9 +405,9 @@ public class SachoveView extends View {
     		if (pgnData == null) return;
     		mTask.savePNG(
 				new FileOutputStream(new File(pgnData.mFileName)), true, pgnData);
-    		dlg("Saved as " + pgnData.mFileName + ".");
+    		dlg(S.g("SAVED_AS") + pgnData.mFileName + ".");
 		} catch (IOException e) {
-			dlg("Save error");
+			dlg(S.g("SAVE_ERROR"));
 		}
     }
     

@@ -1,0 +1,29 @@
+HONZOVY_SACHY Honzovy \u0161achy
+FLIP_BOARD Oto\u010D \u0161achovnici
+MOVE T\u0E1hni
+NEW_GAME Nov\u0E1  partie
+UNDO Zp\u011Bt
+REDO Znovu
+THINKING P\u0159em\u0FD\u0161l\u0EDm...
+SAVE_GAME Ulo\u017E partii
+HUMAN_OPONENT \u010Clov\u011Bk-\u010Dlov\u011Bk
+SAVED_AS Ulo\u017E jako 
+SAVE_ERROR Chyba p\u0159i ulo\u017Een\u0ED
+KNIGHT Jezdec
+BISHOP St\u0159elec
+ROOK V\u011B\u017E
+QUEEN D\u0E1 ma
+SAVE_PGN Ulo\u017E PGN
+FILE_NAME soubor
+GAME partie
+SAVE ulo\u017E
+WHITE b\u0ED l\u0FD
+BLACK \u010Dern\u0FD
+RESULT v\u0FD sledek
+EVENT ud\u0E1 lost
+SITE m\u0ED sto
+PRAGUE Praha
+DATE datum
+ROUND kolo
+WHITE_ELO elo b\u0ED l\u0E9 ho
+BLACK_ELO elo \u010Dern\u0E9 ho

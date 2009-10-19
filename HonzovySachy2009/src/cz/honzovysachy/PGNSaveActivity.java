@@ -1,6 +1,7 @@
 package cz.honzovysachy;
 
 import cz.honzovysachy.pravidla.PGNHeaderData;
+import cz.honzovysachy.resouces.S;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class PGNSaveActivity extends Activity implements OnDateSetListener {
 	int mYear = 2009;
@@ -22,7 +24,7 @@ public class PGNSaveActivity extends Activity implements OnDateSetListener {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+        this.setTitle(S.g("SAVE_PGN"));
         setContentView(R.layout.pgn_header);
         final Button save = (Button)findViewById(R.id.save);
         final Button date = (Button)findViewById(R.id.date);
@@ -35,6 +37,38 @@ public class PGNSaveActivity extends Activity implements OnDateSetListener {
         final EditText whiteelo = (EditText)findViewById(R.id.whiteelo);
         final EditText blackelo = (EditText)findViewById(R.id.blackelo);
         final Spinner gameResult = (Spinner)findViewById(R.id.result);
+        
+        TextView tFileName = (TextView)findViewById(R.id.filenamestatic);
+        TextView tWhite = (TextView)findViewById(R.id.whitestatic);
+        TextView tBlack = (TextView)findViewById(R.id.blackstatic);
+        TextView tResult = (TextView)findViewById(R.id.resultstatic);
+        TextView tEvent = (TextView)findViewById(R.id.eventstatic);
+        TextView tSite = (TextView)findViewById(R.id.sitestatic);
+        TextView tDate = (TextView)findViewById(R.id.datestatic);
+        TextView tRound = (TextView)findViewById(R.id.roundstatic);
+        TextView tWhiteElo = (TextView)findViewById(R.id.whiteelostatic);
+        TextView tBlackElo = (TextView)findViewById(R.id.blackelostatic);
+        
+        tFileName.setText(S.g("FILE_NAME") + ":");
+        tWhite.setText(S.g("WHITE") + ":");
+        tBlack.setText(S.g("BLACK") + ":");
+        tResult.setText(S.g("RESULT") + ":");
+        tEvent.setText(S.g("EVENT") + ":");
+        tSite.setText(S.g("SITE") + ":");
+        tDate.setText(S.g("DATE") + ":");
+        tRound.setText(S.g("ROUND") + ":");
+        tWhiteElo.setText(S.g("WHITE_ELO") + ":");
+        tBlackElo.setText(S.g("BLACK_ELO") + ":");
+        
+        
+        
+        save.setText(S.g("SAVE"));
+        filename.setText("/sdcard/" + S.g("GAME") + ".pgn");
+        white.setText(S.g("WHITE"));
+        black.setText(S.g("BLACK"));
+        event.setText(S.g("EVENT"));
+        site.setText(S.g("PRAGUE"));
+        
         
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(
         		this, android.R.layout.simple_spinner_item,

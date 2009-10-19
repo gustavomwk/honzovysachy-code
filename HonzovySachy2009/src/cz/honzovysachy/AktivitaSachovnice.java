@@ -54,7 +54,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        S.init("en");
+        S.init("cz");
         mView = new SachoveView(this);
         setContentView(mView);
     }

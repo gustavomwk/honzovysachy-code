@@ -7,3 +7,23 @@ REDO Redo
 THINKING thinking...
 SAVE_GAME Save game
 HUMAN_OPONENT Human-human
+SAVED_AS Saved as 
+SAVE_ERROR Save error
+KNIGHT Knight
+BISHOP Bishop
+ROOK Rook
+QUEEN Queen
+SAVE_PGN Save PGN
+FILE_NAME file name
+GAME game
+SAVE save
+WHITE white
+BLACK black
+RESULT result
+EVENT event
+SITE site
+PRAGUE Prague
+DATE date
+ROUND round
+WHITE_ELO white elo
+BLACK_ELO black elo
