@@ -16,6 +16,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.honzovysachy;
 
+import java.util.Locale;
+
 import cz.honzovysachy.resouces.S;
 import android.app.Activity;
 import android.content.Intent;
@@ -54,7 +56,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        S.init("cz");
+        S.init(Locale.getDefault().getLanguage());
         mView = new SachoveView(this);
         setContentView(mView);
     }
