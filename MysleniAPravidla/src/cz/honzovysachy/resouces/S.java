@@ -1,6 +1,9 @@
 package cz.honzovysachy.resouces;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.Properties;
 
 public class S {
@@ -17,6 +20,19 @@ public class S {
 			return init(def);
 		};
 		return true;
+	}
+	
+	public static boolean init(int type, String file) {
+		strings.clear();
+		switch (type) {
+		case 2: try {
+			strings.load(new FileInputStream(file));
+			return true;
+		} catch (IOException e) { return false;}
+		case 3: return init("cs");
+		case 4: return init("en");
+		default: return init(Locale.getDefault().getLanguage());
+		}
 	}
 	
 	public static String g(String key) {

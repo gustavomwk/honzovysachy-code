@@ -421,4 +421,9 @@ public class SachoveView extends View {
         result.setClass(getContext(), PGNSaveActivity.class);
 		((Activity)(getContext())).startActivityForResult(result, 0);
     }
+    public void settings() {
+   		Intent result = new Intent();
+        result.setClass(getContext(), SettingsActivity.class);
+		((Activity)(getContext())).startActivity(result);
+    }
  }

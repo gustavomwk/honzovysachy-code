@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+<LinearLayout
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+<TextView android:id="@+id/locale"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Locale:"/>
+    
+ <RadioGroup android:id="@+id/localegroup"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RadioButton android:id="@+id/localedefault"
+    	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+      	android:text="default" />
+    <RadioButton android:id="@+id/cs"
+    	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+      	android:text="Czech" />
+     <RadioButton android:id="@+id/en"
+    	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+      	android:text="English" />
+     <RadioButton android:id="@+id/sdcard"
+    	android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+      	android:text="/sdcard/strings_hs.txt" />
+</RadioGroup>
+<Button android:id="@+id/ok"
+   android:text="OK"
+   android:layout_width="wrap_content"
+   android:layout_height="wrap_content"/>
+</LinearLayout>
+</ScrollView>
