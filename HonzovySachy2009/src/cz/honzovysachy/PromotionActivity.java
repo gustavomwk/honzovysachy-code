@@ -22,6 +22,7 @@ public class PromotionActivity extends ListActivity {
         PromotionActivity.this.setResult(3);
         setListAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
+        setTitle(S.g("PAWN_PROMOTION"));
         getListView().setTextFilterEnabled(true);
         getListView().setOnItemClickListener(new OnItemClickListener(){
 

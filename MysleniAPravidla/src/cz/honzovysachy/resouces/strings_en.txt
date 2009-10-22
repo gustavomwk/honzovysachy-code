@@ -27,3 +27,13 @@ DATE date
 ROUND round
 WHITE_ELO white elo
 BLACK_ELO black elo
+PAWN_PROMOTION Pawn promotion
+WHITE_WINS White wins
+BLACK_WINS Black wins
+DRAW Draw
+COMMA_BLACK_CHECKMATED , black checkmated
+COMMA_WHITE_CHECKMATED , white checkmated
+COMMA_STALEMATE , stalemate
+COMMA_MATERIAL , material
+COMMA_50_MOVES_RULE , 50 moves rule
+COMMA_3_TIMES_REPETITION , 3 times repetition

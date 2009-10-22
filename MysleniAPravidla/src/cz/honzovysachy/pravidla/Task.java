@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import cz.honzovysachy.mysleni.HodnotaPozice;
+import cz.honzovysachy.resouces.S;
 
 public class Task extends SavedTask {
 
@@ -74,30 +75,30 @@ public class Task extends SavedTask {
 			return "";
 		String s = new String();
 		if (end < 10)
-			s = "White wins";
+			s = S.g("WHITE_WINS");
 		else if (end < 20)
-			s = "Black wins";
+			s = S.g("BLACK_WINS");
 		else
-			s = "Draw";
+			s = S.g("DRAW");
 		switch (end) {
 		case WHITE_WINS_MAT:
-			s += ", black checkmated";
+			s += S.g("COMMA_BLACK_CHECKMATED");
 			break;
 		case BLACK_WINS_MAT:
-			s += ", white checkmated";
+			s += S.g("COMMA_WHITE_CHECKMATED");
 			break;
 		case DRAW_WHITE_IN_STALEMATE:
 		case DRAW_BLACK_IN_STALEMATE:
-			s += ", stalemate";
+			s += S.g("COMMA_STALEMATE");
 			break;
 		case DRAW_MATERIAL:
-			s += ", material";
+			s += S.g("COMMA_MATERIAL");
 			break;
 		case DRAW_50_MOVES:
-			s += ", 50 moves rule";
+			s += S.g("COMMA_50_MOVES_RULE");
 			break;
 		case DRAW_3_REPETITION:
-			s += ", 3 times repetition";
+			s += S.g("COMMA_3_TIMES_REPETITION");
 			break;
 		}
 		return s;
