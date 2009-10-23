@@ -1,4 +1,4 @@
-HONZOVY_SACHY Honzovy \u0161achy
+HONZOVY_SACHY Honza's Chess
 FLIP_BOARD Flip board
 MOVE Move
 NEW_GAME New game
@@ -37,3 +37,10 @@ COMMA_STALEMATE , stalemate
 COMMA_MATERIAL , material
 COMMA_50_MOVES_RULE , 50 moves rule
 COMMA_3_TIMES_REPETITION , 3 times repetition
+SETTINGS Settings
+ABOUT About
+OK OK
+CZECH Czech
+ENGLISH English
+DEFAULT default
+LOCALE Locale:

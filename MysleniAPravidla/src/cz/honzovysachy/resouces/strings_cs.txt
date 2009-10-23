@@ -37,4 +37,10 @@ COMMA_STALEMATE , pat
 COMMA_MATERIAL , materi\u00E1l
 COMMA_50_MOVES_RULE , 50 tah\u016F
 COMMA_3_TIMES_REPETITION , opakovan\u00E1 pozice
-
+SETTINGS Nastaven\u00ed
+ABOUT O programu
+OK Budi\u017E
+CZECH \u010desky
+ENGLISH anglicky
+DEFAULT v\u00fdchoz\u00ed
+LOCALE N\u00e1rodn\u00ed prost\u0159ed\u00ed:

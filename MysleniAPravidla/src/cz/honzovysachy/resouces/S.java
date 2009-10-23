@@ -23,7 +23,7 @@ public class S {
 	}
 	
 	public static boolean init(int type, String file) {
-		strings.clear();
+		strings = new Properties();
 		switch (type) {
 		case 2: try {
 			strings.load(new FileInputStream(file));

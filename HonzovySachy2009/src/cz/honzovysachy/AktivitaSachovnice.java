@@ -16,21 +16,31 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 
 package cz.honzovysachy;
 
-import java.util.Locale;
-
 import cz.honzovysachy.resouces.S;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
+	public static boolean mChangedLanguage; 
+	
+	
+	public static final String SETTINGS = "settings";
+	public static final String LOCALE = "locale";
+	public static final String LOCALE_FILE = "/sdcard/strings_hs.txt";
+	
 	SachoveView mView;
 	
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    super.onCreateOptionsMenu(menu);
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		if (!mChangedLanguage) return true;
+		mChangedLanguage = false;
+		menu.clear();
 	    menu.add(Menu.NONE, 1, Menu.NONE, S.g("FLIP_BOARD")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 2, Menu.NONE, S.g("MOVE")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 3, Menu.NONE, S.g("NEW_GAME")).setOnMenuItemClickListener(this);
@@ -58,7 +68,11 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        S.init(Locale.getDefault().getLanguage());
+        SharedPreferences pref = getBaseContext().getSharedPreferences(SETTINGS, 0);
+        int i = pref.getInt(LOCALE, 1);
+        S.init(i, LOCALE_FILE);
+        this.setTitle(S.g("HONZOVY_SACHY"));
+        mChangedLanguage = true;
         mView = new SachoveView(this);
         setContentView(mView);
     }
@@ -99,6 +113,11 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			break;
 		case 8: 
 			mView.settings();
+			break;
+		case 9:
+			Intent myIntent = new Intent(Intent.ACTION_VIEW,
+				Uri.parse("http://honzovysachy.sf.net"));
+			startActivity(myIntent);
 			break;
 		}
 		return true;
