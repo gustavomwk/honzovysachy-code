@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.example.android.apis"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content">
+    <cz.honzovysachy.BoardControl android:id="@+id/chess_board"
+    	android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+     />
+</LinearLayout>
+
+   

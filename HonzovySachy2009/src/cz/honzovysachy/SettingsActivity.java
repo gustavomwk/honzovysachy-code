@@ -2,6 +2,7 @@ package cz.honzovysachy;
 
 import cz.honzovysachy.resouces.S;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
@@ -35,6 +36,7 @@ public class SettingsActivity extends Activity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		setResult(11, new Intent());
 		this.setTitle(S.g("SETTINGS"));
 		setContentView(R.layout.settings);
 		final Button ok = (Button)findViewById(R.id.ok);
@@ -65,7 +67,7 @@ public class SettingsActivity extends Activity {
                 editor.commit();
                 S.init(type, AktivitaSachovnice.LOCALE_FILE);
                 AktivitaSachovnice.mChangedLanguage = true;
-				finish();				
+                finish();				
 			}
 			
 		});

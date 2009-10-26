@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
 	public static boolean mChangedLanguage; 
@@ -33,7 +34,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	public static final String LOCALE = "locale";
 	public static final String LOCALE_FILE = "/sdcard/strings_hs.txt";
 	
-	SachoveView mView;
+	BoardControl mView;
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
@@ -64,17 +65,23 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
        mView.trySave();
     }
 	
+    private void setTitle() {
+    	setTitle(S.g("HONZOVY_SACHY"));
+    }
+    
     /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        
+        setContentView(R.layout.board_view);
         SharedPreferences pref = getBaseContext().getSharedPreferences(SETTINGS, 0);
         int i = pref.getInt(LOCALE, 1);
         S.init(i, LOCALE_FILE);
-        this.setTitle(S.g("HONZOVY_SACHY"));
+        setTitle();
         mChangedLanguage = true;
-        mView = new SachoveView(this);
-        setContentView(mView);
+        mView = (BoardControl)findViewById(R.id.chess_board);
+     //   setContentView(mView);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -82,7 +89,11 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     		mView.replayPromotion(resultCode);
     		return;
     	}
-    	mView.save(data);
+    	switch (resultCode) {
+    	case 10: mView.save(data); break;
+    	case 11: setTitle(); break;
+    	}
+    	
     }
 
 	public boolean onMenuItemClick(MenuItem item) {
@@ -97,7 +108,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			mView.hrajTed();
 			break;
 		case 3: 
-			mView.novaPartie();
+			mView.newGame();
 			break;
 		case 4: 
 			mView.undo();

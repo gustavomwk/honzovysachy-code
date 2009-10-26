@@ -26,12 +26,14 @@ import java.util.Vector;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
+import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -44,7 +46,7 @@ import cz.honzovysachy.resouces.S;
 
 
 
-public class SachoveView extends View {
+public class BoardControl extends View {
 	SavedTaskAndroid mSavedTaskAndroid;
 	boolean mThinking = false;
 
@@ -72,20 +74,8 @@ public class SachoveView extends View {
 		return true;
 	}
 	
-	public SavedTaskChessAndroid tryLoad() {
-		SavedTaskChessAndroid task = null;
-		try {
-			FileInputStream f = getContext().openFileInput("soubor");
-			ObjectInputStream o = new ObjectInputStream(f);
-			task = (SavedTaskChessAndroid)o.readObject();
-			o.close();
-	       } catch (Exception e) {};
-	       return task;
-	}
-	
-    public SachoveView(Activity a) {
-        super(a);
-        SavedTaskChessAndroid saved = tryLoad();
+	private void init() {
+		SavedTaskChessAndroid saved = tryLoad();
         if (saved == null) {
         	mSavedTaskAndroid = new SavedTaskAndroid();
         	mTask = new Task(null);
@@ -110,6 +100,28 @@ public class SachoveView extends View {
         mFigury[1][4] = getContext().getResources().getDrawable(R.drawable.bd);
         mFigury[1][5] = getContext().getResources().getDrawable(R.drawable.bk);
         pripravTahHned();
+	}
+	
+	
+	public SavedTaskChessAndroid tryLoad() {
+		SavedTaskChessAndroid task = null;
+		try {
+			FileInputStream f = getContext().openFileInput("soubor");
+			ObjectInputStream o = new ObjectInputStream(f);
+			task = (SavedTaskChessAndroid)o.readObject();
+			o.close();
+	       } catch (Exception e) {};
+	       return task;
+	}
+	
+	public BoardControl(Context context, AttributeSet attrs) {
+		super(context, attrs);
+		init();
+	}
+	
+	public BoardControl(Context context) {
+        super(context);
+        init();
     }
     
     public void pripravTah() {
@@ -339,14 +351,16 @@ public class SachoveView extends View {
     	t.start();
      }
     
-    protected void novaPartie() {
+    protected void newGame() {
     	mTask = new Task(null);
     	mSavedTaskAndroid.mox = -1;
     	mSavedTaskAndroid.moy = -1;
     	mSavedTaskAndroid.mcx = 0;
     	mSavedTaskAndroid.mcy = 0;
-    	mSavedTaskAndroid.mBlackPerson = false;
-    	mSavedTaskAndroid.mWhitePerson = true;
+    	if (!(mSavedTaskAndroid.mBlackPerson && mSavedTaskAndroid.mWhitePerson)) {
+    		mSavedTaskAndroid.mBlackPerson = false;
+    		mSavedTaskAndroid.mWhitePerson = true;
+    	}
     	invalidate();
     }
     
@@ -424,6 +438,6 @@ public class SachoveView extends View {
     public void settings() {
    		Intent result = new Intent();
         result.setClass(getContext(), SettingsActivity.class);
-		((Activity)(getContext())).startActivity(result);
+		((Activity)(getContext())).startActivityForResult(result, 0);
     }
  }
