@@ -24,6 +24,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
 	public static boolean mChangedLanguage; 
@@ -50,6 +52,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	    menu.add(Menu.NONE, 7, Menu.NONE, S.g("HUMAN_OPONENT")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 8, Menu.NONE, S.g("SETTINGS")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 9, Menu.NONE, S.g("ABOUT")).setOnMenuItemClickListener(this);
+	    menu.add(Menu.NONE, 10, Menu.NONE, S.g("SETUP_BOARD")).setOnMenuItemClickListener(this);
 	    return true;
 	}
 	
@@ -81,7 +84,15 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         mChangedLanguage = true;
         mView = (BoardControl)findViewById(R.id.chess_board);
         mView.mActivity = this;
-            //   setContentView(mView);
+        final Button bOk = (Button)findViewById(R.id.board_setting_ok);
+        bOk.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				mView.setupBoardOK();
+			}
+        	
+        });
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -129,6 +140,9 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			Intent myIntent = new Intent(Intent.ACTION_VIEW,
 				Uri.parse("http://honzovysachy.sf.net"));
 			startActivity(myIntent);
+			break;
+		case 10:
+			mView.setupBoard();
 			break;
 		}
 		return true;

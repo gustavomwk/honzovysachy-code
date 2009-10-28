@@ -212,8 +212,8 @@ public class BoardControl extends View {
 
     	Rect r = new Rect();
     	getDrawingRect(r);
-  		int w = r.right - r.left;//canvas.getWidth();
-   		int h = r.bottom - r.top;//canvas.getHeight() - 50;
+  		int w = r.right - r.left;
+   		int h = r.bottom - r.top;
    		mSavedTaskAndroid.mPole = (w < h ? w : h);
    		mSavedTaskAndroid.mPole >>= 3;
         
@@ -475,6 +475,19 @@ public class BoardControl extends View {
     	int height = MeasureSpec.getSize(heightMeasureSpec);
     	width = Math.min(width, height);
         setMeasuredDimension(width, width);
+    }
+    public void setupBoard() {
+    	View setting = mActivity.findViewById(R.id.board_setting_panel);
+    	View normal = mActivity.findViewById(R.id.normal_panel);
+    	normal.setVisibility(GONE);
+    	setting.setVisibility(VISIBLE);
+    }
+    
+    public void setupBoardOK() {
+    	View setting = mActivity.findViewById(R.id.board_setting_panel);
+    	View normal = mActivity.findViewById(R.id.normal_panel);
+    	normal.setVisibility(VISIBLE);
+    	setting.setVisibility(GONE);
     }
 
  }

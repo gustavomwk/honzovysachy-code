@@ -9,8 +9,28 @@
     	android:layout_width="fill_parent"
         android:layout_height="fill_parent"
      />
+     <LinearLayout android:id="@+id/normal_panel"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
      <TextView android:id="@+id/move"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:text=""/>
+    </LinearLayout>
+    
+    <LinearLayout android:id="@+id/board_setting_panel"
+    	android:visibility = "gone"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content">
+     <Button android:id="@+id/board_setting_ok"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="OK"/>
+    <TextView android:id="@+id/setup_board_text"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:text="Press move on the board and press e, k, q, r, b, n, p, K, Q, R, B, P"/>
+    </LinearLayout>
 </cz.honzovysachy.FlexibleLayout>
