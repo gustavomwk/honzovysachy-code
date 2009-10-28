@@ -37,7 +37,9 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 import cz.honzovysachy.mysleni.Minimax;
+import cz.honzovysachy.mysleni.ThinkingOutput;
 import cz.honzovysachy.pravidla.PGNHeaderData;
 import cz.honzovysachy.pravidla.PawnPromotionGUIQueen;
 import cz.honzovysachy.pravidla.Pozice;
@@ -56,6 +58,7 @@ public class BoardControl extends View {
 	Drawable mFigury[][];
 	Task mTask;
 	final Handler mHandler = new Handler();
+	AktivitaSachovnice mActivity;
 	
 	protected boolean hrajeClovek() {
 		return !isPremyslim() && (mSavedTaskAndroid.mWhitePerson && mTask.mBoardComputing.bily ||
@@ -328,16 +331,42 @@ public class BoardControl extends View {
     	return mThinking;
     }
     
-    
-    
-    
     protected void tahniPrograme() {
     	mThinking = true;
     	Thread t = new Thread() {
     		public void run() {
     			mTask.nalezTahyVector();
     			final int tah;
-    			tah = Minimax.minimax(mTask, 5000, null); 
+    			tah = Minimax.minimax(mTask, 5000, new ThinkingOutput() {
+    				int mDepth = 0;
+    				String mMove = "";
+    				int mValue = 0;
+    				
+    				private void draw() {
+    					mHandler.post(
+    		    				new Runnable() {
+    								public void run() {
+    									TextView v = (TextView)mActivity.findViewById(R.id.move);
+    			    					v.setText(mMove + " (" + mDepth +") " + mValue);
+    									}}
+    		    					 );
+    					
+    				}
+    				
+					@Override
+					public void bestMove(String move, int value) {
+						mMove = move;
+						mValue = value;
+						draw();
+					}
+
+					@Override
+					public void depth(int depth) {
+						mDepth = depth;
+						draw();						
+					}
+    				
+    			}); 
     			mHandler.post(
     				new Runnable() {
 						public void run() {
@@ -440,4 +469,12 @@ public class BoardControl extends View {
         result.setClass(getContext(), SettingsActivity.class);
 		((Activity)(getContext())).startActivityForResult(result, 0);
     }
+
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+      	int width = MeasureSpec.getSize(widthMeasureSpec);
+    	int height = MeasureSpec.getSize(heightMeasureSpec);
+    	width = Math.min(width, height);
+        setMeasuredDimension(width, width);
+    }
+
  }

@@ -24,7 +24,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
 	public static boolean mChangedLanguage; 
@@ -81,7 +80,8 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         setTitle();
         mChangedLanguage = true;
         mView = (BoardControl)findViewById(R.id.chess_board);
-     //   setContentView(mView);
+        mView.mActivity = this;
+            //   setContentView(mView);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
