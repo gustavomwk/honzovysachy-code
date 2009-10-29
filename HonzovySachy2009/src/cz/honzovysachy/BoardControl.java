@@ -571,6 +571,10 @@ public class BoardControl extends View {
     		}
     		mTask.mBoardComputing = new Pozice(mTask.mBoard);
     	}
+    	if (mTask.mBoard.correctBoard() != 0) {
+    		dlg(S.g("INCORRECT_BOARD"));
+    		return;
+    	}
     	normal.setVisibility(VISIBLE);
     	setting.setVisibility(GONE);
     	mSavedTaskAndroid.mSetup = false;

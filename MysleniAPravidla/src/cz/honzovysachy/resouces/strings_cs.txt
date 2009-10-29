@@ -47,3 +47,4 @@ LOCALE N\u00e1rodn\u00ed prost\u0159ed\u00ed:
 SETUP_BOARD Nastav pozici
 CANCEL Zru\u0161it
 SETUP_TEXT Pohybuj se po \u0161achovnici a ma\u010Dkej 0, 1, 2, 3, 4, 5, 6, q, w, e, r, t, y
+INCORRECT_BOARD nep\u0159\u00edpustn\u00e1 pozice

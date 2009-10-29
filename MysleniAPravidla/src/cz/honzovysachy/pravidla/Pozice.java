@@ -240,6 +240,61 @@ public class Pozice implements Serializable {
   public boolean sach() {
     return sach(bily);
   }
+ 
+  public static final int TO_MANY_WHITE_PIECES = 1;
+  public static final int TO_MANY_BLACK_PIECES = 2;
+  public static final int TO_MANY_WHITE_PAWNS = 3;
+  public static final int TO_MANY_BLACK_PAWNS = 4;
+  public static final int TO_MANY_WHITE_KNIGNTS = 5;
+  public static final int TO_MANY_BLACK_KNIGNTS = 6;
+  public static final int TO_MANY_WHITE_BISHOPS = 7;
+  public static final int TO_MANY_BLACK_BISHOPS = 8;
+  public static final int TO_MANY_WHITE_ROOKS = 9;
+  public static final int TO_MANY_BLACK_ROOKS = 10;
+  public static final int TO_MANY_WHITE_QUEENS = 11;
+  public static final int TO_MANY_BLACK_QUEENS = 12;
+  public static final int TO_MANY_WHITE_KINGS = 13;
+  public static final int TO_MANY_BLACK_KINGS = 14;
+  public static final int NO_WHITE_KING = 15;
+  public static final int NO_BLACK_KING = 16;
+  public static final int PAWN_1_OR_8 = 17;
+  public static final int CHECK = 18;
+  
+  public int correctBoard() {
+	  int wpieces = 0;
+	  int bpieces = 0;
+	  int[] bp = new int[6];
+	  int[] wp = new int[6];
+	  for (int i = a1; i <= h8; i++) {
+		  if (sch[i] == 100 || sch[i] == 0) continue;
+		  if (sch[i] <= 0) {
+			  bpieces++;
+			  bp[-sch[i] - 1]++;
+		  } else {
+			  wpieces++;
+			  wp[sch[i] - 1]++;
+		  }
+		  if ((i < a2 || i > h7) && Math.abs(sch[i]) == 1) return PAWN_1_OR_8; 
+	  }
+	  if (wpieces > 16) return TO_MANY_WHITE_PIECES;
+	  if (bpieces > 16) return TO_MANY_BLACK_PIECES;
+	  if (wp[0] > 8) return TO_MANY_WHITE_PAWNS;
+	  if (bp[0] > 8) return TO_MANY_BLACK_PAWNS;
+	  if (wp[0] + wp[1] > 10) return TO_MANY_WHITE_KNIGNTS;
+	  if (bp[0] + bp[1] > 10) return TO_MANY_BLACK_KNIGNTS;
+	  if (wp[0] + wp[2] > 10) return TO_MANY_WHITE_BISHOPS;
+	  if (bp[0] + bp[2] > 10) return TO_MANY_BLACK_BISHOPS;
+	  if (wp[0] + wp[3] > 10) return TO_MANY_WHITE_ROOKS;
+	  if (bp[0] + bp[3] > 10) return TO_MANY_BLACK_ROOKS;
+	  if (wp[0] + wp[4] > 9) return TO_MANY_WHITE_QUEENS;
+	  if (bp[0] + bp[4] > 9) return TO_MANY_BLACK_QUEENS;
+	  if (wp[5] > 1) return TO_MANY_WHITE_KINGS;
+	  if (bp[5] > 1) return TO_MANY_BLACK_KINGS;
+	  if (wp[5] < 1) return NO_WHITE_KING;
+	  if (bp[5] < 1) return NO_BLACK_KING;
+	  if (sach(!bily)) return CHECK;
+	  return 0;
+  }
   
   	public String toString() {
 		StringBuffer s = new StringBuffer();
