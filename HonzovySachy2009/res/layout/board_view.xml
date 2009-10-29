@@ -22,15 +22,28 @@
     <LinearLayout android:id="@+id/board_setting_panel"
     	android:visibility = "gone"
         android:orientation="vertical"
-        android:layout_width="fill_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <LinearLayout
+    	android:orientation="horizontal"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
      <Button android:id="@+id/board_setting_ok"
-    android:layout_width="fill_parent"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="OK"/>
-    <TextView android:id="@+id/setup_board_text"
-    android:layout_width="fill_parent"
+    <Button android:id="@+id/board_setting_cancel"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="Press move on the board and press e, k, q, r, b, n, p, K, Q, R, B, P"/>
+    android:text="Cancel"/>
+    <CheckBox android:id="@+id/board_setting_white"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="White"/>
+    </LinearLayout>
+    <TextView android:id="@+id/setup_board_text"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="Move on the board and press 0, 1, 2, 3, 4, 5, 6, q, w, e, r, t, y"/>
     </LinearLayout>
 </cz.honzovysachy.FlexibleLayout>

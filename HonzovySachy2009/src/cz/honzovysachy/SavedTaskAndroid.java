@@ -14,6 +14,5 @@ public class SavedTaskAndroid implements Serializable {
 	public boolean mFlipped = false;
 	public boolean mWhitePerson = true;
 	public boolean mBlackPerson = false;
-	
-
+	boolean mSetup = false;
 }

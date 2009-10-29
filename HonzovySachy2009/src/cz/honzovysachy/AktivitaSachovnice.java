@@ -26,6 +26,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
 	public static boolean mChangedLanguage; 
@@ -84,15 +86,29 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         mChangedLanguage = true;
         mView = (BoardControl)findViewById(R.id.chess_board);
         mView.mActivity = this;
+        CheckBox cWhite = (CheckBox)findViewById(R.id.board_setting_white);
+        cWhite.setText(S.g("WHITE"));
+        TextView sText = (TextView)findViewById(R.id.setup_board_text);
+        sText.setText(S.g("SETUP_TEXT"));
         final Button bOk = (Button)findViewById(R.id.board_setting_ok);
+        bOk.setText(S.g("OK"));
         bOk.setOnClickListener(new View.OnClickListener(){
-
 			@Override
 			public void onClick(View v) {
-				mView.setupBoardOK();
+				mView.setupBoardOK(false);
 			}
         	
         });
+        final Button bCancel = (Button)findViewById(R.id.board_setting_cancel);
+        bCancel.setText(S.g("CANCEL"));
+        bCancel.setOnClickListener(new View.OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				mView.setupBoardOK(true);
+			}
+        	
+        });
+        if (mView.mSavedTaskAndroid.mSetup) mView.setupBoard();
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

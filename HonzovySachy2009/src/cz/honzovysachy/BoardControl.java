@@ -37,6 +37,7 @@ import android.util.AttributeSet;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import cz.honzovysachy.mysleni.Minimax;
 import cz.honzovysachy.mysleni.ThinkingOutput;
@@ -53,7 +54,8 @@ public class BoardControl extends View {
 	boolean mThinking = false;
 
 	int mFieldFrom;
-	int mFieldTo;	
+	int mFieldTo;
+	
 	
 	Drawable mFigury[][];
 	Task mTask;
@@ -166,6 +168,7 @@ public class BoardControl extends View {
     
     public boolean onTouchEvent(MotionEvent event)  {
     	if (isPremyslim()) return false;
+    	if (mSavedTaskAndroid.mSetup) return false;
      	if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
     	if (mSavedTaskAndroid.mPole <= 0 || !hrajeClovek()) return false;
     	int x = (int)((event.getX() + 0.5) / mSavedTaskAndroid.mPole);
@@ -264,6 +267,7 @@ public class BoardControl extends View {
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent msg) {
     	if (isPremyslim()) return false;
+    	int pole = Pozice.a1 + mSavedTaskAndroid.mcx + 10 * mSavedTaskAndroid.mcy;
     	switch (keyCode) {
     	case KeyEvent.KEYCODE_DPAD_UP:
     		if (!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy < 7 ||
@@ -297,9 +301,12 @@ public class BoardControl extends View {
     		}
     		return true;
     	case KeyEvent.KEYCODE_DPAD_CENTER:
+    		if (mSavedTaskAndroid.mSetup) {
+    			return true;
+    		}
     		if (!hrajeClovek()) return true;
     		Vector t = mTask.nalezTahyVector();
-    		int pole = Pozice.a1 + mSavedTaskAndroid.mcx + 10 * mSavedTaskAndroid.mcy;
+    		//int pole = Pozice.a1 + mSavedTaskAndroid.mcx + 10 * mSavedTaskAndroid.mcy;
     		if (mTask.JeTam1(t, pole)) {
     			mSavedTaskAndroid.mox = mSavedTaskAndroid.mcx;
     			mSavedTaskAndroid.moy = mSavedTaskAndroid.mcy;
@@ -323,6 +330,52 @@ public class BoardControl extends View {
     		}
     		
     		return true;
+    	case KeyEvent.KEYCODE_0:
+    	case KeyEvent.KEYCODE_1:
+    	case KeyEvent.KEYCODE_2:
+    	case KeyEvent.KEYCODE_3:
+    	case KeyEvent.KEYCODE_4:
+    	case KeyEvent.KEYCODE_5:
+    	case KeyEvent.KEYCODE_6:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = (byte)(keyCode - KeyEvent.KEYCODE_0);
+    		invalidate();
+    		return true;
+    	case KeyEvent.KEYCODE_Q:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = -1;
+    		invalidate();
+    		return true;
+    	case KeyEvent.KEYCODE_W:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = -2;
+    		invalidate();
+    		return true;
+    	case KeyEvent.KEYCODE_E:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = -3;
+    		invalidate();
+    		return true;
+    	case KeyEvent.KEYCODE_R:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = -4;
+    		invalidate();
+    		return true;
+    	case KeyEvent.KEYCODE_T:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = -5;
+    		invalidate();
+    		return true;
+    	case KeyEvent.KEYCODE_Y:
+    		if (!mSavedTaskAndroid.mSetup) return true;
+    		mTask.mBoard.sch[pole] = -6;
+    		invalidate();
+    		return true;
+    	/*case KeyEvent.KEYCODE_BACK:
+    		if (!mSetup) return false;
+    		setupBoardOK(true);
+    		return true;*/
+    		
     	}
     	return false;
     }
@@ -481,13 +534,48 @@ public class BoardControl extends View {
     	View normal = mActivity.findViewById(R.id.normal_panel);
     	normal.setVisibility(GONE);
     	setting.setVisibility(VISIBLE);
+    	mSavedTaskAndroid.mSetup = true;
+    	CheckBox bWhite = (CheckBox)mActivity.findViewById(R.id.board_setting_white);
+    	bWhite.setChecked(mTask.mBoard.bily);
+    	mTask.mBoardComputing = new Pozice(mTask.mBoard);
+    	
+    	mSavedTaskAndroid.mcx = 0;
+    	mSavedTaskAndroid.mcy = 0;
+    	
+    	mSavedTaskAndroid.mox = -1;
+    	mSavedTaskAndroid.moy = -1;
+    	
+    	invalidate();
     }
     
-    public void setupBoardOK() {
+    
+    
+    public void setupBoardOK(boolean cancel) {
     	View setting = mActivity.findViewById(R.id.board_setting_panel);
     	View normal = mActivity.findViewById(R.id.normal_panel);
+    	CheckBox bWhite = (CheckBox)mActivity.findViewById(R.id.board_setting_white);
+    	if (cancel) {
+    		mTask.mBoard = new Pozice(mTask.mBoardComputing);
+    	} else {
+    		mTask.mBoard.bily = bWhite.isChecked();
+    		mTask.mBoard.mimoch = 0;
+    		mTask.mBoard.roch = 0;
+    		/* binarne 00...00vmVM */
+    		if (mTask.mBoard.sch[Pozice.e1] == 6) {
+    			if (mTask.mBoard.sch[Pozice.h1] == 4) mTask.mBoard.roch |= 1;
+    			if (mTask.mBoard.sch[Pozice.a1] == 4) mTask.mBoard.roch |= 2;
+    		}
+    		if (mTask.mBoard.sch[Pozice.e8] == -6) {
+    			if (mTask.mBoard.sch[Pozice.h8] == -4) mTask.mBoard.roch |= 4;
+    			if (mTask.mBoard.sch[Pozice.a8] == -4) mTask.mBoard.roch |= 8;
+    		}
+    		mTask.mBoardComputing = new Pozice(mTask.mBoard);
+    	}
     	normal.setVisibility(VISIBLE);
     	setting.setVisibility(GONE);
+    	mSavedTaskAndroid.mSetup = false;
+    	
+    	invalidate();
     }
 
  }
