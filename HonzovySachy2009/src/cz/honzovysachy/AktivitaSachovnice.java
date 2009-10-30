@@ -30,7 +30,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
-	public static boolean mChangedLanguage; 
+	public static boolean mChangedMenu; 
 	
 	
 	public static final String SETTINGS = "settings";
@@ -42,19 +42,23 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-		if (!mChangedLanguage) return true;
-		mChangedLanguage = false;
+		if (!mChangedMenu) return true;
+		mChangedMenu = false;
 		menu.clear();
 	    menu.add(Menu.NONE, 1, Menu.NONE, S.g("FLIP_BOARD")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 2, Menu.NONE, S.g("MOVE")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 3, Menu.NONE, S.g("NEW_GAME")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 4, Menu.NONE, S.g("UNDO")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 5, Menu.NONE, S.g("REDO")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 6, Menu.NONE, S.g("SAVE_GAME")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 7, Menu.NONE, S.g("HUMAN_OPONENT")).setOnMenuItemClickListener(this);
+	    if (!mView.mSavedTaskAndroid.mSetup) {
+	    	menu.add(Menu.NONE, 2, Menu.NONE, S.g("MOVE")).setOnMenuItemClickListener(this);
+	    	menu.add(Menu.NONE, 3, Menu.NONE, S.g("NEW_GAME")).setOnMenuItemClickListener(this);
+	    	menu.add(Menu.NONE, 4, Menu.NONE, S.g("UNDO")).setOnMenuItemClickListener(this);
+	    	menu.add(Menu.NONE, 5, Menu.NONE, S.g("REDO")).setOnMenuItemClickListener(this);
+	    	menu.add(Menu.NONE, 6, Menu.NONE, S.g("SAVE_GAME")).setOnMenuItemClickListener(this);
+	    	menu.add(Menu.NONE, 7, Menu.NONE, S.g("HUMAN_OPONENT")).setOnMenuItemClickListener(this);
+	    }
 	    menu.add(Menu.NONE, 8, Menu.NONE, S.g("SETTINGS")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 9, Menu.NONE, S.g("ABOUT")).setOnMenuItemClickListener(this);
-	    menu.add(Menu.NONE, 10, Menu.NONE, S.g("SETUP_BOARD")).setOnMenuItemClickListener(this);
+	    if (!mView.mSavedTaskAndroid.mSetup) {
+	    	menu.add(Menu.NONE, 10, Menu.NONE, S.g("SETUP_BOARD")).setOnMenuItemClickListener(this);
+	    }
 	    return true;
 	}
 	
@@ -83,7 +87,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         int i = pref.getInt(LOCALE, 1);
         S.init(i, LOCALE_FILE);
         setTitle();
-        mChangedLanguage = true;
+        mChangedMenu = true;
         mView = (BoardControl)findViewById(R.id.chess_board);
         mView.mActivity = this;
         CheckBox cWhite = (CheckBox)findViewById(R.id.board_setting_white);

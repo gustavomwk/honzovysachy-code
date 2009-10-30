@@ -232,7 +232,7 @@ public class BoardControl extends View {
         bilaf.setARGB(255, 255, 255, 255);
         Paint cernaf = new Paint();
         cernaf.setARGB(255, 0, 0, 0);
-        boolean clovek = hrajeClovek();
+        boolean clovek = hrajeClovek() || mSavedTaskAndroid.mSetup;
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++) {
             	Paint p;
@@ -530,6 +530,7 @@ public class BoardControl extends View {
         setMeasuredDimension(width, width);
     }
     public void setupBoard() {
+    	AktivitaSachovnice.mChangedMenu = true;
     	View setting = mActivity.findViewById(R.id.board_setting_panel);
     	View normal = mActivity.findViewById(R.id.normal_panel);
     	normal.setVisibility(GONE);
@@ -538,6 +539,9 @@ public class BoardControl extends View {
     	CheckBox bWhite = (CheckBox)mActivity.findViewById(R.id.board_setting_white);
     	bWhite.setChecked(mTask.mBoard.bily);
     	mTask.mBoardComputing = new Pozice(mTask.mBoard);
+    	mTask.mGame = new Vector();
+    	mTask.mIndexInGame = -1;
+    	mTask.mEnd = Task.NO_END;
     	
     	mSavedTaskAndroid.mcx = 0;
     	mSavedTaskAndroid.mcy = 0;
@@ -551,6 +555,7 @@ public class BoardControl extends View {
     
     
     public void setupBoardOK(boolean cancel) {
+    	AktivitaSachovnice.mChangedMenu = true;
     	View setting = mActivity.findViewById(R.id.board_setting_panel);
     	View normal = mActivity.findViewById(R.id.normal_panel);
     	CheckBox bWhite = (CheckBox)mActivity.findViewById(R.id.board_setting_white);
@@ -569,16 +574,24 @@ public class BoardControl extends View {
     			if (mTask.mBoard.sch[Pozice.h8] == -4) mTask.mBoard.roch |= 4;
     			if (mTask.mBoard.sch[Pozice.a8] == -4) mTask.mBoard.roch |= 8;
     		}
-    		mTask.mBoardComputing = new Pozice(mTask.mBoard);
-    	}
-    	if (mTask.mBoard.correctBoard() != 0) {
-    		dlg(S.g("INCORRECT_BOARD"));
-    		return;
+        	if (mTask.mBoard.correctBoard() != 0) {
+        		dlg(S.g("INCORRECT_BOARD"));
+        		return;
+        	}
+        	mTask.mBoardComputing = new Pozice(mTask.mBoard);
     	}
     	normal.setVisibility(VISIBLE);
     	setting.setVisibility(GONE);
     	mSavedTaskAndroid.mSetup = false;
-    	
+    	if (!mSavedTaskAndroid.mBlackPerson || !mSavedTaskAndroid.mWhitePerson) {
+    		if (mTask.mBoard.bily) {
+    			mSavedTaskAndroid.mBlackPerson = false;
+    			mSavedTaskAndroid.mWhitePerson = true;
+    		} else {
+    			mSavedTaskAndroid.mBlackPerson = true;
+    			mSavedTaskAndroid.mWhitePerson = false;
+    		}
+    	}
     	invalidate();
     }
 

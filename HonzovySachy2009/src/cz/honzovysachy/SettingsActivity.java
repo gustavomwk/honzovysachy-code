@@ -66,7 +66,7 @@ public class SettingsActivity extends Activity {
 			    editor.putInt(AktivitaSachovnice.LOCALE, type = getRealId(group.getCheckedRadioButtonId()));
                 editor.commit();
                 S.init(type, AktivitaSachovnice.LOCALE_FILE);
-                AktivitaSachovnice.mChangedLanguage = true;
+                AktivitaSachovnice.mChangedMenu = true;
                 finish();				
 			}
 			
