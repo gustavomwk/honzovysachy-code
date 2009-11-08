@@ -601,5 +601,8 @@ public class BoardControl extends View {
     	}
     	invalidate();
     }
+    void moveNow() {
+    	mTask.mExitThinking = true;
+    }
 
  }

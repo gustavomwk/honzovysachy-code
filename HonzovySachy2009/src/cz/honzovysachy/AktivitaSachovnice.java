@@ -43,10 +43,19 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-		if (!mChangedMenu) return true;
-		mChangedMenu = false;
+		//if (!mChangedMenu) return true;
+		//mChangedMenu = false;
+		
 		menu.clear();
+		
+		
+		
 	    menu.add(Menu.NONE, 1, Menu.NONE, S.g("FLIP_BOARD")).setOnMenuItemClickListener(this);
+	    if (mView.mThinking) {
+	    	menu.add(Menu.NONE, 101, Menu.NONE, S.g("MOVE_NOW")).setOnMenuItemClickListener(this);
+			return true;
+		}
+	    
 	    if (!mView.mSavedTaskAndroid.mSetup) {
 	    	menu.add(Menu.NONE, 2, Menu.NONE, S.g("MOVE")).setOnMenuItemClickListener(this);
 	    	menu.add(Menu.NONE, 3, Menu.NONE, S.g("NEW_GAME")).setOnMenuItemClickListener(this);
@@ -130,7 +139,16 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 
 	public boolean onMenuItemClick(MenuItem item) {
 		if (mView.isPremyslim()) {
-			mView.dlg(S.g("THINKING"));
+			switch (item.getItemId()) {
+			case 1: mView.otoc();
+				break;
+			case 101:
+				mView.moveNow();
+				break;
+			default:
+				mView.dlg(S.g("THINKING"));
+			}
+			
 			return true;
 		}
 		switch (item.getItemId()) {
