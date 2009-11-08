@@ -51,3 +51,4 @@ INCORRECT_BOARD Incorrect board
 TIME_PER_MOVE Time per move
 LEVEL Level
 MOVE_NOW Move now
+SPANISH Spanish

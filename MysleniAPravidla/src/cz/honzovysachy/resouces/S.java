@@ -31,6 +31,7 @@ public class S {
 		} catch (IOException e) { return false;}
 		case 3: return init("cs");
 		case 4: return init("en");
+		case 5: return init("es");
 		default: return init(Locale.getDefault().getLanguage());
 		}
 	}

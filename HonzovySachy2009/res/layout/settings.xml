@@ -66,6 +66,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="English" />
+      <RadioButton android:id="@+id/es"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Spanish" />
       <RadioButton android:id="@+id/sdcard"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
