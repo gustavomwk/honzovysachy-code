@@ -28,6 +28,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
@@ -390,7 +391,8 @@ public class BoardControl extends View {
     		public void run() {
     			mTask.nalezTahyVector();
     			final int tah;
-    			tah = Minimax.minimax(mTask, 5000, new ThinkingOutput() {
+    			SharedPreferences pref = mActivity.getSharedPreferences(AktivitaSachovnice.SETTINGS, 0);
+    			tah = Minimax.minimax(mTask, pref.getInt(AktivitaSachovnice.TIME_PER_MOVE, 5000), new ThinkingOutput() {
     				int mDepth = 0;
     				String mMove = "";
     				int mValue = 0;
@@ -518,9 +520,14 @@ public class BoardControl extends View {
 		((Activity)(getContext())).startActivityForResult(result, 0);
     }
     public void settings() {
-   		Intent result = new Intent();
-        result.setClass(getContext(), SettingsActivity.class);
-		((Activity)(getContext())).startActivityForResult(result, 0);
+   		//Intent result = new Intent();
+        //result.setClass(getContext(), SettingsActivity.class);
+		//((Activity)(getContext())).startActivityForResult(result, 0);
+    	
+    	Intent result = new Intent();
+        result.setClass(getContext(), TabSettingsActivity.class);
+        ((Activity)(getContext())).startActivityForResult(result, 0);
+    	
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {

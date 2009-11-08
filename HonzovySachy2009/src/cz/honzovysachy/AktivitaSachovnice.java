@@ -35,6 +35,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	
 	public static final String SETTINGS = "settings";
 	public static final String LOCALE = "locale";
+	public static final String TIME_PER_MOVE = "time_per_move";
 	public static final String LOCALE_FILE = "/sdcard/strings_hs.txt";
 	
 	BoardControl mView;

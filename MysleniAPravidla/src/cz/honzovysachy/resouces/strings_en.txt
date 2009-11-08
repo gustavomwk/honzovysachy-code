@@ -43,8 +43,10 @@ OK OK
 CZECH Czech
 ENGLISH English
 DEFAULT default
-LOCALE Locale:
+LOCALE Locale
 SETUP_BOARD Setup board
 CANCEL Cancel
 SETUP_TEXT Move on the board and press 0, 1, 2, 3, 4, 5, 6, q, w, e, r, t, y
 INCORRECT_BOARD Incorrect board
+TIME_PER_MOVE Time per move
+LEVEL Level

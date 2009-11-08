@@ -16,10 +16,7 @@ public class PromotionActivity extends ListActivity {
 	@Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // setContentView(new PromotionView(this));
-        // Use an existing ListAdapter that will map an array
-        // of strings to TextViews
-        PromotionActivity.this.setResult(3);
+        setResult(3);
         setListAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, mStrings));
         setTitle(S.g("PAWN_PROMOTION"));
