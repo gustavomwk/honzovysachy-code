@@ -13,5 +13,6 @@
         <activity android:name=".PromotionActivity" android:label="Pawn promotion" android:theme="@android:style/Theme.Dialog" />
         <activity android:name=".PGNSaveActivity" android:label="Save PGN"/>
         <activity android:name=".TabSettingsActivity" android:label="Settings"/>
+        <activity android:name=".AboutActivity" android:label="About"/>
     </application>
 </manifest> 

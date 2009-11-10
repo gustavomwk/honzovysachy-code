@@ -78,7 +78,6 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     	setTitle(S.g("HONZOVY_SACHY"));
     }
     
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -166,9 +165,14 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			mView.settings();
 			break;
 		case 9:
+			/*
 			Intent myIntent = new Intent(Intent.ACTION_VIEW,
 				Uri.parse("http://honzovysachy.sf.net"));
 			startActivity(myIntent);
+			*/
+			Intent intent = new Intent();
+			intent.setClass(this, AboutActivity.class);
+			startActivity(intent);
 			break;
 		case 10:
 			mView.setupBoard(false);
