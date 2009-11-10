@@ -536,8 +536,8 @@ public class BoardControl extends View {
     	width = Math.min(width, height);
         setMeasuredDimension(width, width);
     }
-    public void setupBoard() {
-    	AktivitaSachovnice.mChangedMenu = true;
+    
+    public void setupBoard(boolean useBoardComputing) {
     	View setting = mActivity.findViewById(R.id.board_setting_panel);
     	View normal = mActivity.findViewById(R.id.normal_panel);
     	normal.setVisibility(GONE);
@@ -545,7 +545,9 @@ public class BoardControl extends View {
     	mSavedTaskAndroid.mSetup = true;
     	CheckBox bWhite = (CheckBox)mActivity.findViewById(R.id.board_setting_white);
     	bWhite.setChecked(mTask.mBoard.bily);
-    	mTask.mBoardComputing = new Pozice(mTask.mBoard);
+    	if (!useBoardComputing) {
+    		mTask.mBoardComputing = new Pozice(mTask.mBoard);
+    	}
     	mTask.mGame = new Vector();
     	mTask.mIndexInGame = -1;
     	mTask.mEnd = Task.NO_END;
@@ -562,8 +564,7 @@ public class BoardControl extends View {
     
     
     public void setupBoardOK(boolean cancel) {
-    	AktivitaSachovnice.mChangedMenu = true;
-    	View setting = mActivity.findViewById(R.id.board_setting_panel);
+      	View setting = mActivity.findViewById(R.id.board_setting_panel);
     	View normal = mActivity.findViewById(R.id.normal_panel);
     	CheckBox bWhite = (CheckBox)mActivity.findViewById(R.id.board_setting_white);
     	if (cancel) {

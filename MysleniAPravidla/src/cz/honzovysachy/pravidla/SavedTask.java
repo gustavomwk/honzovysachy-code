@@ -14,11 +14,14 @@ public class SavedTask implements Serializable {
 	public int mIndexInGame;
 	/** Current board */
 	public Pozice mBoard;
+	/** Bord used for computing */
+	public Pozice mBoardComputing;
 	
-	public SavedTask(int end, Vector game, int indexInGame, Pozice board) {
+	public SavedTask(int end, Vector game, int indexInGame, Pozice board, Pozice boardComputing) {
 		mEnd = end;
 		mGame = game;
 		mIndexInGame = indexInGame;
 		mBoard = board;
+		mBoardComputing = boardComputing;
 	}
 }

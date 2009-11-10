@@ -92,7 +92,6 @@ public class TabSettingsActivity extends TabActivity implements View.OnClickList
 	    editor.putInt(AktivitaSachovnice.TIME_PER_MOVE, iTime);
         editor.commit();
         S.init(type, AktivitaSachovnice.LOCALE_FILE);
-        AktivitaSachovnice.mChangedMenu = true;
         finish();				
 	}
 	

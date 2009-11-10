@@ -30,9 +30,6 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemClickListener {
-	public static boolean mChangedMenu; 
-	
-	
 	public static final String SETTINGS = "settings";
 	public static final String LOCALE = "locale";
 	public static final String TIME_PER_MOVE = "time_per_move";
@@ -43,13 +40,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-		//if (!mChangedMenu) return true;
-		//mChangedMenu = false;
-		
 		menu.clear();
-		
-		
-		
 	    menu.add(Menu.NONE, 1, Menu.NONE, S.g("FLIP_BOARD")).setOnMenuItemClickListener(this);
 	    if (mView.mThinking) {
 	    	menu.add(Menu.NONE, 101, Menu.NONE, S.g("MOVE_NOW")).setOnMenuItemClickListener(this);
@@ -97,7 +88,6 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
         int i = pref.getInt(LOCALE, 1);
         S.init(i, LOCALE_FILE);
         setTitle();
-        mChangedMenu = true;
         mView = (BoardControl)findViewById(R.id.chess_board);
         mView.mActivity = this;
         CheckBox cWhite = (CheckBox)findViewById(R.id.board_setting_white);
@@ -122,7 +112,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			}
         	
         });
-        if (mView.mSavedTaskAndroid.mSetup) mView.setupBoard();
+        if (mView.mSavedTaskAndroid.mSetup) mView.setupBoard(true);
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -181,7 +171,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			startActivity(myIntent);
 			break;
 		case 10:
-			mView.setupBoard();
+			mView.setupBoard(false);
 			break;
 		}
 		return true;

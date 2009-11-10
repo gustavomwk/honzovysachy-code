@@ -47,22 +47,22 @@ public class Task extends SavedTask {
 	public long mTimeStart;
 	public boolean mNullMove;
 
-	public Pozice mBoardComputing;
+	//public Pozice mBoardComputing;
 
 	/**  @return deep copy of the task. */
 	public SavedTask getSavedTask() {
-		return new SavedTask(mEnd, (Vector)mGame.clone(), mIndexInGame, (Pozice)mBoard.clone());
+		return new SavedTask(mEnd, (Vector)mGame.clone(), mIndexInGame, (Pozice)mBoard.clone(), (Pozice)mBoardComputing.clone());
 	}
 	
 	public Task(SavedTask task) {
-		super(NO_END, new Vector(), -1, new Pozice());
+		super(NO_END, new Vector(), -1, new Pozice(), new Pozice());
 		if (task != null) {
 			mEnd = task.mEnd;
 			mGame = task.mGame;
 			mIndexInGame = task.mIndexInGame;
 			mBoard = task.mBoard;
+			mBoardComputing = task.mBoardComputing;
 		}
-		mBoardComputing = (Pozice)mBoard.clone();
 		mIndexVZasobniku = -1;
 		mZasobnik = new Vector();
 		mZasobnikTahu = new ZasobnikTahu();
