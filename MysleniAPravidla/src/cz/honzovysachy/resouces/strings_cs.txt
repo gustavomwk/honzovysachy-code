@@ -52,3 +52,4 @@ TIME_PER_MOVE \u010cas na tah
 LEVEL \u00darove\u0148
 MOVE_NOW Hraj te\u010f
 SPANISH \u0160pan\u011blsky
+CATALAN Katal\u00e1nsky

@@ -32,6 +32,7 @@ public class S {
 		case 3: return init("cs");
 		case 4: return init("en");
 		case 5: return init("es");
+		case 6: return init("ca");
 		default: return init(Locale.getDefault().getLanguage());
 		}
 	}

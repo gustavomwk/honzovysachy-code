@@ -23,6 +23,7 @@ public class TabSettingsActivity extends TabActivity implements View.OnClickList
 		case R.id.cs: return 3;
 		case R.id.en: return 4;
 		case R.id.es: return 5;
+		case R.id.ca: return 6;
 		case R.id.localedefault: return 1;
 		case R.id.sdcard: return 2;
 		default: return 1;
@@ -35,6 +36,7 @@ public class TabSettingsActivity extends TabActivity implements View.OnClickList
 		case 3: return R.id.cs;
 		case 4: return R.id.en;
 		case 5: return R.id.es;
+		case 6: return R.id.ca;
 		case 2: return R.id.sdcard;
 		default: return R.id.localedefault;
 		}
@@ -59,10 +61,12 @@ public class TabSettingsActivity extends TabActivity implements View.OnClickList
 		RadioButton cs = (RadioButton)findViewById(R.id.cs);
 		RadioButton en = (RadioButton)findViewById(R.id.en);
 		RadioButton es = (RadioButton)findViewById(R.id.es);
+		RadioButton ca = (RadioButton)findViewById(R.id.ca);
 		RadioButton def = (RadioButton)findViewById(R.id.localedefault);
 		cs.setText(S.g("CZECH"));
 		en.setText(S.g("ENGLISH"));
 		es.setText(S.g("SPANISH"));
+		ca.setText(S.g("CATALAN"));
 		def.setText(S.g("DEFAULT"));
 		ok.setOnClickListener(this);
 		
