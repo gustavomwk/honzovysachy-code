@@ -62,6 +62,11 @@ public class Task extends SavedTask {
 			mIndexInGame = task.mIndexInGame;
 			mBoard = task.mBoard;
 			mBoardComputing = task.mBoardComputing;
+			// Update fix! There were crashes when an older app was not uninstalled, just reinstalled 
+			// (mBoardComputing == null)
+			if (mBoardComputing == null) {
+				mBoardComputing = new Pozice(mBoard);
+			}
 		}
 		mIndexVZasobniku = -1;
 		mZasobnik = new Vector();
