@@ -391,8 +391,11 @@ public class BoardControl extends View {
     		public void run() {
     			mTask.nalezTahyVector();
     			final int tah;
+    			
+    			if (mActivity == null) try {Thread.sleep(500, 0);} catch (Exception e) {} // TODO fix better !!!!
     			SharedPreferences pref = mActivity.getSharedPreferences(AktivitaSachovnice.SETTINGS, 0);
-    			tah = Minimax.minimax(mTask, pref.getInt(AktivitaSachovnice.TIME_PER_MOVE, 5000), new ThinkingOutput() {
+    			int time = 5000;
+    			tah = Minimax.minimax(mTask, pref == null ? time : pref.getInt(AktivitaSachovnice.TIME_PER_MOVE, time), new ThinkingOutput() {
     				int mDepth = 0;
     				String mMove = "";
     				int mValue = 0;
