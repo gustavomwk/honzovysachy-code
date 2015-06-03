@@ -224,7 +224,7 @@ public class BoardControl extends View {
         Paint bila = new Paint();
         bila.setARGB(255, 200, 200, 200);
         Paint cerna = new Paint();
-        cerna.setARGB(255, 100, 100, 100);
+        cerna.setARGB(255, 150, 150, 150);
         Paint modra = new Paint();
         modra.setARGB(255, 0, 0, 255);
         Paint zelena = new Paint();
