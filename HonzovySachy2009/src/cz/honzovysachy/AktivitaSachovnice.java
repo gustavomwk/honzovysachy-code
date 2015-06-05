@@ -20,6 +20,7 @@ import cz.honzovysachy.resouces.S;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -80,7 +81,10 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+		if (Integer.valueOf(Build.VERSION.SDK).intValue() >= 11)
+		{
+			requestWindowFeature(8/*Window.FEATURE_ACTION_BAR */);
+		}
         setContentView(R.layout.board_view);
         SharedPreferences pref = getBaseContext().getSharedPreferences(SETTINGS, 0);
         int i = pref.getInt(LOCALE, 1);
@@ -178,5 +182,15 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 			break;
 		}
 		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		if (item.getItemId() == android.R.id.home)
+		{
+			openOptionsMenu();
+			return true;
+		}
+		return super.onOptionsItemSelected(item);
 	}
 }
