@@ -58,7 +58,7 @@ public class AktivitaSachovnice extends Activity implements MenuItem.OnMenuItemC
 	    menu.add(Menu.NONE, 8, Menu.NONE, S.g("SETTINGS")).setOnMenuItemClickListener(this);
 	    menu.add(Menu.NONE, 9, Menu.NONE, S.g("ABOUT")).setOnMenuItemClickListener(this);
 	    if (!mView.mSavedTaskAndroid.mSetup) {
-	    	menu.add(Menu.NONE, 10, Menu.NONE, S.g("SETUP_BOARD")).setOnMenuItemClickListener(this);
+	    	//menu.add(Menu.NONE, 10, Menu.NONE, S.g("SETUP_BOARD")).setOnMenuItemClickListener(this);
 	    }
 	    return true;
 	}

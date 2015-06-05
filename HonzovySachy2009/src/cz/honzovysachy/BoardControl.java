@@ -35,7 +35,6 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
-import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CheckBox;
@@ -47,8 +46,6 @@ import cz.honzovysachy.pravidla.PawnPromotionGUIQueen;
 import cz.honzovysachy.pravidla.Pozice;
 import cz.honzovysachy.pravidla.Task;
 import cz.honzovysachy.resouces.S;
-
-
 
 public class BoardControl extends View {
 	SavedTaskAndroid mSavedTaskAndroid;
@@ -225,8 +222,6 @@ public class BoardControl extends View {
         bila.setARGB(255, 200, 200, 200);
         Paint cerna = new Paint();
         cerna.setARGB(255, 150, 150, 150);
-        Paint modra = new Paint();
-        modra.setARGB(255, 0, 0, 255);
         Paint zelena = new Paint();
         zelena.setARGB(255, 0, 255, 0);
         Paint bilaf = new Paint();
@@ -239,9 +234,6 @@ public class BoardControl extends View {
             	Paint p;
             	if (clovek && mSavedTaskAndroid.mox == i && mSavedTaskAndroid.moy == j) {
             		p = zelena;
-            	} else
-            	if (clovek && mSavedTaskAndroid.mcx == i && mSavedTaskAndroid.mcy == j) {
-            		p = modra;
             	} else {
             		p = ((((i + j) & 1) == 1) ? bila : cerna);
             	}
@@ -264,122 +256,6 @@ public class BoardControl extends View {
 		d.setTitle(co);
 		d.show();
 	}
-	
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent msg) {
-    	if (isPremyslim()) return false;
-    	int pole = Pozice.a1 + mSavedTaskAndroid.mcx + 10 * mSavedTaskAndroid.mcy;
-    	switch (keyCode) {
-    	case KeyEvent.KEYCODE_DPAD_UP:
-    		if (!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy < 7 ||
-    			mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy > 0) {
-    			if (mSavedTaskAndroid.mFlipped)
-    				mSavedTaskAndroid.mcy--;
-    			else mSavedTaskAndroid.mcy++;
-    			invalidate();
-    		}
-    		return true;
-    	
-    	case KeyEvent.KEYCODE_DPAD_DOWN:
-    		if (mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy < 7 ||
-    			!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcy > 0) {
-    			if (mSavedTaskAndroid.mFlipped) mSavedTaskAndroid.mcy++; else mSavedTaskAndroid.mcy--;
-    			invalidate();
-    		}
-    		return true;
-    	case KeyEvent.KEYCODE_DPAD_RIGHT:
-    		if (!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx < 7 || mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx > 0) {
-    			if (mSavedTaskAndroid.mFlipped) mSavedTaskAndroid.mcx--; else mSavedTaskAndroid.mcx++;
-    			invalidate();
-    		}
-    		return true;
-    	case KeyEvent.KEYCODE_DPAD_LEFT:
-    		if (mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx < 7 ||
-    			!mSavedTaskAndroid.mFlipped && mSavedTaskAndroid.mcx > 0) {
-    			if (mSavedTaskAndroid.mFlipped)
-    				mSavedTaskAndroid.mcx++; else mSavedTaskAndroid.mcx--;
-    			invalidate();
-    		}
-    		return true;
-    	case KeyEvent.KEYCODE_DPAD_CENTER:
-    		if (mSavedTaskAndroid.mSetup) {
-    			return true;
-    		}
-    		if (!hrajeClovek()) return true;
-    		Vector t = mTask.nalezTahyVector();
-    		//int pole = Pozice.a1 + mSavedTaskAndroid.mcx + 10 * mSavedTaskAndroid.mcy;
-    		if (mTask.JeTam1(t, pole)) {
-    			mSavedTaskAndroid.mox = mSavedTaskAndroid.mcx;
-    			mSavedTaskAndroid.moy = mSavedTaskAndroid.mcy;
-    			invalidate();
-    			return true;
-    		}
-    		int pole1 = Pozice.a1 + mSavedTaskAndroid.mox + 10 * mSavedTaskAndroid.moy;
-    		if (mTask.JeTam2(t, pole1, pole)) {
-    			if (Math.abs(mTask.mBoardComputing.sch[pole1]) == 1 && (mSavedTaskAndroid.mcy == 7 || mSavedTaskAndroid.mcy == 0)) {
-    				mFieldFrom = pole1;
-    				mFieldTo = pole;
-    				Intent result = new Intent();
-    		        result.setClass(getContext(), PromotionActivity.class);
-    				((Activity)(getContext())).startActivityForResult(result, 0);
-    				return true;
-    			} else {
-    				int tah = mTask.makeMove(t, pole1, pole, new PawnPromotionGUIQueen());
-    				tahni(tah);
-    				return true;
-    			}
-    		}
-    		
-    		return true;
-    	case KeyEvent.KEYCODE_0:
-    	case KeyEvent.KEYCODE_1:
-    	case KeyEvent.KEYCODE_2:
-    	case KeyEvent.KEYCODE_3:
-    	case KeyEvent.KEYCODE_4:
-    	case KeyEvent.KEYCODE_5:
-    	case KeyEvent.KEYCODE_6:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = (byte)(keyCode - KeyEvent.KEYCODE_0);
-    		invalidate();
-    		return true;
-    	case KeyEvent.KEYCODE_Q:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = -1;
-    		invalidate();
-    		return true;
-    	case KeyEvent.KEYCODE_W:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = -2;
-    		invalidate();
-    		return true;
-    	case KeyEvent.KEYCODE_E:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = -3;
-    		invalidate();
-    		return true;
-    	case KeyEvent.KEYCODE_R:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = -4;
-    		invalidate();
-    		return true;
-    	case KeyEvent.KEYCODE_T:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = -5;
-    		invalidate();
-    		return true;
-    	case KeyEvent.KEYCODE_Y:
-    		if (!mSavedTaskAndroid.mSetup) return true;
-    		mTask.mBoard.sch[pole] = -6;
-    		invalidate();
-    		return true;
-    	/*case KeyEvent.KEYCODE_BACK:
-    		if (!mSetup) return false;
-    		setupBoardOK(true);
-    		return true;*/
-    		
-    	}
-    	return false;
-    }
     
     public boolean isPremyslim() {
     	return mThinking;
